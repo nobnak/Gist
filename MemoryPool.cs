@@ -13,9 +13,6 @@ namespace Gist {
     public class MemoryPool<T> : IMemoryPool<T> where T : new () {
         Stack<T> _pool = new Stack<T>();
 
-        public MemoryPool() {
-        }
-
         public T New() {
             lock (this) {
                 if (_pool.Count > 0)
