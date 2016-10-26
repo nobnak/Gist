@@ -30,8 +30,28 @@ namespace Gist.Extensions.AABB {
             }
             return MinMaxBounds (resmin, resmax);
         }
+        public static Bounds ToWorld(this Transform tr, Bounds local) {
+            var local2world = tr.localToWorldMatrix;
+            var absMat = local2world.Absolute ();
+            return local.ToWorld (local2world, absMat);
+        }
+        public static Bounds ToWorld (this Bounds local, Matrix4x4 mat, Matrix4x4 absMat) {
+            var center = mat.MultiplyPoint3x4 (local.center);
+            var extent = absMat.MultiplyVector (local.extents);
+            return new Bounds (center, 2f * extent);
+        }
+
+        public static Matrix4x4 Absolute(this Matrix4x4 mat) {
+            var absM = Matrix4x4.zero;
+            for (var i = 0; i < 16; i++) {
+                var j = mat [i];
+                absM [i] = (j < 0 ? -j : j);
+            }
+            return absM;
+        }
         #endregion
 
+        #region Utils
         public static Bounds MinMaxBounds(Vector3 min, Vector3 max) {
             var bb = new Bounds();
             bb.SetMinMax(min, max);
@@ -43,5 +63,6 @@ namespace Gist.Extensions.AABB {
         public static Vector3 Max() {
             return new Vector3 (float.MinValue, float.MinValue, float.MinValue);
         }
+        #endregion
     }
 }
