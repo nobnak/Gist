@@ -5,17 +5,89 @@ namespace Gist.Extensions.Easing {
 
 	public static class EasingExtension {
 
-		public static Easer Easing(this MonoBehaviour bhv, System.Action<float> func) {
-			
+        public static Easer Interpolate(this MonoBehaviour bhv, Easings.Functions mode, float duration) {
+            return new Easer(bhv).Interpolate (mode, duration);
 		}
 	}
 
 	public class Easer {
-		MonoBehaviour _bhv;
-		System.Action<float> _func;
+        public const float EPSILON = 1e-3f;
 
-		public Easer(Component comp, System.Action<float> func) {
-			
+        Invoker _invoker;
+		MonoBehaviour _bhv;
+        Coroutine _coroutine;
+
+		public Easer(MonoBehaviour bhv) {
+            this._bhv = bhv;
 		}
+
+        public Easer Interpolate(Easings.Functions mode, float duration) {
+            Stop ();
+            _coroutine = _bhv.StartCoroutine (Interpolation (mode, duration));
+            return this;
+        }
+        public Easer ForEach(System.Action<float> func, float start, float end) {
+            _invoker = new Invoker (func, start, end);
+            return this;
+        }
+        public Easer ForEach(System.Action<float> func, float end) {
+            var curr = _invoker.current;
+            Debug.LogFormat ("Curr={0}", curr);
+            _invoker = new Invoker (func, curr, end);
+            return this;
+        }
+        public void Stop () {
+            if (_coroutine != null)
+                _bhv.StopCoroutine (_coroutine);
+            _coroutine = null;
+        }
+
+        Easer Func(float t) {
+            _invoker.Invoke (t);
+            return this;
+        }
+        IEnumerator Interpolation(Easings.Functions mode, float duration) {
+            if (-EPSILON < duration && duration < EPSILON)
+                yield break;
+            yield return null;
+
+            var t = (duration > 0f ? 0f : 1f);
+            var ds = 1f / duration;
+
+            while (true) {
+                t += Time.deltaTime * ds;
+                if (t < 0f || 1f < t)
+                    break;
+
+                Func (Easings.Interpolate (t, mode));
+                yield return null;
+            }
+
+            Func (Easings.Interpolate (Mathf.Clamp01 (t), mode));
+            _coroutine = null;
+        }
+
+        public struct Invoker {
+            public readonly System.Action<float> func;
+            public readonly float start;
+            public readonly float end;
+            public readonly float duration;
+
+            public float current;
+
+            public Invoker(System.Action<float> func, float start, float end) {
+                this.func = func;
+                this.start = start;
+                this.end = end;
+                this.duration = end - start;
+                this.current = start;
+            }
+            public float Invoke(float t) {
+                current = duration * t + start;
+                if (func != null)
+                    func(current);
+                return current;
+            }
+        }
 	}
 }
