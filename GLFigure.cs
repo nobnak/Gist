@@ -25,7 +25,17 @@ namespace Gist {
         public enum ZTestEnum { NEVER = 1, LESS = 2, EQUAL = 3, LESSEQUAL = 4,
             GREATER = 5, NOTEQUAL = 6, GREATEREQUAL = 7, ALWAYS = 8 };
 
-		Material _lineMat;
+        #region Static
+        static GLFigure _instance;
+
+        public static GLFigure Instance {
+            get {
+                return (_instance == null ? (_instance = new GLFigure()) : _instance);
+            }
+        }
+        #endregion
+
+        Material _lineMat;
 
 		public GLFigure() {
 			var lineShader = Shader.Find (LINE_SHADER);

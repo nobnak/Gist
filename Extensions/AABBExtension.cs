@@ -30,12 +30,12 @@ namespace Gist.Extensions.AABB {
             }
             return MinMaxBounds (resmin, resmax);
         }
-        public static Bounds ToWorld(this Transform tr, Bounds local) {
+        public static Bounds EncapsulateInWorldBounds(this Transform tr, Bounds local) {
             var local2world = tr.localToWorldMatrix;
-            var absMat = local2world.Absolute ();
-            return local.ToWorld (local2world, absMat);
+            return local.EncapsulateInWorldBounds (local2world);
         }
-        public static Bounds ToWorld (this Bounds local, Matrix4x4 mat, Matrix4x4 absMat) {
+        public static Bounds EncapsulateInWorldBounds(this Bounds local, Matrix4x4 mat) {
+            var absMat = mat.Absolute ();
             var center = mat.MultiplyPoint3x4 (local.center);
             var extent = absMat.MultiplyVector (local.extents);
             return new Bounds (center, 2f * extent);
