@@ -32,7 +32,6 @@ namespace Gist.Extensions.Easing {
         }
         public Easer ForEach(System.Action<float> func, float end) {
             var curr = _invoker.current;
-            Debug.LogFormat ("Curr={0}", curr);
             _invoker = new Invoker (func, curr, end);
             return this;
         }
