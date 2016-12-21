@@ -187,11 +187,11 @@ namespace Gist {
                 EndDraw ();
             }
         }
-		public void DrawLines(IEnumerable<Vector3> vertices, Transform trs, Color color, int mode) {
-			DrawLines (vertices, Camera.current.worldToCameraMatrix * trs.localToWorldMatrix, color, mode);
+		public void DrawLines(IEnumerable<Vector3> vertices, Transform trs, Color color) {
+			DrawLines (vertices, Camera.current.worldToCameraMatrix * trs.localToWorldMatrix, color);
 		}
-        public void DrawLines(IEnumerable<Vector3> vertices, Matrix4x4 modelViewMat, Color color, int mode) {
-            if (!StartDraw (modelViewMat, color, mode))
+        public void DrawLines(IEnumerable<Vector3> vertices, Matrix4x4 modelViewMat, Color color) {
+            if (!StartDraw (modelViewMat, color, GL.LINES))
                 return;
             try {
     			var iter = vertices.GetEnumerator ();

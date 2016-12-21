@@ -29,7 +29,7 @@ namespace Gist {
 				dataset [i].Draw (_fig);
 
 			if (lines.Length >= 2) {
-				_fig.DrawLines (GenerateVertices(), transform, Color.white, GL.LINES);
+				_fig.DrawLines (GenerateVertices(), transform, Color.white);
 			}
 		}
 		IEnumerable<Vector3> GenerateVertices() {
