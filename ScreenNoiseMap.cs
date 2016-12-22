@@ -29,6 +29,8 @@ namespace Gist {
         Vector2 _texelSize;
 
         void OnEnable() {
+            if (targetCam == null)
+                targetCam = Camera.main;
             _seeds = SEED_SIZE * new Vector3 (Random.value, Random.value, Random.value);
         }
     	void Update () {
