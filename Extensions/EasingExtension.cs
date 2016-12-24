@@ -13,6 +13,9 @@ namespace Gist.Extensions.Easing {
 	public class Easer {
         public const float EPSILON = 1e-3f;
 
+        public event System.Action<float> OnBegin;
+        public event System.Action<float> OnEnd;        
+
         Invoker _invoker;
 		MonoBehaviour _bhv;
         Coroutine _coroutine;
@@ -53,6 +56,7 @@ namespace Gist.Extensions.Easing {
             var t = (duration > 0f ? 0f : 1f);
             var ds = 1f / duration;
 
+            NotifyOnBegin (t);
             while (true) {
                 t += Time.deltaTime * ds;
                 if (t < 0f || 1f < t)
@@ -63,7 +67,17 @@ namespace Gist.Extensions.Easing {
             }
 
             Func (Easings.Interpolate (Mathf.Clamp01 (t), mode));
+            NotifyOnEnd (t);
             _coroutine = null;
+        }
+
+        void NotifyOnBegin(float t) {
+            if (OnBegin != null)
+                OnBegin (t);
+        }
+        void NotifyOnEnd(float t) {
+            if (OnEnd != null)
+                OnEnd(t);
         }
 
         public struct Invoker {
