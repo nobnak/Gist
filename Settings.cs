@@ -48,7 +48,7 @@ namespace Gist {
             }
             public virtual void OnGUI(MonoBehaviour b) {
                 if (mode == ModeEnum.GUI)
-                    _window = GUILayout.Window (b.GetInstanceID(), _window, Window, b.name, GUILayout.MinWidth (WINDOW_WIDTH));
+                    _window = GUILayout.Window (GetHashCode(), _window, Window, b.name, GUILayout.MinWidth (WINDOW_WIDTH));
             }
 
             void NotifyOnDataChange () {
