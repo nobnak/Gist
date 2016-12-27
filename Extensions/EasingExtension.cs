@@ -26,7 +26,8 @@ namespace Gist.Extensions.Easing {
 
         public Easer Interpolate(Easings.Functions mode, float duration) {
             Stop ();
-            _coroutine = _bhv.StartCoroutine (Interpolation (mode, duration));
+            if (_bhv.isActiveAndEnabled)
+                _coroutine = _bhv.StartCoroutine (Interpolation (mode, duration));
             return this;
         }
         public Easer ForEach(System.Action<float> func, float start, float end) {
