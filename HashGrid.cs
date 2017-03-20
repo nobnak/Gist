@@ -100,7 +100,7 @@ namespace Gist {
 		public T Find(System.Predicate<T> Predicate) {
 			return _points.Find (Predicate);
 		}
-		public IEnumerable<S> Neighbors<S>(Vector3 center, float distance) where S:class,T {
+        public IEnumerable<S> Neighbors<S>(Vector3 center, float distance) where S : class, T {
 			var r2 = distance * distance;
 			foreach (var id in _hash.CellIds(center, distance)) {
 				var cell = _grid [id];

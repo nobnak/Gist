@@ -6,7 +6,8 @@ namespace Gist {
     public class CameraSettings : Settings<CameraSettings.Data> {
         Camera _c;
 
-        void Awake() {
+        protected override void Awake() {
+            base.Awake();
             _c = GetComponent<Camera> ();
         }
         protected override void Update () {

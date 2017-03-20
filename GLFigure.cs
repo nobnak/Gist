@@ -25,7 +25,17 @@ namespace Gist {
         public enum ZTestEnum { NEVER = 1, LESS = 2, EQUAL = 3, LESSEQUAL = 4,
             GREATER = 5, NOTEQUAL = 6, GREATEREQUAL = 7, ALWAYS = 8 };
 
-		Material _lineMat;
+        #region Static
+        static GLFigure _instance;
+
+        public static GLFigure Instance {
+            get {
+                return (_instance == null ? (_instance = new GLFigure()) : _instance);
+            }
+        }
+        #endregion
+
+        Material _lineMat;
 
 		public GLFigure() {
 			var lineShader = Shader.Find (LINE_SHADER);
@@ -81,105 +91,137 @@ namespace Gist {
         }
 
 		public void DrawCircle (Matrix4x4 modelViewMat, Color color) {
-            StartDraw (modelViewMat, color, GL.LINES);
-			var dr = TWO_PI_RAD / SEGMENTS;
-			var v = new Vector3 (0.5f, 0f, 0f);
-			for (var i = 0; i <= SEGMENTS; i++) {
-				GL.Vertex (v);
-                v = PositionFromAngle((i + 1) * dr, 1f);
-				GL.Vertex (v);
+            if (!StartDraw (modelViewMat, color, GL.LINES))
+                return;
+            try {
+    			var dr = TWO_PI_RAD / SEGMENTS;
+    			var v = new Vector3 (0.5f, 0f, 0f);
+    			for (var i = 0; i <= SEGMENTS; i++) {
+    				GL.Vertex (v);
+                    v = PositionFromAngle((i + 1) * dr, 1f);
+    				GL.Vertex (v);
+                }
+            } finally {
+                EndDraw ();
             }
-            EndDraw ();
 		}
         public void FillCircle(Matrix4x4 modelViewMat, Color color) {
-            StartDraw (modelViewMat, color, GL.TRIANGLES);
-			var dr = TWO_PI_RAD / SEGMENTS;
-            var v = PositionFromAngle (0f, 1f);
-			for (var i = 0; i < SEGMENTS; i++) {
-				GL.Vertex (v);
-				GL.Vertex (Vector3.zero);
-                v = PositionFromAngle((i + 1) * dr, 1f);
-				GL.Vertex (v);
+            if (!StartDraw (modelViewMat, color, GL.TRIANGLES))
+                return;
+            try {
+    			var dr = TWO_PI_RAD / SEGMENTS;
+                var v = PositionFromAngle (0f, 1f);
+    			for (var i = 0; i < SEGMENTS; i++) {
+    				GL.Vertex (v);
+    				GL.Vertex (Vector3.zero);
+                    v = PositionFromAngle((i + 1) * dr, 1f);
+    				GL.Vertex (v);
+                }
+            } finally {
+                EndDraw ();
             }
-            EndDraw ();
 		}
 
         public void DrawFan(Matrix4x4 modelViewMat, Color color, float fromAngle, float toAngle) {
-            StartDraw (modelViewMat, color, GL.LINES);
-            var radFrom = (fromAngle + FAN_START_ANGLE) * Mathf.Deg2Rad;
-            var radTo = (toAngle + FAN_START_ANGLE) * Mathf.Deg2Rad;
-            var dr = (radTo - radFrom) / SEGMENTS;
-            var v = PositionFromAngle (radFrom, 2f);
-            GL.Vertex (Vector3.zero);
-            GL.Vertex (v);
-            for (var i = 0; i <= SEGMENTS; i++) {
+            if (!StartDraw (modelViewMat, color, GL.LINES))
+                return;
+
+            try {
+                var radFrom = (fromAngle + FAN_START_ANGLE) * Mathf.Deg2Rad;
+                var radTo = (toAngle + FAN_START_ANGLE) * Mathf.Deg2Rad;
+                var dr = (radTo - radFrom) / SEGMENTS;
+                var v = PositionFromAngle (radFrom, 2f);
+                GL.Vertex (Vector3.zero);
                 GL.Vertex (v);
-                v = PositionFromAngle ((i + 1) * dr + radFrom, 2f);
+                for (var i = 0; i <= SEGMENTS; i++) {
+                    GL.Vertex (v);
+                    v = PositionFromAngle ((i + 1) * dr + radFrom, 2f);
+                    GL.Vertex (v);
+                }
+                GL.Vertex (Vector3.zero);
                 GL.Vertex (v);
+            } finally {
+                EndDraw ();
             }
-            GL.Vertex (Vector3.zero);
-            GL.Vertex (v);
-            EndDraw ();
         }
         public void FillFan(Matrix4x4 modelViewMat, Color color, float fromAngle, float toAngle) {
-            StartDraw (modelViewMat, color, GL.TRIANGLES);
-            var radFrom = (fromAngle + FAN_START_ANGLE) * Mathf.Deg2Rad;
-            var radTo = (toAngle + FAN_START_ANGLE) * Mathf.Deg2Rad;
-            var dr = (radTo - radFrom) / SEGMENTS;
-            var v = PositionFromAngle (radFrom, 2f);
-            for (var i = 0; i < SEGMENTS; i++) {
-                GL.Vertex (v);
-                GL.Vertex (Vector3.zero);
-                v = PositionFromAngle ((i + 1) * dr + radFrom, 2f);
-                GL.Vertex (v);
+            if (!StartDraw (modelViewMat, color, GL.TRIANGLES))
+                return;
+            try {
+                var radFrom = (fromAngle + FAN_START_ANGLE) * Mathf.Deg2Rad;
+                var radTo = (toAngle + FAN_START_ANGLE) * Mathf.Deg2Rad;
+                var dr = (radTo - radFrom) / SEGMENTS;
+                var v = PositionFromAngle (radFrom, 2f);
+                for (var i = 0; i < SEGMENTS; i++) {
+                    GL.Vertex (v);
+                    GL.Vertex (Vector3.zero);
+                    v = PositionFromAngle ((i + 1) * dr + radFrom, 2f);
+                    GL.Vertex (v);
+                }
+            } finally { 
+                EndDraw ();
             }
-            EndDraw ();
         }
 
         public void DrawQuad(Matrix4x4 modelViewMat, Color color) {
-            StartDraw (modelViewMat, color, GL.LINES);
-            var v = QUAD [0];
-            for (var i = 0; i < QUAD.Length; i++) {
-                GL.Vertex (v);
-                v = QUAD [(i + 1) % QUAD.Length];
-                GL.Vertex (v);
+            if (!StartDraw (modelViewMat, color, GL.LINES))
+                return;
+            try {
+                var v = QUAD [0];
+                for (var i = 0; i < QUAD.Length; i++) {
+                    GL.Vertex (v);
+                    v = QUAD [(i + 1) % QUAD.Length];
+                    GL.Vertex (v);
+                }
+            } finally {
+                EndDraw ();
             }
-            EndDraw ();
         }
         public void FillQuad(Matrix4x4 modelViewMat, Color color) {
-            StartDraw (modelViewMat, color, GL.QUADS);
-            for (var i = 0; i < QUAD.Length; i++)
-                GL.Vertex (QUAD [i]);
-            EndDraw ();
+            if (!StartDraw (modelViewMat, color, GL.QUADS))
+                return;
+            try {
+                for (var i = 0; i < QUAD.Length; i++)
+                    GL.Vertex (QUAD [i]);
+            } finally {
+                EndDraw ();
+            }
         }
-		public void DrawLines(IEnumerable<Vector3> vertices, Transform trs, Color color, int mode) {
-			DrawLines (vertices, Camera.current.worldToCameraMatrix * trs.localToWorldMatrix, color, mode);
+		public void DrawLines(IEnumerable<Vector3> vertices, Transform trs, Color color) {
+			DrawLines (vertices, Camera.current.worldToCameraMatrix * trs.localToWorldMatrix, color);
 		}
-        public void DrawLines(IEnumerable<Vector3> vertices, Matrix4x4 modelViewMat, Color color, int mode) {
-            StartDraw (modelViewMat, color, mode);
-			var iter = vertices.GetEnumerator ();
-			while (iter.MoveNext ()) {
-				var vfrom = iter.Current;
-				if (!iter.MoveNext ())
-					break;
-				var vto = iter.Current;
-				GL.Vertex (vfrom);
-				GL.Vertex (vto);
-			}
-            EndDraw ();
+        public void DrawLines(IEnumerable<Vector3> vertices, Matrix4x4 modelViewMat, Color color) {
+            if (!StartDraw (modelViewMat, color, GL.LINES))
+                return;
+            try {
+    			var iter = vertices.GetEnumerator ();
+    			while (iter.MoveNext ()) {
+    				var vfrom = iter.Current;
+    				if (!iter.MoveNext ())
+    					break;
+    				var vto = iter.Current;
+    				GL.Vertex (vfrom);
+    				GL.Vertex (vto);
+    			}
+            } finally {
+                EndDraw ();
+            }
 		}
 
         Vector3 PositionFromAngle(float rad, float size) {
             return new Vector3(0.5f * size * Mathf.Cos (rad), 0.5f * size * Mathf.Sin (rad), 0f);            
         }
 
-        void StartDraw (Matrix4x4 modelViewMat, Color color, int mode) {
+        bool StartDraw (Matrix4x4 modelViewMat, Color color, int mode) {
+            if (_lineMat == null)
+                return false;
             _lineMat.SetPass (0);
             GL.PushMatrix ();
             GL.LoadIdentity ();
             GL.MultMatrix (modelViewMat);
             GL.Begin (mode);
             GL.Color (color);
+            return true;
         }
 
         static void EndDraw () {

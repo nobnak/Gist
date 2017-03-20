@@ -21,7 +21,8 @@ namespace Gist {
             _points.Add (new Point (p));
         }
 
-        protected virtual void Awake() {
+        protected override void Awake() {
+            base.Awake ();
             _fig = new GLFigure ();
             _points = new List<Point> ();
             _clusterIDs = new List<int> ();
