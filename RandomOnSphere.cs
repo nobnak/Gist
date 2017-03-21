@@ -19,12 +19,12 @@ namespace Gist {
 			return Mathf.Clamp (t, -1f, 1f);
 		}
 
-		public static void RandomPolar(out float lat, out float lon) {
-			RandomPolar (Random.value, Random.value, out lat, out lon);
+        public static void RandomPolar(out float lat, out float lon, float lonFrom = 0f, float lonTo = AROUND_IN_DEG) {
+            RandomPolar (Random.value, Random.value, out lat, out lon, lonFrom, lonTo);
 		}
-		public static void RandomPolar(float s, float t, out float lat, out float lon) {
+        public static void RandomPolar(float s, float t, out float lat, out float lon, float lonFrom, float lonTo) {
 			lat = QUARTER_OF_AROUND * RandomLatitude (s);
-			lon = AROUND_IN_DEG * t;
+            lon = (lonTo - lonFrom) * t + lonFrom;
 		}
 	}
 }
