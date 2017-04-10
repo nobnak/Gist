@@ -1,90 +1,92 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Gist;
 
 namespace Gist {
 
-    public class PositionClustering : Settings<PositionClustering.Data> {
-        public Camera targetCam;
+    public class PositionClustering : System.IDisposable {
+        public System.Action<List<Vector2>> OnUpdateCluster;
 
+        Data data;
         List<Point> _points;
         List<int> _clusterIDs;
         List<Vector2> _clusters;
         List<Vector3> _tmp;
 
-        GLFigure _fig;
-
-        public virtual void OnUpdateCluster(List<Vector2> clusters) {
-        }
-        public void Receive(Vector2 p) {
-            _points.Add (new Point (p));
-        }
-
-        protected override void Awake() {
-            base.Awake ();
-            _fig = new GLFigure ();
+        public PositionClustering(Data data) {
+            this.data = data;
             _points = new List<Point> ();
             _clusterIDs = new List<int> ();
             _clusters = new List<Vector2> ();
-            _tmp = new List<Vector3> ();
+            _tmp = new List<Vector3> ();            
         }
-        protected virtual void OnDestroy() {
-            if (_fig != null)
-                _fig.Dispose ();
-        }
-        protected virtual void OnRenderObject() {
-            if ((Camera.current.cullingMask & (1 << gameObject.layer)) == 0)
-                return;
-            if (targetCam == null || _points == null || _clusters == null)
-                return;
-            if (!data.debugPointsVisible)
-                return;
 
-            var rot = targetCam.transform.rotation;
-            var size = data.debugInputSize * Vector2.one;
-            foreach (var pp in _points) {
-                var p = (Vector3)pp.pos;
-                p.z = data.debugInputDepth;
-                _fig.FillCircle (targetCam.ViewportToWorldPoint (p), rot, size, data.debugInputColor);
+        #region IDisposable implementation 
+        public void Dispose () { }
+        #endregion
+
+        public void Receive(Vector2 p) {
+            _points.Add (new Point (p));
+        }
+        public void RemoveBeforeTime (float t) {
+            var lastIndexOfOld = -1;
+            for (var i = 0; i < _points.Count; i++) {
+                if (_points [i].time >= t)
+                    break;
+                lastIndexOfOld = i;
             }
-            for (var i = 0; i < _clusters.Count; i++) {
-                var p = (Vector3)_clusters [i];
-                p.z = data.debugInputDepth;
-                _fig.FillCircle (targetCam.ViewportToWorldPoint (p), rot, size, data.debugClusterColor);
+            if (lastIndexOfOld >= 0)
+                _points.RemoveRange (0, lastIndexOfOld + 1);
+        }
+        public bool FindNearestCluster(Vector2 p, out int index, out float sqrd) {
+            sqrd = float.MaxValue;
+            index = -1;
+            for (var j = 0; j < _clusters.Count; j++) {
+                var q = _clusters [j];
+                var jsqr = (q - p).sqrMagnitude;
+                if (jsqr < sqrd) {
+                    sqrd = jsqr;
+                    index = j;
+                }
             }
+            return index >= 0;
         }
-        protected override void Update() {
-            base.Update ();
-            DebugInput();
-
-            var t = Time.timeSinceLevelLoad - data.effectiveDuration;
-            RemoveBeforeTime (_points, t);
-            UpdateCluster();
-        }
-
-        protected virtual void ClearPoints() {
+        public virtual void ClearPoints() {
             _points.Clear ();
         }
-        protected virtual void ClearCluster() {
+        public virtual void ClearCluster() {
             _clusterIDs.Clear ();
             _clusters.Clear ();
             _tmp.Clear ();
         }
-        protected virtual void UpdateCluster () {
+        public virtual void UpdateCluster () {
             ClearCluster ();
             MakeClusters();
             UpdateClusterPosition();
             OnUpdateCluster (_clusters);
         }
 
-        void MakeClusters () {
+        public virtual IEnumerable<Point> GetPointEnumerator() {
+            foreach (var pp in _points)
+                yield return pp;
+        }
+        public virtual IEnumerable<Vector2> GetClusterEnumerator() {
+            foreach (var c in _clusters)
+                yield return c;
+        }
+
+        protected virtual void NotifyOnUpdateCluster(List<Vector2> clusters) {
+            if (OnUpdateCluster != null)
+                OnUpdateCluster (clusters);
+        }
+        protected virtual void MakeClusters () {
             var qd = data.clusterDistance * data.clusterDistance;
             for (var j = 0; j < _points.Count; j++) {
                 var p = _points [j];
                 float sqr;
                 int i;
-                if (FindNearest (_clusters, p.pos, out i, out sqr) && (sqr < qd || _clusters.Count >= data.clusterCountLimit)) {
+                if (FindNearestCluster (p.pos, out i, out sqr) 
+                        && (sqr < qd || _clusters.Count >= data.clusterCountLimit)) {
                     _clusters [i] = p.pos;
                 }
                 else
@@ -119,41 +121,6 @@ namespace Gist {
             }
         }
 
-        void DebugInput () {
-            if (data.debugInputEnabled) {
-                if (Input.GetMouseButton (0)) {
-                    var p = (Vector2)targetCam.ScreenToViewportPoint (Input.mousePosition);
-                    Receive (p);
-                }
-                if (Input.GetMouseButtonDown (1)) {
-
-                }
-            }
-        }
-
-        static void RemoveBeforeTime (List<Point> list, float t) {
-            var lastIndexOfOld = -1;
-            for (var i = 0; i < list.Count; i++) {
-                if (list [i].time >= t)
-                    break;
-                lastIndexOfOld = i;
-            }
-            if (lastIndexOfOld >= 0)
-                list.RemoveRange (0, lastIndexOfOld + 1);
-        }
-        static bool FindNearest(List<Vector2> list, Vector2 p, out int index, out float sqrd) {
-            sqrd = float.MaxValue;
-            index = -1;
-            for (var j = 0; j < list.Count; j++) {
-                var q = list [j];
-                var jsqr = (q - p).sqrMagnitude;
-                if (jsqr < sqrd) {
-                    sqrd = jsqr;
-                    index = j;
-                }
-            }
-            return index >= 0;
-        }
 
         public struct Point {
             public readonly Vector2 pos;
@@ -165,6 +132,7 @@ namespace Gist {
             }
             public Point(Vector2 pos) : this(pos, Time.timeSinceLevelLoad) {}
         }
+
         [System.Serializable]
         public class Data {
             public enum ClusterModeEnum { Latest = 0, Average }
@@ -173,13 +141,6 @@ namespace Gist {
             public float clusterDistance = 0.2f;
             public float clusterCountLimit = 10;
             public float averageTail = 0.7f;
-
-            public bool debugInputEnabled = false;
-            public bool debugPointsVisible = false;
-            public float debugInputDepth = 10f;
-            public float debugInputSize = 1f;
-            public Color debugInputColor = new Color(1f, 0f, 0f, 0.2f);
-            public Color debugClusterColor = new Color(0f, 1f, 1f, 0.5f);
         }
 
 

@@ -1,6 +1,5 @@
 using System.Runtime.InteropServices;
 using UnityEngine;
-using DataUI;
 
 namespace Gist {
 
@@ -13,39 +12,15 @@ namespace Gist {
         public const int WP_SWP_NOSIZE = 0x0001;
 
         public Data data;
-        public bool guiVisibility;
-        public KeyCode guiToggle = KeyCode.W;
 
-        FieldEditor _editor;
-        Rect _window = new Rect(10, 10, 200, 200);
-
-        void OnEnable() {
+        #region Unity
+        protected virtual void OnEnable() {
             if (data.applyOnEnable)
                 Apply();
-            _editor = new FieldEditor (data);
         }
-        void Update() {
-            if (Input.GetKeyDown (guiToggle))
-                guiVisibility = !guiVisibility;
-        }
-        void OnGUI() {
-            if (guiVisibility && _editor != null)
-                _window = GUILayout.Window (GetInstanceID (), _window, Window, name);
-        }
+        #endregion
 
-        void Window(int id) {
-            GUILayout.BeginVertical ();
-
-            _editor.OnGUI ();
-            if (GUILayout.Button ("Apply"))
-                Apply ();
-            if (GUILayout.Button ("Load Current"))
-                Current ();
-
-            GUILayout.EndVertical ();
-            GUI.DragWindow ();
-        }
-        bool Apply() {
+        protected virtual bool Apply() {
             if (Application.isEditor) {
                 //Debug.LogError ("Application shouldn't be running in Editor");
                 return false;
@@ -65,7 +40,7 @@ namespace Gist {
                 Debug.LogFormat ("Failed to Sset Window Position");
             return true;
         }
-        bool Current() {
+        protected virtual bool Current() {
             System.IntPtr hwnd;
             if (!GetActiveWindow (out hwnd))
                 return false;
@@ -84,11 +59,10 @@ namespace Gist {
             data.y = point.y;
             data.width = rect.right - rect.left;
             data.height = rect.bottom - rect.top;
-            _editor.Load ();
             return true;
         }
 
-        static bool GetActiveWindow (out System.IntPtr hwnd) {
+        public static bool GetActiveWindow (out System.IntPtr hwnd) {
             hwnd = GetActiveWindow ();
             if (hwnd == System.IntPtr.Zero) {
                 Debug.LogError ("Failed to Get Active Window Handle");

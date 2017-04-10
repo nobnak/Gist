@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Gist;
 using System.Collections.Generic;
 
 namespace Gist {
