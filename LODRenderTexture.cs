@@ -27,6 +27,8 @@ namespace Gist {
             : this((out int w, out int h) => { w = tex.width; h = tex.height; }, lod, depth, format) { }
 
         public RenderTexture Texture { get { return tex; } }
+        public FilterMode FilterMode { get; set; }
+        public TextureWrapMode WrapMode { get; set; }
         public bool UpdateTexture () {
             int w, h;
             size (out w, out h);
@@ -45,6 +47,8 @@ namespace Gist {
             if (tex == null || tex.width != width || tex.height != height) {
                 Release(ref tex);
                 tex = new RenderTexture (width, height, depth, format);
+                tex.filterMode = FilterMode;
+                tex.wrapMode = WrapMode;
                 NotifyAfterCreateTexture ();
                 return true;
             }
@@ -62,7 +66,10 @@ namespace Gist {
         #endregion
 
         void Release<T>(ref T data) where T : Object {
-            Object.Destroy (data);
+            if (Application.isPlaying)
+                Object.Destroy (data);
+            else
+                Object.DestroyImmediate (data);
         }
     }
 }
