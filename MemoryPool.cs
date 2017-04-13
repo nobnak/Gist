@@ -10,7 +10,7 @@ namespace Gist {
     }
     #endregion
 
-    public abstract class AbstractMemoryPool<T> : IMemoryPool<T> {
+    public abstract class AbstractMemoryPool<T> : IMemoryPool<T>, System.IDisposable {
         public event System.Action<T> OnNew;
         public event System.Action<T> OnFree;
 
@@ -31,6 +31,15 @@ namespace Gist {
                 Push (used);
                 NotifyOnFree (used);
                 return this;
+            }
+        }
+        #endregion
+
+        #region IDisposable implementation
+        public virtual void Dispose () {
+            if (_pool != null) {
+                _pool.Clear ();
+                _pool = null;
             }
         }
         #endregion
@@ -67,9 +76,17 @@ namespace Gist {
 
     public class OutsourceMemoryPool<T> : AbstractMemoryPool<T> {
         protected System.Func<T> create;
+        protected System.Action<T> delete;
 
-        public OutsourceMemoryPool(System.Func<T> create) {
+        public OutsourceMemoryPool(System.Func<T> create, System.Action<T> delete) {
             this.create = create;
+            this.delete = delete;
+        }
+
+        public override void Dispose () {
+            while (_pool.Count > 0)
+                delete(_pool.Pop ());
+            base.Dispose ();
         }
 
         protected override T Create () {
