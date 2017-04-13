@@ -9,8 +9,9 @@ namespace Gist {
         protected Dictionary<T, List<S>> dataInCategory;
         protected MemoryPool<List<S>> cagePool;
 
+        public Categorizer() : this(null) {}
         public Categorizer(System.Func<S, T> categorize) {
-            this.categorize = categorize;
+            Set(categorize);
             this.dataInCategory = new Dictionary<T, List<S>> ();
             this.cagePool = new MemoryPool<List<S>> ();
         }
@@ -62,6 +63,9 @@ namespace Gist {
         }
         #endregion
 
+        public void Set(System.Func<S, T> categorize) {
+            this.categorize = categorize;
+        }
         public int Count(T category) {
             List<S> cage;
             return dataInCategory.TryGetValue (category, out cage) ? cage.Count : 0;
