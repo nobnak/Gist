@@ -13,11 +13,14 @@ namespace Gist {
 		public ManuallyRenderCamera(ITracker tracker) {
 			this.tracker = tracker;
 			this.manualCamGo = new GameObject ("Manually Render Camera");
+			this.manualCamGo.hideFlags = HideFlags.DontSave;
 			this.manualCam = manualCamGo.AddComponent<Camera> ();
 			this.manualCam.enabled = false;
 		}
 		public ManuallyRenderCamera(Camera referenceCam) : this(new CameraTracker(referenceCam)) {}
 		public ManuallyRenderCamera(System.Action<Camera> referenceFunc) : this(new FunctionalTracker(referenceFunc)) {}
+
+		public Camera Camera { get { return manualCam; } }
 
 		public ManuallyRenderCamera Render(RenderTexture target) {
             PrepareForRendering (target);
