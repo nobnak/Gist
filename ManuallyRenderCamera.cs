@@ -6,22 +6,18 @@ namespace Gist {
 	public class ManuallyRenderCamera : System.IDisposable {
         public event System.Action<Camera> AfterCopyFrom;
 
-		Camera referenceCam;
+		ITracker tracker;
 		Camera manualCam;
 		GameObject manualCamGo;
 
-		public ManuallyRenderCamera(Camera referenceCam) {
-			this.referenceCam = referenceCam;
-
-			manualCamGo = new GameObject ("Manually Render Camera");
-			manualCamGo.transform.SetParent (referenceCam.transform, false);
-			manualCamGo.transform.localPosition = Vector3.zero;
-			manualCamGo.transform.localRotation = Quaternion.identity;
-			manualCamGo.transform.localScale = Vector3.one;
-
-			manualCam = manualCamGo.AddComponent<Camera> ();
-			manualCam.enabled = false;
+		public ManuallyRenderCamera(ITracker tracker) {
+			this.tracker = tracker;
+			this.manualCamGo = new GameObject ("Manually Render Camera");
+			this.manualCam = manualCamGo.AddComponent<Camera> ();
+			this.manualCam.enabled = false;
 		}
+		public ManuallyRenderCamera(Camera referenceCam) : this(new CameraTracker(referenceCam)) {}
+		public ManuallyRenderCamera(System.Action<Camera> referenceFunc) : this(new FunctionalTracker(referenceFunc)) {}
 
 		public ManuallyRenderCamera Render(RenderTexture target) {
             PrepareForRendering (target);
@@ -35,7 +31,7 @@ namespace Gist {
         }
 
         void PrepareForRendering(RenderTexture target) {
-            manualCam.CopyFrom (referenceCam);
+			tracker.Adjust (manualCam);
             NotifyAfterCopyFrom ();
             manualCam.targetTexture = target;
         }
@@ -52,5 +48,37 @@ namespace Gist {
 				Object.DestroyImmediate (manualCamGo);
 		}
 		#endregion
+
+		public interface ITracker {
+			void Adjust(Camera cam);
+		}
+
+		public class CameraTracker : ITracker {
+			protected Camera referenceCam;
+
+			public CameraTracker(Camera referenceCam) {
+				this.referenceCam = referenceCam;
+			}
+
+			#region ITracker
+			public void Adjust(Camera cam) {
+				cam.CopyFrom (referenceCam);
+			}
+			#endregion
+		}
+
+		public class FunctionalTracker : ITracker {
+			protected System.Action<Camera> adjust;
+
+			public FunctionalTracker(System.Action<Camera> adjust) {
+				this.adjust = adjust;
+			}
+
+			#region ITracker implementation
+			public void Adjust (Camera cam) {
+				adjust (cam);
+			}
+			#endregion
+		}
 	}
 }
