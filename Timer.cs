@@ -35,6 +35,9 @@ namespace Gist {
                 NotifyElapsed ();
             }
         }
+        public void Stop() {
+            active = false;
+        }
 
         void NotifyElapsed () {
             if (Elapsed != null)
