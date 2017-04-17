@@ -17,7 +17,11 @@ namespace Gist {
 
         public float Interval {
             get { return interval; }
-            set { interval = value; }
+            set {
+                interval = value;
+                if (interval < 0f)
+                    active = false;
+            }
         }
 
         public void Start() {
