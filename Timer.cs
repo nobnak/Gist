@@ -15,6 +15,7 @@ namespace Gist {
 
         protected float interval;
         protected float timeOfStart;
+        protected float elapsedTime;
 
         public Timer(float interval) {
             Goto (StateEnum.Init);
@@ -31,6 +32,7 @@ namespace Gist {
         }
         public virtual bool Active { get { return active; } }
         public virtual bool Completed { get { return completed; } }
+        public virtual float ElapsedTime { get { return elapsedTime; } }
 
         public virtual void Start() {
             Start (interval);
@@ -39,16 +41,20 @@ namespace Gist {
             Goto (StateEnum.Active);
             Interval = interval;
             timeOfStart = Time.timeSinceLevelLoad;
+            elapsedTime = 0f;
         }
         public virtual void Update() {
-            Update (Time.timeSinceLevelLoad - timeOfStart);
+            if (active) {
+                elapsedTime = Time.timeSinceLevelLoad - timeOfStart;
+                Update (elapsedTime);
+            }
         }
         public virtual void Stop() {
             Goto (StateEnum.Init);
         }
 
         protected virtual void Update(float elapsedTime) {
-            if (active && interval <= elapsedTime) {
+            if (interval <= elapsedTime) {
                 Goto (StateEnum.Completed);
                 NotifyElapsed ();
             }
