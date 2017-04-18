@@ -88,6 +88,8 @@ namespace Gist {
 
     #region Progress Timer class
     public class ProgressTimer : Timer {
+        public event System.Action<ProgressTimer> ProgressChanged;
+
         protected float progress;
         protected float dprogress;
 
@@ -104,7 +106,13 @@ namespace Gist {
 
         protected override void Update(float elapsedTime) {
             progress = Mathf.Clamp01 (elapsedTime * dprogress);
+            NotifyProgressChanged ();
             base.Update (elapsedTime);
+        }
+
+        void NotifyProgressChanged() {
+            if (ProgressChanged != null)
+                ProgressChanged (this);
         }
     }
     #endregion
