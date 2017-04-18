@@ -13,14 +13,14 @@ namespace Gist {
         protected bool completed;
 
         protected float interval;
-        protected float timeOfElapsed;
+        protected float timeOfStart;
 
         public Timer(float interval) {
             Goto (StateEnum.Init);
             Interval = interval;
         }
 
-        public float Interval {
+        public virtual float Interval {
             get { return interval; }
             set {
                 interval = value;
@@ -28,45 +28,57 @@ namespace Gist {
                     Goto (StateEnum.Init);
             }
         }
-        public bool Active { get { return active; } }
-        public bool Completed { get { return completed; } }
+        public virtual bool Active { get { return active; } }
+        public virtual bool Completed { get { return completed; } }
 
-        public void Start() {
+        public virtual void Start() {
             Start (interval);
         }
-        public void Start(float interval) {
+        public virtual void Start(float interval) {
             Goto (StateEnum.Active);
             Interval = interval;
-            timeOfElapsed = Time.timeSinceLevelLoad + interval;
+            timeOfStart = Time.timeSinceLevelLoad;
         }
-        public void Update() {
-            var currentTime = Time.timeSinceLevelLoad;
-            if (active && timeOfElapsed <= currentTime) {
+        public virtual void Update() {
+            Update (Time.timeSinceLevelLoad - timeOfStart);
+        }
+        public virtual void Stop() {
+            Goto (StateEnum.Init);
+        }
+
+        protected virtual void Update(float elapsedTime) {
+            if (active && interval <= elapsedTime) {
                 Goto (StateEnum.Completed);
                 NotifyElapsed ();
             }
         }
-        public void Stop() {
-            Goto (StateEnum.Init);
-        }
-
-        void Goto(StateEnum state) {
+        protected virtual void Goto(StateEnum state) {
             switch (state) {
             case StateEnum.Init:
-                active = false;
-                completed = false;
+                Goto_Init ();
                 break;
             case StateEnum.Active:
-                active = true;
-                completed = false;
+                Goto_Active ();
                 break;
             case StateEnum.Completed:
-                active = false;
-                completed = true;
+                Goto_Completed ();
                 break;
             }
         }
-        void NotifyElapsed () {
+        protected virtual void Goto_Init() {
+            active = false;
+            completed = false;
+        }
+        protected virtual void Goto_Active() {
+            active = true;
+            completed = false;
+        }
+        protected virtual void Goto_Completed() {
+            active = false;
+            completed = true;
+        }
+
+        protected virtual void NotifyElapsed () {
             if (Elapsed != null)
                 Elapsed (this);
         }
