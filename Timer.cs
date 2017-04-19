@@ -9,6 +9,7 @@ namespace Gist {
         public enum StateEnum { Init = 0, Active, Completed }
 
         public event System.Action<Timer> Elapsed;
+        public event System.Action<Timer, float> TimeChanged;
 
         protected bool active;
         protected bool completed;
@@ -45,15 +46,17 @@ namespace Gist {
         }
         public virtual void Update() {
             if (active) {
-                elapsedTime = Time.timeSinceLevelLoad - timeOfStart;
-                Update (elapsedTime);
+                float dtime;
+                elapsedTime = CalculateElapsedTime (out dtime);
+                Update (dtime);
             }
         }
         public virtual void Stop() {
             Goto (StateEnum.Init);
         }
 
-        protected virtual void Update(float elapsedTime) {
+        protected virtual void Update(float dtime) {
+            NotifyTimeChanged (dtime);
             if (interval <= elapsedTime) {
                 Goto (StateEnum.Completed);
                 NotifyElapsed ();
@@ -89,15 +92,26 @@ namespace Gist {
             if (Elapsed != null)
                 Elapsed (this);
         }
+        protected virtual void NotifyTimeChanged(float dtime) {
+            if (TimeChanged != null)
+                TimeChanged (this, dtime);
+        }
+
+        protected virtual float CalculateElapsedTime (out float dtime) {
+            var nextElapsedTime = Time.timeSinceLevelLoad - timeOfStart;
+            dtime = nextElapsedTime - elapsedTime;
+            return nextElapsedTime;
+        }
+
     }
     #endregion
 
     #region Progress Timer class
     public class ProgressTimer : Timer {
-        public event System.Action<ProgressTimer> ProgressChanged;
+        public event System.Action<ProgressTimer, float> ProgressChanged;
 
         protected float progress;
-        protected float dprogress;
+        protected float dProgressDTime;
 
         public ProgressTimer(float interval) : base(interval) {
         }
@@ -106,19 +120,25 @@ namespace Gist {
 
         public override void Start(float interval) {
             base.Start (interval);
-            dprogress = 1f / interval;
+            dProgressDTime = 1f / interval;
             progress = 0f;
         }
 
-        protected override void Update(float elapsedTime) {
-            progress = Mathf.Clamp01 (elapsedTime * dprogress);
-            NotifyProgressChanged ();
+        protected override void Update(float dtime) {
+            float dprogress;
+            progress = CalculateProgress (dtime, out dprogress);
+            NotifyProgressChanged (dprogress);
             base.Update (elapsedTime);
         }
 
-        void NotifyProgressChanged() {
+        void NotifyProgressChanged(float delta) {
             if (ProgressChanged != null)
-                ProgressChanged (this);
+                ProgressChanged (this, delta);
+        }
+
+        float CalculateProgress (float dtime, out float dprogress) {
+            dprogress = dtime * dProgressDTime;
+            return Mathf.Clamp01 (elapsedTime * dProgressDTime);
         }
     }
     #endregion
