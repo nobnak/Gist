@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace Gist {
 	public class ManuallyRenderCamera : System.IDisposable {
@@ -20,38 +21,54 @@ namespace Gist {
 		public ManuallyRenderCamera(Camera referenceCam) : this(new CameraTracker(referenceCam)) {}
 		public ManuallyRenderCamera(System.Action<Camera> referenceFunc) : this(new FunctionalTracker(referenceFunc)) {}
 
+        #region IDisposable implementation
+        public void Dispose () {
+            Release (manualCamGo);
+        }
+        #endregion
+
 		public Camera Camera { get { return manualCam; } }
 
 		public ManuallyRenderCamera Render(RenderTexture target) {
+            Profiler.BeginSample ("ManuallyRenderCamera.Render");
             PrepareForRendering (target);
 			manualCam.Render ();
+            PostpareForRendering ();
+            Profiler.EndSample ();
 			return this;
 		}
         public ManuallyRenderCamera RenderWithShader(RenderTexture target, Shader shader, string tag) {
+            Profiler.BeginSample ("ManuallyRenderCamera.RenderWithShader");
             PrepareForRendering (target);
             manualCam.RenderWithShader (shader, tag);
+            PostpareForRendering ();
+            Profiler.EndSample ();
             return this;
         }
 
-        void PrepareForRendering(RenderTexture target) {
-			tracker.Adjust (manualCam);
-            NotifyAfterCopyFrom ();
-            manualCam.targetTexture = target;
-        }
+        #region Event notification
         void NotifyAfterCopyFrom() {
             if (AfterCopyFrom != null)
                 AfterCopyFrom (manualCam);
         }
+        #endregion
 
-		#region IDisposable implementation
-		public void Dispose () {
-			if (Application.isPlaying)
-				Object.Destroy (manualCamGo);
-			else
-				Object.DestroyImmediate (manualCamGo);
-		}
-		#endregion
+        void PrepareForRendering(RenderTexture target) {
+            tracker.Adjust (manualCam);
+            NotifyAfterCopyFrom ();
+            manualCam.targetTexture = target;
+        }
+        void PostpareForRendering() {
+            manualCam.targetTexture = null;
+        }
+        void Release(Object obj) {
+            if (Application.isPlaying)
+                Object.Destroy (obj);
+            else
+                Object.DestroyImmediate (obj);
+        }
 
+        #region Classes
 		public interface ITracker {
 			void Adjust(Camera cam);
 		}
@@ -83,5 +100,6 @@ namespace Gist {
 			}
 			#endregion
 		}
+        #endregion
 	}
 }
