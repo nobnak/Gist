@@ -102,6 +102,13 @@ namespace Gist {
 			UploadIfBufferIsDirty ();
 			cs.SetBuffer (kernel, name, GPUBuffer);
 		}
+        public virtual void SetBuffer(Material mat, string name) {
+            SetBuffer (mat, Shader.PropertyToID (name));
+        }
+        public virtual void SetBuffer(Material mat, int name) {
+            UploadIfBufferIsDirty ();
+            mat.SetBuffer (name, GPUBuffer);
+        }
 		public virtual void Download() {
 			GPUBuffer.GetData (cpuBuffer);
 		}
