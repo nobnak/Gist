@@ -44,12 +44,14 @@ namespace Gist {
             timeOfStart = Time.timeSinceLevelLoad;
             elapsedTime = 0f;
         }
-        public virtual void Update() {
+        public virtual bool Update() {
+            var currActivity = active;
             if (active) {
                 float dtime;
                 elapsedTime = CalculateElapsedTime (out dtime);
                 Update (dtime);
             }
+            return currActivity;
         }
         public virtual void Stop() {
             Goto (StateEnum.Init);
