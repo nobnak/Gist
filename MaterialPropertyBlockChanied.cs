@@ -11,6 +11,7 @@ namespace Gist {
         T SetMatrix(string name, Matrix4x4 value);
         T SetTexture(string name, Texture value);
         T SetVector(string name, Vector4 value);
+        T SetBuffer (string name, ComputeBuffer value);
         #endregion
 
         #region Get
@@ -69,6 +70,11 @@ namespace Gist {
         public MaterialPropertyBlockChanied SetVector (string name, Vector4 value) {
             foreach (var p in pairs)
                 p.SetVector (name, value);
+            return this;
+        }
+        public MaterialPropertyBlockChanied SetBuffer(string name, ComputeBuffer value) {
+            foreach (var p in pairs)
+                p.SetBuffer (name, value);
             return this;
         }
 
@@ -144,6 +150,11 @@ namespace Gist {
         public Pair SetVector(string name, Vector4 value) {
             CheckLoad ();
             Block.SetVector (name, value);
+            return this;
+        }
+        public Pair SetBuffer(string name, ComputeBuffer value) {
+            CheckLoad ();
+            Block.SetBuffer (name, value);
             return this;
         }
         #endregion
