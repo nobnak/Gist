@@ -2,7 +2,7 @@
 using System.Collections;
 using System.IO;
 
-namespace DataUI.Settings {
+namespace Gist {
     
     public abstract class Settings<T> : MonoBehaviour {
         public const float WINDOW_WIDTH = 300f;
