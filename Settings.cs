@@ -17,7 +17,7 @@ namespace Gist {
         public string dataPath;
 
         #region Unity
-        public virtual void OnEnable() {
+        protected virtual void OnEnable() {
             Load (data);
             NotifyOnDataChange ();
         }
