@@ -10,21 +10,30 @@ namespace Gist {
 
         int lod;
         int depth;
+        RenderTextureReadWrite readWrite;
         RenderTextureFormat format;
         RenderTexture tex;
         TargetSize size;
 
-        public LODRenderTexture(TargetSize size, int lod, int depth, RenderTextureFormat format) {
+        public LODRenderTexture(TargetSize size, int lod, int depth, RenderTextureFormat format,
+            RenderTextureReadWrite readWrite) {
             this.size = size;
             this.lod = Mathf.Max(0, lod);
             this.depth = depth;
             this.size = size;
             this.format = format;
+            this.readWrite = readWrite;
         }
-        public LODRenderTexture(Camera cam, int lod = 0, int depth = 24, RenderTextureFormat format = RenderTextureFormat.ARGB32)
-            : this((out int w, out int h) => { w = cam.pixelWidth; h = cam.pixelHeight; }, lod, depth, format) { }
-        public LODRenderTexture(Texture tex, int lod = 0, int depth = 24, RenderTextureFormat format = RenderTextureFormat.ARGB32)
-            : this((out int w, out int h) => { w = tex.width; h = tex.height; }, lod, depth, format) { }
+        public LODRenderTexture(Camera cam, int lod = 0, int depth = 24, 
+            RenderTextureFormat format = RenderTextureFormat.ARGB32,
+            RenderTextureReadWrite readWrite = RenderTextureReadWrite.Default)
+            : this((out int w, out int h) => { w = cam.pixelWidth; h = cam.pixelHeight; }, 
+                lod, depth, format, readWrite) { }
+        public LODRenderTexture(Texture tex, int lod = 0, int depth = 24, 
+            RenderTextureFormat format = RenderTextureFormat.ARGB32,
+            RenderTextureReadWrite readWrite = RenderTextureReadWrite.Default)
+            : this((out int w, out int h) => { w = tex.width; h = tex.height; }, 
+                lod, depth, format, readWrite) { }
 
         public RenderTexture Texture { get { return tex; } }
         public FilterMode FilterMode { get; set; }
@@ -46,7 +55,7 @@ namespace Gist {
         bool UpdateTexture(int width, int height) {
             if (tex == null || tex.width != width || tex.height != height) {
                 Release(ref tex);
-                tex = new RenderTexture (width, height, depth, format);
+                tex = new RenderTexture (width, height, depth, format, readWrite);
                 tex.filterMode = FilterMode;
                 tex.wrapMode = WrapMode;
                 NotifyAfterCreateTexture ();
