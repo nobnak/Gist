@@ -3,18 +3,19 @@ using System.Collections;
 using System.IO;
 
 namespace Gist {
-    
-    public abstract class Settings<T> : MonoBehaviour {
-        public const float WINDOW_WIDTH = 300f;
-
-        public UnityEngine.Events.UnityEvent OnDataChange;
-        public event System.Action EventOnDataChange;
-
+    public abstract class Settings : MonoBehaviour {
         public enum PathTypeEnum { StreamingAssets = 0, MyDocuments }
 
-        public T data;
+        public UnityEngine.Events.UnityEvent OnDataChange;
+
         public PathTypeEnum pathType;
         public string dataPath;
+    }
+
+    public abstract class Settings<T> : Settings {
+        public event System.Action EventOnDataChange;
+
+        public T data;
 
         #region Unity
         protected virtual void OnEnable() {
