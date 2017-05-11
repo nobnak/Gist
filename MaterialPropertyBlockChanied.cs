@@ -101,12 +101,20 @@ namespace Gist {
         public Vector4 GetDefaultVector (int index, string name) { return pairs [index].GetDefaultVector (name); }
         #endregion
 
+        #region Static
         public static Pair[] GeneratePairs(Renderer[] renderers) {
             var pairs = new Pair[renderers.Length];
             for (var i = 0; i < renderers.Length; i++)
                 pairs [i] = new Pair (renderers [i], new MaterialPropertyBlock ());
             return pairs;
         }
+        public static MaterialPropertyBlockChanied operator+ (MaterialPropertyBlockChanied a, MaterialPropertyBlockChanied b) {
+            var pairs = new Pair[a.pairs.Length + b.pairs.Length];
+            System.Array.Copy (a.pairs, pairs, a.pairs.Length);
+            System.Array.Copy (b.pairs, 0, pairs, a.pairs.Length, b.pairs.Length);
+            return new MaterialPropertyBlockChanied (pairs);
+        }
+        #endregion
     }
 
     public class Pair : IBlock<Pair> {
