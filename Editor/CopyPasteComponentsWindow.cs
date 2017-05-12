@@ -26,8 +26,12 @@ namespace Gist.Editor {
 
         static void Copy(GameObject objectFrom, GameObject objectTo) {
             foreach (var comp in objectFrom.GetComponents<Component>()) {
-                UnityEditorInternal.ComponentUtility.CopyComponent (comp);
-                UnityEditorInternal.ComponentUtility.PasteComponentAsNew (objectTo);
+                if (UnityEditorInternal.ComponentUtility.CopyComponent (comp)) {
+                    if (!UnityEditorInternal.ComponentUtility.PasteComponentAsNew (objectTo)) {                        
+                        var duplicatedComponent = objectTo.GetComponent (comp.GetType ());
+                        UnityEditorInternal.ComponentUtility.PasteComponentValues (duplicatedComponent);
+                    }
+                }
             }
         }
         static T ObjectField<T>(string label, T obj, bool allowSceneObject) where T:Object {
