@@ -40,6 +40,35 @@ namespace Gist.Extensions.AABB {
             var extent = absMat.MultiplyVector (local.extents);
             return new Bounds (center, 2f * extent);
         }
+        public static Bounds EncapsulateVertices(this IEnumerable<Vector3> vertices) { 
+            var minx = float.MaxValue;
+            var miny = float.MaxValue;
+            var minz = float.MaxValue;
+            var maxx = float.MinValue;
+            var maxy = float.MinValue;
+            var maxz = float.MinValue;
+
+            foreach (var v in vertices) {
+                if (v.x < minx)
+                    minx = v.x;
+                if (maxx < v.x)
+                    maxx = v.x;
+
+                if (v.y < miny)
+                    miny = v.y;
+                if (maxy < v.y)
+                    maxy = v.y;
+
+                if (v.z < minz)
+                    minz = v.z;
+                if (maxz < v.z)
+                    maxz = v.z;
+            }
+
+            var size = new Vector3 (maxx - minx, maxy - miny, maxz - minz);
+            var center = new Vector3 (minx + 0.5f * size.x, miny + 0.5f * size.y, minz + 0.5f * size.z);
+            return new Bounds (center, size);
+        }
 
         public static Matrix4x4 Absolute(this Matrix4x4 mat) {
             var absM = Matrix4x4.zero;
