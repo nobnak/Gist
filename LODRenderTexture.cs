@@ -6,7 +6,9 @@ namespace Gist {
     public class LODRenderTexture : System.IDisposable {
         public const int DEFAULT_ANTIALIASING = -1;
         public delegate void TargetSize(out int width, out int height);
+
         public event System.Action<LODRenderTexture> AfterCreateTexture;
+        public event System.Action<LODRenderTexture> BeforeDestroyTexture;
 
         int lod;
         int depth;
@@ -58,7 +60,7 @@ namespace Gist {
 
         bool UpdateTexture(int width, int height) {
             if (tex == null || tex.width != width || tex.height != height) {
-                Release(ref tex);
+                ReleaseTexture();
                 tex = new RenderTexture (width, height, depth, format, readWrite);
                 tex.filterMode = FilterMode;
                 tex.wrapMode = WrapMode;
@@ -72,6 +74,11 @@ namespace Gist {
             if (AfterCreateTexture != null)
                 AfterCreateTexture (this);
         }
+        void NotifyBeforeDestroyTexture() {
+            if (BeforeDestroyTexture != null)
+                BeforeDestroyTexture (this);
+        }
+
         static int ParseAntiAliasing (int antiAliasing) {
             return (antiAliasing > 0 ? antiAliasing : (QualitySettings.antiAliasing == 0 ? 1 : QualitySettings.antiAliasing));
         }
@@ -82,6 +89,11 @@ namespace Gist {
         }
         #endregion
 
+        void ReleaseTexture() {
+            NotifyBeforeDestroyTexture ();
+            Release(ref tex);
+            tex = null;
+        }
         void Release<T>(ref T data) where T : Object {
             if (Application.isPlaying)
                 Object.Destroy (data);
