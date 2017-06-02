@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Gist;
 
-namespace Gist {
+namespace Gist.Layers {
         
     [ExecuteInEditMode]
     public class LayerPanel : MonoBehaviour {

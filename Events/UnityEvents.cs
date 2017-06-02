@@ -2,7 +2,7 @@
 
 
 
-namespace Gist {
+namespace Gist.Events {
 
     [System.Serializable]
     public class TextureEvent : UnityEngine.Events.UnityEvent<Texture> {}
