@@ -35,6 +35,12 @@ namespace Gist {
         }
         #endregion
 
+        #region Static
+        public static string FullPath(System.Environment.SpecialFolder folder, string file) {
+            return System.IO.Path.Combine (System.Environment.GetFolderPath (folder), file);
+        }
+        #endregion
+
         public Texture2D Image { get { return image; } }
         public TextureFormat Format { get { return format; } set { format = value; } }
         public bool Mipmap { get { return mipmap; } set { mipmap = value; } }
@@ -96,5 +102,51 @@ namespace Gist {
                 TextureDestroy (image);
         }
 
+
+
+    }
+
+    public class ImageLoaderWorker : System.IDisposable {
+        protected float interval;
+        protected System.Func<string> getPath;
+
+        protected ImageLoader loader;
+        protected MonoBehaviour m;
+        protected Coroutine work;
+
+        public ImageLoaderWorker(MonoBehaviour m, ImageLoader loader, float interval, System.Func<string> getPath) {
+            this.m = m;
+            this.loader = loader;
+            this.interval = interval;
+            this.getPath = getPath;
+
+            Start ();
+        }
+
+        #region IDisposable implementation
+        public void Dispose () {
+            Stop ();
+        }
+        #endregion
+
+        public void Start () {
+            Stop ();
+            this.work = m.StartCoroutine (Worker ());
+        }
+
+        public void Stop () {
+            if (work != null) {
+                m.StopCoroutine (work);
+                work = null;
+            }
+        }
+
+        protected virtual IEnumerator Worker() {
+            while (true) {
+                yield return (interval > 0 ? new WaitForSeconds (interval) : null);
+
+                loader.Update (getPath ());
+            }
+        }
     }
 }
