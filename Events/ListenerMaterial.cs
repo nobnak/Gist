@@ -25,5 +25,12 @@ namespace Gist.Events {
             if (block != null)
                 block.SetTexture (textureName, tex).Apply ();
         }
+
+        public virtual Texture GetTexture(string textureName) {
+            return (block != null ? block.GetTexture (textureName) : null);
+        }
+        public virtual Texture GetTexture() {
+            return GetTexture (defaultTextureName);
+        }
     }
 }
