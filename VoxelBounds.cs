@@ -46,9 +46,12 @@ namespace Gist {
 
         #region Debug
         public void DrawGizmos() {
-            Gizmos.matrix = LocalToWorldMatrix();
-            Gizmos.DrawWireCube (bounds.center, bounds.size);
+            Gizmos.matrix = LocalToWorldMatrix ();
+            DrawGizmosLocal ();
             Gizmos.matrix = Matrix4x4.identity;
+        }
+        public void DrawGizmosLocal() {
+            Gizmos.DrawWireCube (bounds.center, bounds.size);
         }
         #endregion
 
