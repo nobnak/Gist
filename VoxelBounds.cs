@@ -44,6 +44,18 @@ namespace Gist {
     	}
         #endregion
 
+        #region Matrix
+        public virtual Matrix4x4 VoxelUvToLocalMatrix() {
+            var min = bounds.min;
+            var size = bounds.size;
+            var m = Matrix4x4.zero;
+            m [0] = size.x; m [12] = min.x;
+            m [5] = size.y; m [13] = min.y;
+            m [10] = size.z; m [14] = min.z;
+            return m;
+        }
+        #endregion
+
         #region Debug
         public void DrawGizmos() {
             Gizmos.matrix = LocalToWorldMatrix ();
