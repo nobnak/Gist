@@ -52,6 +52,7 @@ namespace Gist {
             m [0] = size.x; m [12] = min.x;
             m [5] = size.y; m [13] = min.y;
             m [10] = size.z; m [14] = min.z;
+            m [15] = 1f;
             return m;
         }
         #endregion
