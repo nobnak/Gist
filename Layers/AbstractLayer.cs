@@ -6,6 +6,7 @@ using UnityEngine.Events;
 namespace Gimp.Layers {
 
     public abstract class AbstractLayer : MonoBehaviour {
+        const float EPSILON = 1e-3f;
         public UnityEvent Changed;
 
         [SerializeField]
@@ -37,6 +38,19 @@ namespace Gimp.Layers {
 
         public virtual Rect Field { get { return field; } }
 
+        public virtual bool Raycast(Ray ray, out Vector3 position, out float t) {
+            position = default(Vector3);
+            t = default(float);
+
+            var n = transform.forward;
+            var dn = Vector3.Dot (ray.direction, n);
+            if (-EPSILON < dn && dn < EPSILON)
+                return false;
+
+            t = Vector3.Dot (transform.position - ray.origin, n) / dn;
+            position = ray.GetPoint (t);
+            return true;
+        }
         public virtual Vector3 ProjectOn(Vector3 p, out Vector3 distance) {
             var arrow = p - cacheTr.position;
             distance = Vector3.Dot (transform.forward, arrow) * transform.forward;
