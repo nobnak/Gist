@@ -12,7 +12,6 @@ namespace Gist {
         public event System.Action<Texture2D> TextureUpdate;
 
         protected Texture2D image;
-        protected System.DateTime lastUpdateTime;
         protected System.DateTime lastFileTime;
 
         protected TextureFormat format;
@@ -24,7 +23,6 @@ namespace Gist {
             this.mipmap = mipmap;
             this.linear = linear;
 
-            this.lastUpdateTime = System.DateTime.MinValue;
             this.lastFileTime = System.DateTime.MinValue;
         }
         public ImageLoader() : this(TextureFormat.ARGB32, true, false) {}
@@ -53,6 +51,7 @@ namespace Gist {
                     }
                     break;
                 default:
+                    lastFileTime = System.DateTime.MinValue;
                     ReleaseTexture();
                     break;
                 }
