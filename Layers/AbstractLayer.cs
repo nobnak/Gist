@@ -69,12 +69,8 @@ namespace Gimp.Layers {
             return cacheTr.position + Offset (xNormalized, yNormalized);
         }
         public virtual Vector2 ProjectOnNormalized(Vector3 p) {
-            var arrow = p - cacheTr.position;
-            var size = field.size;
-            var offset = field.min;
-            var xNormalized = (Vector2.Dot (arrow, transform.right) - offset.x) / size.x;
-            var yNormalized = (Vector2.Dot (arrow, transform.up) - offset.y) / size.y;
-            return new Vector2 (xNormalized, yNormalized);
+            var localPos = transform.InverseTransformPoint (p);
+            return new Vector2 (localPos.x + 0.5f, localPos.y + 0.5f);
         }
             
         protected abstract bool UpdateLayer ();
