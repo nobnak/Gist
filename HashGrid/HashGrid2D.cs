@@ -77,7 +77,7 @@ namespace Gist {
             List<T>[] _grid;
             List<T> _points;
             List<Vector2> _positions;
-            Hash2D _hash;
+            Hash _hash;
 
             public HashGrid(System.Func<T, Vector2> GetPosition, float cellSize, int nx, int ny) {
                 this._GetPosition = GetPosition;
@@ -86,7 +86,7 @@ namespace Gist {
                 Rebuild (cellSize, nx, ny);
             }
 
-            public Hash2D GridInfo { get { return _hash; } }
+            public Hash GridInfo { get { return _hash; } }
 
             public void Add(T point) {
                 _points.Add (point);
@@ -115,7 +115,7 @@ namespace Gist {
                 }
             }
             public void Rebuild(float cellSize, int nx, int ny) {
-                _hash = new Hash2D (cellSize, nx, ny);
+                _hash = new Hash (cellSize, nx, ny);
                 var totalCells = nx * ny;
                 if (_grid == null || _grid.Length != totalCells) {
                     _grid = new List<T>[totalCells];
@@ -178,6 +178,51 @@ namespace Gist {
             }
             #endregion
 
+            public class Hash {
+                public readonly Vector2 gridSize;
+                public readonly float cellSize;
+                public readonly int nx, ny;
+
+                public Hash(float cellSize, int nx, int ny) {
+                    this.cellSize = cellSize;
+                    this.nx = nx;
+                    this.ny = ny;
+                    this.gridSize = new Vector2(nx * cellSize, ny * cellSize);
+                }
+                public IEnumerable<int> CellIds(Vector2 position, float radius) {
+                    var fromx = CellX (position.x - radius);
+                    var fromy = CellY (position.y - radius);
+                    var widthx = CellX (position.x + radius) - fromx;
+                    var widthy = CellY (position.y + radius) - fromy;
+                    if (widthx < 0)
+                        widthx += nx;
+                    if (widthy < 0)
+                        widthy += ny;
+
+                    for (var y = 0; y <= widthy; y++)
+                        for (var x = 0; x <= widthx; x++)
+                            yield return CellId (x + fromx, y + fromy);
+                }
+                public int CellId(Vector2 position) {
+                    return CellId (CellX (position.x), CellY (position.y));
+                }
+                public int CellId(int x, int y) {
+                    x = Mod (x, nx);
+                    y = Mod (y, ny);
+                    return x + y * nx;
+                }
+                public int CellX(float posX) {
+                    posX -= gridSize.x * Mathf.CeilToInt (posX / gridSize.x);
+                    return (int)(posX / cellSize);
+                }
+                public int CellY(float posY) {
+                    posY -= gridSize.y * Mathf.CeilToInt (posY / gridSize.y);
+                    return (int)(posY / cellSize);
+                }
+                public int Mod(int x, int mod) {
+                    return x - Mathf.FloorToInt ((float)x / mod) * mod;
+                }
+            }
         }
 	}
 }
