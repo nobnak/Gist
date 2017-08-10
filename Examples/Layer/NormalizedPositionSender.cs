@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Gist.Events;
-using Gimp.Layers;
+using Gist.Layers;
 
     namespace Gist.Examples.Layer {
         

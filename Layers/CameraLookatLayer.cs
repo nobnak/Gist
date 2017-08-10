@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace Gimp.Layers {
+namespace Gist.Layers {
 
     [ExecuteInEditMode]
     public class CameraLookatLayer : AbstractLayer {

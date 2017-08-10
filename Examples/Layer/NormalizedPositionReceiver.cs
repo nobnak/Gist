@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Gimp.Layers;
+using Gist.Layers;
 
 namespace Gist.Examples.Layer {
 
