@@ -5,6 +5,7 @@ using Gist.HashGridSystem.Storage;
 
 namespace Gist.HashGridSystem {
 
+    [ExecuteInEditMode]
     public class HashGrid2D : MonoBehaviour {
         public enum UpdateModeEnum { Update = 0, Rebuild }
 
@@ -13,26 +14,24 @@ namespace Gist.HashGridSystem {
         public int gridWidth = 20;
         public Color gizmoColor = Color.white;
 
-        public static Storage2D<MonoBehaviour> World;
+        public Storage2D<MonoBehaviour> World { get; private set; }
 
-        Storage2D<MonoBehaviour> _world;
-
-        void Awake() {
-            _world = new Storage2D<MonoBehaviour> (GetPosition, cellSize, gridWidth, gridWidth);
-            World = _world;
+        #region Unity
+        void OnEnable() {
+            World = new Storage2D<MonoBehaviour> (GetPosition, cellSize, gridWidth, gridWidth);
         }
         void LateUpdate() {
             switch (updateMode) {
             default:
-                _world.Update ();
+                World.Update ();
                 break;
             case UpdateModeEnum.Rebuild:
-                _world.Rebuild (cellSize, gridWidth, gridWidth);
+                World.Rebuild (cellSize, gridWidth, gridWidth);
                 break;
             }
         }
-        void OnDrawGizmosSelected() {
-            if (_world == null)
+        void OnDrawGizmos() {
+            if (!(World != null && isActiveAndEnabled))
                 return;
             
             var size = gridWidth * cellSize * new Vector3 (1f, 1f, 0f);
@@ -40,27 +39,36 @@ namespace Gist.HashGridSystem {
             var offset = cellSize * new Vector3 (
                              Mathf.FloorToInt (center.x / cellSize) + 0.5f, 
                              Mathf.FloorToInt (center.y / cellSize) + 0.5f, 
-                             Mathf.FloorToInt (center.z / cellSize) + 0.5f);
+                             0f);
             Gizmos.color = gizmoColor;
             Gizmos.matrix = transform.localToWorldMatrix;
 			Gizmos.DrawWireCube (center + 0.5f * size, size);
 
-			var cubeSize = 0.5f * cellSize * Vector3.one;
-			var hash = _world.GridInfo;
+            var cubeSize = 0.5f * cellSize * new Vector3 (1f, 1f, 0f);
+			var hash = World.GridInfo;
 			for (var y = 0; y < hash.ny; y++) {
 				for (var x = 0; x < hash.nx; x++) {
+                    var count = World.Stat (x, y);
                     var pos = cellSize * new Vector3 (x, y, 0f) + offset;
-					var count = _world.Stat (pos);
-					if (count > 0) {
-						var h = Mathf.Clamp01((float)count / 100);
-						Gizmos.color = Jet (h, 0.5f * Mathf.Clamp01 (count / 10f));
+
+                    if (count > 0) {
+                        var h = Mathf.Clamp01 ((float)count / 100);
+                        Gizmos.color = Jet (h, 0.5f * Mathf.Clamp01 (count / 10f));
                         Gizmos.DrawCube (pos, cubeSize);
+                    } else {
+                        Gizmos.color = 0.5f * gizmoColor;
+                        Gizmos.DrawWireCube (pos, cubeSize);
                     }
                 }
             }
 
             Gizmos.matrix = Matrix4x4.identity;
         }
+        void OnDisable() {
+            World.Dispose ();
+            World = null;
+        }
+        #endregion
 
         Vector2 GetPosition(MonoBehaviour m) {
             return (Vector2)transform.InverseTransformPoint (m.transform.position);
