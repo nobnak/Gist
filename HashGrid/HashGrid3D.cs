@@ -5,7 +5,7 @@ using Gist.HashGridSystem.Storage;
 
 namespace Gist.HashGridSystem {
 
-    public class HashGrid3D : MonoBehaviour {
+    public class HashGrid3D : AbstractHashGrid {
         public enum UpdateModeEnum { Update = 0, Rebuild }
 
         public UpdateModeEnum updateMode;
@@ -15,6 +15,7 @@ namespace Gist.HashGridSystem {
 
         public Storage3D<MonoBehaviour> World { get; private set; }
 
+        #region Unity
         void Awake() {
             World = new Storage3D<MonoBehaviour> (GetPosition, cellSize, gridWidth, gridWidth, gridWidth);
         }
@@ -56,6 +57,11 @@ namespace Gist.HashGridSystem {
                     }
                 }
             }                        
+        }
+        #endregion
+
+        public override void Add (MonoBehaviour m) {
+            World.Add (m);
         }
 
         Vector3 GetPosition(MonoBehaviour m) {

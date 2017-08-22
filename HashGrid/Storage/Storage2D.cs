@@ -74,7 +74,7 @@ namespace Gist.HashGridSystem.Storage {
                 _positions.Add(_GetPosition (_points [i]));
 
             #if PARALLEL
-            Parallel.For (0, limit, (i) => AddOnGrid (_points [i], _positions [i]));
+            Parallel.For (0, limit, Parallel_AddOnGrid);
             #else
             for (var i = 0; i < limit; i++)
                 AddOnGrid (_points [i], _positions [i]);
@@ -90,12 +90,19 @@ namespace Gist.HashGridSystem.Storage {
             return Stat (_hash.CellId (pos));
         }
 
-        void AddOnGrid (T point, Vector2 pos) {
+        void Parallel_AddOnGrid(int i) {
+            var point = _points [i];
+            var pos = _positions [i];
             var id = _hash.CellId (pos);
             var cell = _grid [id];
             lock (cell) {
                 cell.Add (point);
             }
+        }
+        void AddOnGrid (T point, Vector2 pos) {
+            var id = _hash.CellId (pos);
+            var cell = _grid [id];
+            cell.Add (point);
         }
         void RemoveOnGrid (T point, Vector2 pos) {
             var id = _hash.CellId (pos);

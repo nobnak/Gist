@@ -5,8 +5,7 @@ using Gist.HashGridSystem.Storage;
 
 namespace Gist.HashGridSystem {
 
-    [ExecuteInEditMode]
-    public class HashGrid2D : MonoBehaviour {
+    public class HashGrid2D : AbstractHashGrid {
         public enum UpdateModeEnum { Update = 0, Rebuild }
 
         public UpdateModeEnum updateMode;
@@ -35,14 +34,10 @@ namespace Gist.HashGridSystem {
                 return;
             
             var size = gridWidth * cellSize * new Vector3 (1f, 1f, 0f);
-			var center = transform.position;
-            var offset = cellSize * new Vector3 (
-                             Mathf.FloorToInt (center.x / cellSize) + 0.5f, 
-                             Mathf.FloorToInt (center.y / cellSize) + 0.5f, 
-                             0f);
+            var offset = cellSize * new Vector3 (0.5f, 0.5f, 0f);
             Gizmos.color = gizmoColor;
             Gizmos.matrix = transform.localToWorldMatrix;
-			Gizmos.DrawWireCube (center + 0.5f * size, size);
+			Gizmos.DrawWireCube (0.5f * size, size);
 
             var cubeSize = 0.5f * cellSize * new Vector3 (1f, 1f, 0f);
 			var hash = World.GridInfo;
@@ -70,9 +65,17 @@ namespace Gist.HashGridSystem {
         }
         #endregion
 
-        Vector2 GetPosition(MonoBehaviour m) {
-            return (Vector2)transform.InverseTransformPoint (m.transform.position);
+        public override void Add (MonoBehaviour m) {
+            World.Add (m);
         }
+
+        Vector2 GetPosition(MonoBehaviour m) {
+            return GetPosition(m.transform.position);
+        }
+        Vector2 GetPosition(Vector3 worldPos) {
+            return (Vector2)transform.InverseTransformPoint (worldPos);
+        }
+
 		Color Jet(float x, float a) {
 			return new Color(
 				Mathf.Clamp01(Mathf.Min(4f * x - 1.5f, -4f * x + 4.5f)),
