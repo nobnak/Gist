@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿#define PARALLEL
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -58,17 +60,24 @@ namespace Gist.HashGridSystem.Storage {
         }
         public void Update() {
             var limit = _grid.Length;
+            #if PARALLEL
+            Parallel.For(0, limit, (i) => _grid[i].Clear());
+            #else
             for (var i = 0; i < limit; i++)
                 _grid [i].Clear ();
+            #endif
 
             limit = _points.Count;
             _positions.Clear ();
             for (var i = 0; i < limit; i++)
                 _positions.Add(_GetPosition (_points [i]));
-            Parallel.For (0, limit, (i) =>
-                AddOnGrid (_points [i], _positions [i])
-            );
-
+            
+            #if PARALLEL
+            Parallel.For (0, limit, (i) => AddOnGrid (_points [i], _positions [i]));
+            #else
+            for (var i = 0; i < limit; i++)
+                AddOnGrid (_points [i], _positions [i]);
+            #endif
         }
         public int Stat(int id) {
             return _grid [id].Count;
@@ -83,7 +92,9 @@ namespace Gist.HashGridSystem.Storage {
         void AddOnGrid (T point, Vector3 pos) {
             var id = _hash.CellId (pos);
             var cell = _grid [id];
-            cell.Add(point);
+            lock (cell) {
+                cell.Add (point);
+            }
         }
         void RemoveOnGrid (T point, Vector3 pos) {
             var id = _hash.CellId (pos);

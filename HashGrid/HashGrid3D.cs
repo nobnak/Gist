@@ -13,26 +13,23 @@ namespace Gist.HashGridSystem {
         public int gridWidth = 20;
         public Color gizmoColor = Color.white;
 
-        public static Storage3D<MonoBehaviour> World;
-
-        Storage3D<MonoBehaviour> _world;
+        public Storage3D<MonoBehaviour> World { get; private set; }
 
         void Awake() {
-            _world = new Storage3D<MonoBehaviour> (GetPosition, cellSize, gridWidth, gridWidth, gridWidth);
-            World = _world;
+            World = new Storage3D<MonoBehaviour> (GetPosition, cellSize, gridWidth, gridWidth, gridWidth);
         }
         void LateUpdate() {
             switch (updateMode) {
             default:
-                _world.Update ();
+                World.Update ();
                 break;
             case UpdateModeEnum.Rebuild:
-                _world.Rebuild (cellSize, gridWidth, gridWidth, gridWidth);
+                World.Rebuild (cellSize, gridWidth, gridWidth, gridWidth);
                 break;
             }
         }
         void OnDrawGizmosSelected() {
-            if (_world == null)
+            if (World == null)
                 return;
             
 			var size = gridWidth * cellSize * Vector3.one;
@@ -41,7 +38,7 @@ namespace Gist.HashGridSystem {
 			Gizmos.DrawWireCube (offset + 0.5f * size, size);
 
 			var cubeSize = 0.5f * cellSize * Vector3.one;
-			var hash = _world.GridInfo;
+			var hash = World.GridInfo;
 			for (var z = 0; z < hash.nz; z++) {
 				for (var y = 0; y < hash.ny; y++) {
 					for (var x = 0; x < hash.nx; x++) {
@@ -49,7 +46,7 @@ namespace Gist.HashGridSystem {
 							x + Mathf.FloorToInt(offset.x / cellSize) + 0.5f, 
 							y + Mathf.FloorToInt(offset.y / cellSize) + 0.5f,
 							z + Mathf.FloorToInt(offset.z / cellSize) + 0.5f);
-						var count = _world.Stat (pos);
+						var count = World.Stat (pos);
 						if (count > 0) {
 							var h = Mathf.Clamp01((float)count / 100);
 							Gizmos.color = Jet (h, 0.5f * Mathf.Clamp01 (count / 10f));
