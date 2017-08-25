@@ -17,6 +17,7 @@ namespace Gist.Layers {
 
         #region Unity
         protected virtual void OnEnable() {
+            InitLayer ();
             UpdateAll ();
         }
         protected virtual void Update() {
@@ -72,7 +73,9 @@ namespace Gist.Layers {
             var localPos = transform.InverseTransformPoint (p);
             return new Vector2 (localPos.x + 0.5f, localPos.y + 0.5f);
         }
-            
+
+        protected virtual void InitLayer () {
+        }
         protected abstract bool UpdateLayer ();
         protected virtual void UpdateCache() {
             cacheTr = new TransformCache (transform);

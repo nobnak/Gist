@@ -14,6 +14,11 @@ namespace Gist.Layers {
         [SerializeField]
         protected ScaleModeEnum scaleMode;
 
+        ScaleModeEnum prevScaleMode;
+
+        protected override void InitLayer () {
+            prevScaleMode = scaleMode;
+        }
         protected override bool UpdateLayer () {
             var changed = transform.hasChanged;
             transform.hasChanged = false;
@@ -29,9 +34,10 @@ namespace Gist.Layers {
             var size = cam.transform.InverseTransformDirection (
                 cam.ViewportToWorldPoint (new Vector3 (1f, 1f, z)) - cam.ViewportToWorldPoint (new Vector3 (0f, 0f, z)));
             var targetField = new Rect(-0.5f * size.x, -0.5f * size.y, size.x, size.y);
-            if (targetField != field) {
+            if (targetField != field || scaleMode != prevScaleMode) {
                 changed = true;
                 field = targetField;
+                prevScaleMode = scaleMode;
                 switch (scaleMode) {
                 case ScaleModeEnum.Scale:
                     transform.localScale = new Vector3 (size.x, size.y, 1f);
