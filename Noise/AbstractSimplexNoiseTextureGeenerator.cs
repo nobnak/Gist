@@ -1,42 +1,41 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Gist.Layers;
+using Gist.Events;
 
 namespace Gist {
     [ExecuteInEditMode]
-    public class SimplexNoiseTextureGeenerator : MonoBehaviour {
+    public abstract class AbstractSimplexNoiseTextureGeenerator : MonoBehaviour {
         public const float SEED_SIZE = 100f;
 
         public TextureEvent OnCreateTexture;
 
         [SerializeField]
-        AbstractLayer layer;
+        protected int width = 256;
         [SerializeField]
-        int width = 256;
-        [SerializeField]
-        float aspect = 1f;
+        protected float aspect = 1f;
 
         [SerializeField]
-        float fieldSize = 1f;
+        protected float fieldSize = 1f;
         [SerializeField]
-        float noiseFreq = 1f;
+        protected float noiseFreq = 1f;
         [SerializeField]
-        float timeScale = 1f;
+        protected float timeScale = 1f;
 
         public System.Func<float, float, float, float> HeightFunc;
 
-        Texture2D _noiseTex;
-        float[] _heightValues;
-        Vector3[] _normalValues;
-        Color[] _noiseColors;
-        Vector3 _seeds;
-        Vector2 _texelSize;
+        protected Texture2D _noiseTex;
+        protected float[] _heightValues;
+        protected Vector3[] _normalValues;
+        protected Color[] _noiseColors;
+        protected Vector3 _seeds;
+        protected Vector2 _texelSize;
 
         #region Unity
-        void OnEnable() {
+        protected virtual void OnEnable() {
             _seeds = SEED_SIZE * new Vector3 (Random.value, Random.value, Random.value);
         }
-    	void Update () {
+        protected virtual void Update () {
             _texelSize.Set(1f / width, 1f / width);
 
             if (_noiseTex == null || _noiseTex.width != width) {
@@ -52,30 +51,31 @@ namespace Gist {
 
             UpdateNoiseMap ();
     	}
-        void OnDisable() {
+        protected virtual void OnDisable() {
             ReleaseTex ();
         }
         #endregion
 
-        public void SetAspect(float aspect) {
+        protected abstract Vector2 WorldToViewportPoint (Vector3 worldPos);
+        protected abstract Vector3 TransformDirection(Vector3 localDir);
+
+        public virtual void SetAspect(float aspect) {
             this.aspect = aspect;
         }
 
-        public Vector3 GetZNormalFromUv(Vector2 uv) {
-            var n = GetNormal (uv);
-            return n.normalized;
+        public virtual Vector3 GetLocalNormalFromWorldPos(Vector3 worldPos) {
+            var uv = WorldToViewportPoint (worldPos);
+            return GetLocalNormal (uv);
         }
-        public Vector3 GetYNormalFromUv(Vector2 uv) {
-            var n = GetNormal (uv);
-            n = new Vector3 (n.x, n.z, n.y);
-            return n.normalized;
-        }
-        public Vector3 GetYNormalFromWorldPos(Vector3 worldPos) {
-            var uv = layer.ProjectOnNormalized (worldPos);
-            return GetYNormalFromUv (uv);
+        public virtual Vector3 GetNormalFromWorldPos(Vector3 worldPos) {
+            return TransformDirection(GetLocalNormalFromWorldPos(worldPos));
         }
 
-        public Vector3 GetNormal(Vector2 uv) {
+        public virtual Vector3 GetWorldNormal(Vector2 uv) {
+            var n = GetLocalNormal (uv);
+            return TransformDirection(n);
+        }
+        public virtual Vector3 GetLocalNormal(Vector2 uv) {
             var x = uv.x * width + 0.5f;
             var y = uv.y * width + 0.5f;
             var ix = (int)x;
@@ -92,20 +92,20 @@ namespace Gist {
             if (jy >= width)
                 jy = width - 1;
             
-            return (1f - dx) * ((1f - dy) * GetNormal (ix, iy) + dy * GetNormal (ix, jy))
-                + dx * ((1f - dy) * GetNormal (jx, iy) + dy * GetNormal (jx, jy));
+            return (1f - dx) * ((1f - dy) * GetLocalNormal (ix, iy) + dy * GetLocalNormal (ix, jy))
+                + dx * ((1f - dy) * GetLocalNormal (jx, iy) + dy * GetLocalNormal (jx, jy));
         }
 
-        public float GetHeight(int x, int y) { return _heightValues[x + y * (width + 1)]; }
-        public void SetHeight(int x, int y, float value) { _heightValues[x + y * (width + 1)] = value; }
+        public virtual float GetHeight(int x, int y) { return _heightValues[x + y * (width + 1)]; }
+        public virtual void SetHeight(int x, int y, float value) { _heightValues[x + y * (width + 1)] = value; }
 
-        public Vector3 GetNormal(int x, int y) { return _normalValues[x + y * width]; }
-        public void SetNormal(int x, int y, Vector3 value) { _normalValues[x + y * width] = value; }
+        public virtual Vector3 GetLocalNormal(int x, int y) { return _normalValues[x + y * width]; }
+        public virtual void SetNormal(int x, int y, Vector3 value) { _normalValues[x + y * width] = value; }
 
-        public Color GetNoisePixel(int x, int y) { return _noiseColors[x + y * width]; }
-        public void SetNoisePixel(int x, int y, Color value) { _noiseColors[x + y * width] = value; }
+        public virtual Color GetNoisePixel(int x, int y) { return _noiseColors[x + y * width]; }
+        public virtual void SetNoisePixel(int x, int y, Color value) { _noiseColors[x + y * width] = value; }
 
-        void UpdateNoiseMap() {
+        protected virtual void UpdateNoiseMap() {
             UpdateHeightMap ();
             UpdateNormalMap ();
             UpdateTexture ();
@@ -114,7 +114,7 @@ namespace Gist {
             _noiseTex.Apply (false);
         }
 
-        void UpdateHeightMap () {
+        protected virtual void UpdateHeightMap () {
             var px = new Vector2 (noiseFreq * aspect / width, noiseFreq / width);
             var t = Time.timeSinceLevelLoad * timeScale + _seeds.z;
             var H = (HeightFunc == null ? DefaultHeightFunc : HeightFunc);                
@@ -123,7 +123,7 @@ namespace Gist {
                     SetHeight(x, y, H(px.x * (x - 0.5f + _seeds.x), px.y * (y - 0.5f + _seeds.y), t));
             });
         }
-        void UpdateNormalMap () {
+        protected virtual void UpdateNormalMap () {
             var invDx = new Vector2(width / (fieldSize * aspect), width / fieldSize);
             Parallel.For (0, width, y =>  {
                 for (var x = 0; x < width; x++) {
@@ -138,20 +138,17 @@ namespace Gist {
             Parallel.For (0, width, y =>  {
                 for (var x = 0; x < width; x++) {
                     var h = GetHeight(x, y);
-                    var n = GetNormal(x, y);
+                    var n = GetLocalNormal(x, y);
                     SetNoisePixel(x, y, new Color(0.5f * (n.x + 1f), 0.5f * (n.y + 1f), 0.5f * (n.z + 1f), h));
                 }
             });
         }
 
-        float DefaultHeightFunc(float x, float y, float z) {
+        protected virtual float DefaultHeightFunc(float x, float y, float z) {
             return (float)SimplexNoise.Noise (x, y, z);
         }
-        void ReleaseTex () {
+        protected virtual void ReleaseTex () {
             DestroyImmediate(_noiseTex);
         }
-
-        [System.Serializable]
-        public class TextureEvent : UnityEngine.Events.UnityEvent<Texture> {}
     }
 }
