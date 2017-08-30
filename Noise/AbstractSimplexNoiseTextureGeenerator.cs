@@ -67,7 +67,7 @@ namespace Gist {
             var uv = WorldToViewportPoint (worldPos);
             return GetLocalNormal (uv);
         }
-        public virtual Vector3 GetNormalFromWorldPos(Vector3 worldPos) {
+        public virtual Vector3 GetWorldNormalFromWorldPos(Vector3 worldPos) {
             return TransformDirection(GetLocalNormalFromWorldPos(worldPos));
         }
 
