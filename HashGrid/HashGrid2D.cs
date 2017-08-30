@@ -65,9 +65,24 @@ namespace Gist.HashGridSystem {
         }
         #endregion
 
-        public override void Add (MonoBehaviour m) {
-            World.Add (m);
+        #region implemented abstract members of AbstractHashGrid
+        public override void Add (MonoBehaviour point) {
+            World.Add (point);
         }
+        public override void Remove (MonoBehaviour point) {
+            World.Remove (point);
+        }
+        public override MonoBehaviour Find (System.Predicate<MonoBehaviour> Predicate) {
+            return World.Find (Predicate);
+        }
+        public override IEnumerable<S> Neighbors<S> (Vector3 center, float distance) {
+            return World.Neighbors<S> (GetPosition(center), distance);
+        }
+        public override IEnumerable<MonoBehaviour> Points {
+            get { return World; }
+        }
+        #endregion
+
 
         Vector2 GetPosition(MonoBehaviour m) {
             return GetPosition(m.transform.position);
