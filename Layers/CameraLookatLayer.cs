@@ -33,10 +33,8 @@ namespace Gist.Layers {
             var z = Vector3.Dot (cam.transform.forward, (cacheTr.position - cam.transform.position));
             var size = cam.transform.InverseTransformDirection (
                 cam.ViewportToWorldPoint (new Vector3 (1f, 1f, z)) - cam.ViewportToWorldPoint (new Vector3 (0f, 0f, z)));
-            var targetField = new Rect(-0.5f * size.x, -0.5f * size.y, size.x, size.y);
-            if (targetField != field || scaleMode != prevScaleMode) {
+            if (SetSize(size) || scaleMode != prevScaleMode) {
                 changed = true;
-                field = targetField;
                 prevScaleMode = scaleMode;
                 switch (scaleMode) {
                 case ScaleModeEnum.Scale:

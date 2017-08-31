@@ -5,7 +5,7 @@ using Gist.Events;
 
 namespace Gist {
     [ExecuteInEditMode]
-    public abstract class AbstractSimplexNoiseTextureGeenerator : MonoBehaviour {
+    public abstract class AbstractSimplexNoiseTextureGeenerator : MonoBehaviour, IGenerativeTexture<Vector3> {
         public const float SEED_SIZE = 100f;
 
         public TextureEvent OnCreateTexture;
@@ -56,6 +56,22 @@ namespace Gist {
         }
         #endregion
 
+        #region IGenerativeTexture implementation
+        public int Width {
+            get { return width; }
+        }
+        public int Height {
+            get { return width; }
+        }
+        public Vector3 GetTextureValue(int ix, int iy) {
+            return GetLocalNormal (ix, iy);
+        }
+        public Vector3 GetTextureValue(Vector2 uv) {
+            return GetLocalNormal (uv);
+        }
+        #endregion
+
+
         protected abstract Vector2 WorldToViewportPoint (Vector3 worldPos);
         protected abstract Vector3 TransformDirection(Vector3 localDir);
 
@@ -76,24 +92,7 @@ namespace Gist {
             return TransformDirection(n);
         }
         public virtual Vector3 GetLocalNormal(Vector2 uv) {
-            var x = uv.x * width + 0.5f;
-            var y = uv.y * width + 0.5f;
-            var ix = (int)x;
-            var iy = (int)y;
-            var dx = x - ix;
-            var dy = y - iy;
-
-            ix = ix < 0 ? 0 : (ix >= width ? width - 1 : ix);
-            iy = iy < 0 ? 0 : (iy >= width ? width - 1 : iy);
-            var jx = ix + 1;
-            var jy = iy + 1;
-            if (jx >= width)
-                jx = width - 1;
-            if (jy >= width)
-                jy = width - 1;
-            
-            return (1f - dx) * ((1f - dy) * GetLocalNormal (ix, iy) + dy * GetLocalNormal (ix, jy))
-                + dx * ((1f - dy) * GetLocalNormal (jx, iy) + dy * GetLocalNormal (jx, jy));
+            return TextureFilter.Bilinear (uv, width, width, GetLocalNormal);
         }
 
         public virtual float GetHeight(int x, int y) { return _heightValues[x + y * (width + 1)]; }
@@ -108,7 +107,7 @@ namespace Gist {
         protected virtual void UpdateNoiseMap() {
             UpdateHeightMap ();
             UpdateNormalMap ();
-            UpdateTexture ();
+            UpdatePixels ();
 
             _noiseTex.SetPixels (_noiseColors);
             _noiseTex.Apply (false);
@@ -134,7 +133,7 @@ namespace Gist {
                 }
             });
         }
-        void UpdateTexture() {
+        void UpdatePixels() {
             Parallel.For (0, width, y =>  {
                 for (var x = 0; x < width; x++) {
                     var h = GetHeight(x, y);

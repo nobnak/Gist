@@ -14,6 +14,7 @@ namespace Gist.Layers {
 
         protected TransformCache cacheTr;
         protected Rect field;
+        protected float aspect;
 
         #region Unity
         protected virtual void OnEnable() {
@@ -38,7 +39,15 @@ namespace Gist.Layers {
         #endregion
 
         public virtual Rect Field { get { return field; } }
+        public virtual float Aspect { get { return aspect; } }
 
+        public virtual bool SetSize(Vector2 size) {
+            var targetField = new Rect(-0.5f * size.x, -0.5f * size.y, size.x, size.y);
+            var result = (targetField != field);
+            field = targetField;
+            aspect = size.x / size.y;
+            return result;
+        }
         public virtual bool Raycast(Ray ray, out Vector3 position, out float t) {
             position = default(Vector3);
             t = default(float);
