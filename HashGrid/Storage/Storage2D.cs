@@ -22,6 +22,7 @@ namespace Gist.HashGridSystem.Storage {
         }
 
         public Hash GridInfo { get { return _hash; } }
+        public int Count { get { return _points.Count; } }
 
         public void Add(T point) {
             _points.Add (point);
@@ -30,6 +31,9 @@ namespace Gist.HashGridSystem.Storage {
         public void Remove(T point) {
             RemoveOnGrid(point, _GetPosition(point));
             _points.Remove (point);
+        }
+        public T IndexOf(int index) {
+            return _points [index];
         }
         public T Find(System.Predicate<T> Predicate) {
             return _points.Find (Predicate);

@@ -81,6 +81,11 @@ namespace Gist.HashGridSystem {
         public override IEnumerable<MonoBehaviour> Points {
             get { return World; }
         }
+
+        public override int Count { get { return World.Count; } }
+        public override MonoBehaviour IndexOf (int index) {
+            return World.IndexOf (index);
+        }
         #endregion
 
 
