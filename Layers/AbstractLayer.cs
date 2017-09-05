@@ -40,6 +40,7 @@ namespace Gist.Layers {
 
         public virtual Rect Field { get { return field; } }
         public virtual float Aspect { get { return aspect; } }
+        public virtual TransformCache Cache { get { return cacheTr; } }
 
         public virtual bool SetSize(Vector2 size) {
             var targetField = new Rect(-0.5f * size.x, -0.5f * size.y, size.x, size.y);
@@ -105,11 +106,20 @@ namespace Gist.Layers {
             public readonly bool initialized;
             public readonly Vector3 position;
             public readonly Quaternion rotation;
+            public readonly Vector3 localScale;
 
             public TransformCache(Transform tr) {
                 this.initialized = true;
                 this.position = tr.position;
                 this.rotation = tr.rotation;
+                this.localScale = tr.localScale;
+            }
+
+            public Transform CopyTo(Transform tr) {
+                tr.position = position;
+                tr.rotation = rotation;
+                tr.localScale = localScale;
+                return tr;
             }
         }
         #endregion

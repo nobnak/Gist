@@ -6,44 +6,50 @@ using UnityEngine;
 namespace Gist.Layers {
 
     [ExecuteInEditMode]
-    public class CameraLookatLayer : AbstractLayer {
-        public enum ScaleModeEnum { Fixed = 0, Scale }
+    public class CameraLookatLayer : BaseLookatLayer {
 
         public Camera targetCamera;
 
-        [SerializeField]
-        protected ScaleModeEnum scaleMode;
+        protected Master master;
 
-        ScaleModeEnum prevScaleMode;
+        #region implemented abstract members of BaseLookatLayer
+        protected override IMaster GetMaster () {
+            master.Update (targetCamera);
+            return master;
+        }
+        #endregion
 
         protected override void InitLayer () {
-            prevScaleMode = scaleMode;
+            base.InitLayer ();
+            master = new Master (this);
         }
-        protected override bool UpdateLayer () {
-            var changed = transform.hasChanged;
-            transform.hasChanged = false;
 
-            var cam = (targetCamera == null ? Camera.main : targetCamera);
-            var targetRotation = cam.transform.rotation;
-            if (targetRotation != transform.rotation) {
-                changed = true;
-                transform.rotation = targetRotation;
+        public class Master : IMaster {
+            public Camera TargetCamera { get; protected set; }
+
+            protected CameraLookatLayer parent;
+
+            public Master(CameraLookatLayer parent) {
+                this.parent = parent;
             }
 
-            var z = Vector3.Dot (cam.transform.forward, (cacheTr.position - cam.transform.position));
-            var size = cam.transform.InverseTransformDirection (
-                cam.ViewportToWorldPoint (new Vector3 (1f, 1f, z)) - cam.ViewportToWorldPoint (new Vector3 (0f, 0f, z)));
-            if (SetSize(size) || scaleMode != prevScaleMode) {
-                changed = true;
-                prevScaleMode = scaleMode;
-                switch (scaleMode) {
-                case ScaleModeEnum.Scale:
-                    transform.localScale = new Vector3 (size.x, size.y, 1f);
-                    break;
-                }
+            #region IMaster implementation
+            public Quaternion Rotation () {
+                return TargetCamera.transform.rotation;
             }
+            public Vector3 Size () {
+                var z = Vector3.Dot (TargetCamera.transform.forward, 
+                    (parent.cacheTr.position - TargetCamera.transform.position));
+                var size = TargetCamera.transform.InverseTransformDirection (
+                    TargetCamera.ViewportToWorldPoint (new Vector3 (1f, 1f, z))
+                    - TargetCamera.ViewportToWorldPoint (new Vector3 (0f, 0f, z)));
+                return size;
+            }
+            #endregion
 
-            return changed;
-    	}
+            public void Update(Camera nextCam) {
+                TargetCamera = (nextCam == null ? Camera.main : nextCam);
+            }
+        }
     }
 }
