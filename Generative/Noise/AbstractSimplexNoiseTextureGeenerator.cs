@@ -30,28 +30,19 @@ namespace Gist {
         protected Color[] _noiseColors;
         protected Vector3 _seeds;
         protected Vector2 _texelSize;
+        protected Coroutine updateNoiseMapCoroutine;
 
         #region Unity
         protected virtual void OnEnable() {
             _seeds = SEED_SIZE * new Vector3 (Random.value, Random.value, Random.value);
+            updateNoiseMapCoroutine = StartCoroutine (UpdateNoiseMapProcess ());
         }
         protected virtual void Update () {
-            _texelSize.Set(1f / width, 1f / width);
+            InitNoiseMapProcess ();
 
-            if (_noiseTex == null || _noiseTex.width != width) {
-                ReleaseTex();
-                _noiseTex = new Texture2D (width, width, TextureFormat.ARGB32, false, true);
-                _noiseTex.wrapMode = TextureWrapMode.Clamp;
-                _noiseTex.filterMode = FilterMode.Bilinear;
-                _noiseColors = _noiseTex.GetPixels ();
-                _normalValues = new Vector3[_noiseColors.Length];
-                _heightValues = new float[(width + 1) * (width + 1)];
-                OnCreateTexture.Invoke (_noiseTex);
-            }
-
-            UpdateNoiseMap ();
     	}
         protected virtual void OnDisable() {
+            StopCoroutine (updateNoiseMapCoroutine);
             ReleaseTex ();
         }
         #endregion
@@ -104,13 +95,36 @@ namespace Gist {
         public virtual Color GetNoisePixel(int x, int y) { return _noiseColors[x + y * width]; }
         public virtual void SetNoisePixel(int x, int y, Color value) { _noiseColors[x + y * width] = value; }
 
-        protected virtual void UpdateNoiseMap() {
-            UpdateHeightMap ();
-            UpdateNormalMap ();
-            UpdatePixels ();
+        void InitNoiseMapProcess () {
+            _texelSize.Set (1f / width, 1f / width);
+            if (_noiseTex == null || _noiseTex.width != width) {
+                ReleaseTex ();
+                _noiseTex = new Texture2D (width, width, TextureFormat.ARGB32, false, true);
+                _noiseTex.wrapMode = TextureWrapMode.Clamp;
+                _noiseTex.filterMode = FilterMode.Bilinear;
+                _noiseColors = _noiseTex.GetPixels ();
+                _normalValues = new Vector3[_noiseColors.Length];
+                _heightValues = new float[(width + 1) * (width + 1)];
+                OnCreateTexture.Invoke (_noiseTex);
+            }
+        }
 
-            _noiseTex.SetPixels (_noiseColors);
-            _noiseTex.Apply (false);
+        protected virtual IEnumerator UpdateNoiseMapProcess() {
+            while (true) {
+                InitNoiseMapProcess ();
+
+                UpdateHeightMap ();
+                yield return null;
+
+                UpdateNormalMap ();
+                yield return null;
+
+                UpdatePixels ();
+                _noiseTex.SetPixels (_noiseColors);
+                _noiseTex.Apply (false);
+                yield return null;
+            }
+
         }
 
         protected virtual void UpdateHeightMap () {
