@@ -43,8 +43,9 @@ namespace Gist {
                 try {
                     for (var k = j; k < toExclusive; k += numThreads)
                         body (k);
-                }
-                finally {
+                } catch (System.Exception e) {
+                    UnityEngine.Debug.LogError(e);
+                } finally {
                     resets [ii].Set ();
                 }
             });
