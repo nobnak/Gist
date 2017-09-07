@@ -7,27 +7,43 @@ namespace Gist {
 
         #region Set
         T SetColor(string name, Color value);
+        T SetColor(int name, Color value);
         T SetFloat(string name, float value);
+        T SetFloat(int name, float value);
         T SetMatrix(string name, Matrix4x4 value);
+        T SetMatrix(int name, Matrix4x4 value);
         T SetTexture(string name, Texture value);
+        T SetTexture(int name, Texture value);
         T SetVector(string name, Vector4 value);
+        T SetVector(int name, Vector4 value);
         T SetBuffer (string name, ComputeBuffer value);
+        T SetBuffer (int name, ComputeBuffer value);
         #endregion
 
         #region Get
         Color GetColor (string name);
+        Color GetColor (int name);
         float GetFloat (string name);
+        float GetFloat (int name);
         Matrix4x4 GetMatrix (string name);
+        Matrix4x4 GetMatrix (int name);
         Texture GetTexture (string name);
+        Texture GetTexture (int name);
         Vector4 GetVector (string name);
+        Vector4 GetVector (int name);
         #endregion
 
         #region Defaults
         Color GetDefaultColor (string name);
+        Color GetDefaultColor (int name);
         float GetDefaultFloat (string name);
+        float GetDefaultFloat (int name);
         Matrix4x4 GetDefaultMatrix (string name);
+        Matrix4x4 GetDefaultMatrix (int name);
         Texture GetDefaultTexture (string name);
+        Texture GetDefaultTexture (int name);
         Vector4 GetDefaultVector (string name);
+        Vector4 GetDefaultVector (int name);
         #endregion
     }
 
@@ -48,57 +64,85 @@ namespace Gist {
         }
 
         public MaterialPropertyBlockChanied SetColor (string name, Color value) {
+            return SetColor (Shader.PropertyToID (name), value);
+        }
+        public MaterialPropertyBlockChanied SetColor(int name, Color value) {
             foreach (var p in pairs)
                 p.SetColor (name, value);
             return this;
         }
         public MaterialPropertyBlockChanied SetFloat (string name, float value) {
+            return SetFloat (Shader.PropertyToID (name), value);
+        }
+        public MaterialPropertyBlockChanied SetFloat(int name, float value) {
             foreach (var p in pairs)
                 p.SetFloat (name, value);
             return this;
         }
         public MaterialPropertyBlockChanied SetMatrix (string name, Matrix4x4 value) {
+            return SetMatrix (Shader.PropertyToID (name), value);
+        }
+        public MaterialPropertyBlockChanied SetMatrix(int name, Matrix4x4 value) {
             foreach (var p in pairs)
                 p.SetMatrix (name, value);
             return this;
         }
         public MaterialPropertyBlockChanied SetTexture (string name, Texture value) {
+            return SetTexture (Shader.PropertyToID (name), value);
+        }
+        public MaterialPropertyBlockChanied SetTexture(int name, Texture value) {
             foreach (var p in pairs)
                 p.SetTexture (name, value);
             return this;
         }
         public MaterialPropertyBlockChanied SetVector (string name, Vector4 value) {
+            return SetVector (Shader.PropertyToID (name), value);
+        }
+        public MaterialPropertyBlockChanied SetVector(int name, Vector4 value) {
             foreach (var p in pairs)
                 p.SetVector (name, value);
             return this;
         }
         public MaterialPropertyBlockChanied SetBuffer(string name, ComputeBuffer value) {
+            return SetBuffer (Shader.PropertyToID (name), value);
+        }
+        public MaterialPropertyBlockChanied SetBuffer(int name, ComputeBuffer value) {
             foreach (var p in pairs)
                 p.SetBuffer (name, value);
             return this;
         }
 
-        public Color GetColor (string name) { return GetColor (0, name); }
-        public Color GetColor (int index, string name) { return pairs [index].GetColor (name); }
-        public float GetFloat (string name) { return GetFloat (0, name); }
-        public float GetFloat (int index, string name) { return pairs [index].GetFloat (name); }
-        public Matrix4x4 GetMatrix (string name) { return GetMatrix (0, name); }
-        public Matrix4x4 GetMatrix (int index, string name) { return pairs [index].GetMatrix (name); }
-        public Texture GetTexture (string name) { return GetTexture (0, name); }
-        public Texture GetTexture (int index, string name) { return pairs [index].GetTexture (name); }
-        public Vector4 GetVector (string name) { return GetVector (0, name); }
-        public Vector4 GetVector (int index, string name) { return pairs [index].GetVector (name); }
+        public Color GetColor (string name) { return GetColor (Shader.PropertyToID(name)); }
+        public Color GetColor(int name) { return GetColor(0, name); }
+        public Color GetColor (int index, int name) { return pairs [index].GetColor (name); }
+        public float GetFloat (string name) { return GetFloat (Shader.PropertyToID(name)); }
+        public float GetFloat (int name) { return GetFloat (0, name); }
+        public float GetFloat (int index, int name) { return pairs [index].GetFloat (name); }
+        public Matrix4x4 GetMatrix (string name) { return GetMatrix (Shader.PropertyToID(name)); }
+        public Matrix4x4 GetMatrix (int name) { return GetMatrix (0, name); }
+        public Matrix4x4 GetMatrix (int index, int name) { return pairs [index].GetMatrix (name); }
+        public Texture GetTexture (string name) { return GetTexture (Shader.PropertyToID(name)); }
+        public Texture GetTexture (int name) { return GetTexture (0, name); }
+        public Texture GetTexture (int index, int name) { return pairs [index].GetTexture (name); }
+        public Vector4 GetVector (string name) { return GetVector (Shader.PropertyToID(name)); }
+        public Vector4 GetVector (int name) { return GetVector (0, name); }
+        public Vector4 GetVector (int index, int name) { return pairs [index].GetVector (name); }
 
-        public Color GetDefaultColor (string name) { return GetDefaultColor (0, name); }
-        public Color GetDefaultColor (int index, string name) { return pairs [index].GetDefaultColor (name); }
-        public float GetDefaultFloat (string name) { return GetDefaultFloat (0, name);  }
-        public float GetDefaultFloat (int index, string name) { return pairs [index].GetDefaultFloat (name);  }
-        public Matrix4x4 GetDefaultMatrix (string name) { return GetDefaultMatrix (0, name); }
-        public Matrix4x4 GetDefaultMatrix (int index, string name) { return pairs [index].GetDefaultMatrix (name); }
-        public Texture GetDefaultTexture (string name) { return GetDefaultTexture (0, name); }
-        public Texture GetDefaultTexture (int index, string name) { return pairs [index].GetDefaultTexture (name); }
-        public Vector4 GetDefaultVector (string name) { return GetDefaultVector (0, name); }
-        public Vector4 GetDefaultVector (int index, string name) { return pairs [index].GetDefaultVector (name); }
+        public Color GetDefaultColor (string name) { return GetDefaultColor (Shader.PropertyToID(name)); }
+        public Color GetDefaultColor (int name) { return GetDefaultColor (0, name); }
+        public Color GetDefaultColor (int index, int name) { return pairs [index].GetDefaultColor (name); }
+        public float GetDefaultFloat (string name) { return GetDefaultFloat (Shader.PropertyToID(name));  }
+        public float GetDefaultFloat (int name) { return GetDefaultFloat (0, name);  }
+        public float GetDefaultFloat (int index, int name) { return pairs [index].GetDefaultFloat (name);  }
+        public Matrix4x4 GetDefaultMatrix (string name) { return GetDefaultMatrix (Shader.PropertyToID(name)); }
+        public Matrix4x4 GetDefaultMatrix (int name) { return GetDefaultMatrix (0, name); }
+        public Matrix4x4 GetDefaultMatrix (int index, int name) { return pairs [index].GetDefaultMatrix (name); }
+        public Texture GetDefaultTexture (string name) { return GetDefaultTexture (Shader.PropertyToID(name)); }
+        public Texture GetDefaultTexture (int name) { return GetDefaultTexture (0, name); }
+        public Texture GetDefaultTexture (int index, int name) { return pairs [index].GetDefaultTexture (name); }
+        public Vector4 GetDefaultVector (string name) { return GetDefaultVector (Shader.PropertyToID(name)); }
+        public Vector4 GetDefaultVector (int name) { return GetDefaultVector (0, name); }
+        public Vector4 GetDefaultVector (int index, int name) { return pairs [index].GetDefaultVector (name); }
         #endregion
 
         #region Static
@@ -136,31 +180,49 @@ namespace Gist {
 
         #region Set
         public Pair SetColor(string name, Color value) {
+            return SetColor (Shader.PropertyToID (name), value);
+        }
+        public Pair SetColor(int name, Color value) {
             CheckLoad ();
             Block.SetColor (name, value);
             return this;
         }
         public Pair SetFloat(string name, float value) {
+            return SetFloat (Shader.PropertyToID (name), value);
+        }
+        public Pair SetFloat(int name, float value) {
             CheckLoad ();
             Block.SetFloat (name, value);
             return this;
         }
         public Pair SetMatrix(string name, Matrix4x4 value) {
+            return SetMatrix (Shader.PropertyToID (name), value);
+        }
+        public Pair SetMatrix(int name, Matrix4x4 value) {
             CheckLoad ();
             Block.SetMatrix (name, value);
             return this;
         }
         public Pair SetTexture(string name, Texture value) {
+            return SetTexture (Shader.PropertyToID (name), value);
+        }
+        public Pair SetTexture(int name, Texture value) {
             CheckLoad ();
             Block.SetTexture (name, value);
             return this;
         }
         public Pair SetVector(string name, Vector4 value) {
+            return SetVector (Shader.PropertyToID (name), value);
+        }
+        public Pair SetVector(int name, Vector4 value) {
             CheckLoad ();
             Block.SetVector (name, value);
             return this;
         }
         public Pair SetBuffer(string name, ComputeBuffer value) {
+            return SetBuffer (Shader.PropertyToID (name), value);
+        }
+        public Pair SetBuffer(int name, ComputeBuffer value) {
             CheckLoad ();
             Block.SetBuffer (name, value);
             return this;
@@ -169,22 +231,37 @@ namespace Gist {
 
         #region Get
         public Color GetColor(string name) {
+            return GetColor (Shader.PropertyToID (name));
+        }
+        public Color GetColor(int name) {
             CheckLoad ();
             return (Color)Block.GetVector (name);
         }
         public float GetFloat(string name) {
+            return GetFloat (Shader.PropertyToID (name));
+        }
+        public float GetFloat(int name) {
             CheckLoad ();
             return Block.GetFloat (name);
         }
         public Matrix4x4 GetMatrix(string name) {
+            return GetMatrix (Shader.PropertyToID (name));
+        }
+        public Matrix4x4 GetMatrix(int name) {
             CheckLoad ();
             return Block.GetMatrix (name);
         }
         public Texture GetTexture(string name) {
+            return GetTexture (Shader.PropertyToID (name));
+        }
+        public Texture GetTexture(int name) {
             CheckLoad ();
             return Block.GetTexture (name);
         }
         public Vector4 GetVector(string name) {
+            return GetVector (Shader.PropertyToID (name));
+        }
+        public Vector4 GetVector(int name) {
             CheckLoad ();
             return Block.GetVector (name);
         }
@@ -192,22 +269,37 @@ namespace Gist {
 
         #region Defaults
         public Color GetDefaultColor(string name) {
+            return GetDefaultColor (Shader.PropertyToID (name));
+        }
+        public Color GetDefaultColor(int name) {
             CheckLoad ();
             return Renderer.sharedMaterial.GetColor (name);
         }
         public float GetDefaultFloat(string name) {
+            return GetDefaultFloat (Shader.PropertyToID (name));
+        }
+        public float GetDefaultFloat(int name) {
             CheckLoad ();
             return Renderer.sharedMaterial.GetFloat (name);
         }
         public Matrix4x4 GetDefaultMatrix(string name) {
+            return GetDefaultMatrix (Shader.PropertyToID (name));
+        }
+        public Matrix4x4 GetDefaultMatrix(int name) {
             CheckLoad ();
             return Renderer.sharedMaterial.GetMatrix (name);
         }
         public Texture GetDefaultTexture(string name) {
+            return GetDefaultTexture (Shader.PropertyToID (name));
+        }
+        public Texture GetDefaultTexture(int name) {
             CheckLoad ();
             return Renderer.sharedMaterial.GetTexture (name);
         }
         public Vector4 GetDefaultVector(string name) {
+            return GetDefaultVector (Shader.PropertyToID (name));
+        }
+        public Vector4 GetDefaultVector(int name) {
             CheckLoad ();
             return Renderer.sharedMaterial.GetVector (name);
         }
