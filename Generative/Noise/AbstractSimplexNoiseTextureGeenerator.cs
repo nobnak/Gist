@@ -11,7 +11,8 @@ namespace Gist {
         public TextureEvent OnCreateTexture;
 
         [SerializeField]
-        protected int width = 256;
+        [Range(4, 10)]
+        protected int bits = 4;
         [SerializeField]
         protected float aspect = 1f;
 
@@ -24,6 +25,7 @@ namespace Gist {
 
         public System.Func<float, float, float, float> HeightFunc;
 
+        protected int width;
         protected Texture2D _noiseTex;
         protected float[] _heightValues;
         protected Vector3[] _normalValues;
@@ -37,10 +39,7 @@ namespace Gist {
             _seeds = SEED_SIZE * new Vector3 (Random.value, Random.value, Random.value);
             updateNoiseMapCoroutine = StartCoroutine (UpdateNoiseMapProcess ());
         }
-        protected virtual void Update () {
-            InitNoiseMapProcess ();
-
-    	}
+        protected virtual void Update() {}
         protected virtual void OnDisable() {
             StopCoroutine (updateNoiseMapCoroutine);
             ReleaseTex ();
@@ -96,6 +95,7 @@ namespace Gist {
         public virtual void SetNoisePixel(int x, int y, Color value) { _noiseColors[x + y * width] = value; }
 
         void InitNoiseMapProcess () {
+            width = 1 << bits;
             _texelSize.Set (1f / width, 1f / width);
             if (_noiseTex == null || _noiseTex.width != width) {
                 ReleaseTex ();
