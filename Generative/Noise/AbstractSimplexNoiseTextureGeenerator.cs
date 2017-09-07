@@ -113,13 +113,13 @@ namespace Gist {
             while (true) {
                 InitNoiseMapProcess ();
 
-                UpdateHeightMap ();
+                yield return StartCoroutine (UpdateHeightMap ());
                 yield return null;
 
-                UpdateNormalMap ();
+                yield return StartCoroutine (UpdateNormalMap ());
                 yield return null;
 
-                UpdatePixels ();
+                yield return StartCoroutine (UpdatePixels ());
                 _noiseTex.SetPixels (_noiseColors);
                 _noiseTex.Apply (false);
                 yield return null;
@@ -127,18 +127,18 @@ namespace Gist {
 
         }
 
-        protected virtual void UpdateHeightMap () {
+        protected virtual IEnumerator UpdateHeightMap () {
             var px = new Vector2 (noiseFreq * aspect / width, noiseFreq / width);
             var t = Time.timeSinceLevelLoad * timeScale + _seeds.z;
             var H = (HeightFunc == null ? DefaultHeightFunc : HeightFunc);                
-            Parallel.For (0, width + 1, y =>  {
+            return Parallel.ForAsync (0, width + 1, y =>  {
                 for (var x = 0; x <= width; x++)
                     SetHeight(x, y, H(px.x * (x - 0.5f + _seeds.x), px.y * (y - 0.5f + _seeds.y), t));
             });
         }
-        protected virtual void UpdateNormalMap () {
+        protected virtual IEnumerator UpdateNormalMap () {
             var invDx = new Vector2(width / (fieldSize * aspect), width / fieldSize);
-            Parallel.For (0, width, y =>  {
+            return Parallel.ForAsync (0, width, y =>  {
                 for (var x = 0; x < width; x++) {
                     var h = GetHeight(x, y);
                     var dhdx = (GetHeight(x + 1, y) - h) * invDx.x;
@@ -147,8 +147,8 @@ namespace Gist {
                 }
             });
         }
-        void UpdatePixels() {
-            Parallel.For (0, width, y =>  {
+        IEnumerator UpdatePixels() {
+            return Parallel.ForAsync (0, width, y =>  {
                 for (var x = 0; x < width; x++) {
                     var h = GetHeight(x, y);
                     var n = GetLocalNormal(x, y);
