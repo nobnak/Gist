@@ -1,4 +1,4 @@
-﻿#define PARALLEL
+﻿//#define PARALLEL
 
 using System.Collections;
 using System.Collections.Generic;
@@ -82,6 +82,17 @@ namespace Gist.HashGridSystem.Storage {
             for (var i = 0; i < limit; i++)
                 AddOnGrid (_points [i], _positions [i]);
             #endif
+        }
+        public IEnumerator UpdateAsync(MonoBehaviour m) {
+            var limit = _grid.Length;
+            yield return m.StartCoroutine (Parallel.ForAsync (0, limit, (i) => _grid [i].Clear ()));
+
+            limit = _points.Count;
+            _positions.Clear ();
+            for (var i = 0; i < limit; i++)
+                _positions.Add(_GetPosition (_points [i]));
+
+            yield return m.StartCoroutine (Parallel.ForAsync (0, limit, Parallel_AddOnGrid));
         }
         public int Stat(int id) {
             return _grid [id].Count;
