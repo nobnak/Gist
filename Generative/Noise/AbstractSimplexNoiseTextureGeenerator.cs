@@ -16,12 +16,9 @@ namespace Gist {
         [SerializeField]
         protected float aspect = 1f;
 
-        [SerializeField]
-        protected float fieldSize = 1f;
-        [SerializeField]
-        protected float noiseFreq = 1f;
-        [SerializeField]
-        protected float timeScale = 1f;
+        public float fieldSize = 1f;
+        public float noiseFreq = 1f;
+        public float timeScale = 1f;
 
         public System.Func<float, float, float, float> HeightFunc;
 
