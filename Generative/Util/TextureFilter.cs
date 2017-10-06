@@ -6,7 +6,7 @@ namespace Gist {
     
     public static class TextureFilter {
         
-        public static float Bilinear(Vector2 uv, int width, int height, System.Func<int, int, float> Value) {
+        public static float Bilinear1(Vector2 uv, int width, int height, System.Func<int, int, float> Value) {
             var lwidth = width - 1;
             var x = uv.x * lwidth;
             var y = uv.y * lwidth;
@@ -27,7 +27,7 @@ namespace Gist {
             return (1f - dx) * ((1f - dy) * Value (ix, iy) + dy * Value (ix, jy))
                 + dx * ((1f - dy) * Value (jx, iy) + dy * Value (jx, jy));
         }
-        public static Vector3 Bilinear(Vector2 uv, int width, int height, System.Func<int, int, Vector3> Value) {
+        public static Vector3 Bilinear3(Vector2 uv, int width, int height, System.Func<int, int, Vector3> Value) {
             var lwidth = width - 1;
             var x = uv.x * lwidth;
             var y = uv.y * lwidth;

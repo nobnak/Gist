@@ -79,7 +79,7 @@ namespace Gist {
             return TransformDirection(n);
         }
         public virtual Vector3 GetLocalNormal(Vector2 uv) {
-            return TextureFilter.Bilinear (uv, width, width, GetLocalNormal);
+            return TextureFilter.Bilinear3(uv, width, width, GetLocalNormal);
         }
 
         public virtual float GetHeight(int x, int y) { return _heightValues[x + y * (width + 1)]; }
