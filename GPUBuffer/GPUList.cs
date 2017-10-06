@@ -30,6 +30,8 @@ namespace Gist.GPUBuffer {
         public GPUList(int capacity) : this(capacity, ComputeBufferType.Default) { }
         public GPUList() : this(DEFAULT_CAPACITY) { }
 
+        public ComputeBuffer Buffer { get { return buffer; } }
+        public T[] Data { get { return data;  } }
         public int Capacity {
             get { return capacity; }
             set { Resize(value); }

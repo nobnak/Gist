@@ -37,6 +37,8 @@ namespace Gist.GPUBuffer {
                 listA.RemoveAt(j);
                 AreEquals(data, listA);
             }
+
+            listA.Dispose();
         }
 
         private static void AreEquals<T>(IList<T> a, IList<T> b) {
