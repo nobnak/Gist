@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Gist.Scoped {
 
-    public class ScopedRenderTextureActivator : ScopedActivator {
+    public class ScopedRenderTextureActivator : System.IDisposable {
         protected RenderTexture prev;
 
         public ScopedRenderTextureActivator(RenderTexture next) {
@@ -13,16 +13,9 @@ namespace Gist.Scoped {
         }
 
         #region IDisposable implementation
-        public override void Dispose () {
+        public void Dispose () {
             RenderTexture.active = prev;
         }
         #endregion
-    }
-
-    public abstract class ScopedActivator : System.IDisposable {
-        #region IDisposable implementation
-        public abstract void Dispose ();
-        #endregion
-        
     }
 }
