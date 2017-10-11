@@ -5,17 +5,16 @@ using UnityEngine;
 namespace Gist.BoundingVolume {
 
     public class AABB {
-
+        public static readonly Vector3 DEFAULT_MIN = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+        public static readonly Vector3 DEFAULT_MAX = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+        
         protected Vector3 min;
         protected Vector3 max;
 
         public AABB(Vector3 min, Vector3 max) {
-            this.min = min;
-            this.max = max;
+            Set(min, max);
         }
-        public AABB() : this(
-            new Vector3(float.MaxValue, float.MaxValue, float.MaxValue),
-            new Vector3(float.MinValue, float.MinValue, float.MinValue)) { }
+        public AABB() : this(DEFAULT_MIN, DEFAULT_MAX) { }
 
         public bool Empty { get { return min.x > max.x || min.y > max.y || min.z > max.z; } }
         public Vector3 Min {  get { return min; } }
@@ -61,6 +60,18 @@ namespace Gist.BoundingVolume {
                 && min.z <= point.z && point.z <= max.z;
         }
 
+        public void Clear() {
+            Set(DEFAULT_MIN, DEFAULT_MAX);
+        }
+
+        public void Set(Vector3 min, Vector3 max) {
+            this.min = min;
+            this.max = max;
+        }
+        public void Set(Bounds bb) {
+            Set(bb.min, bb.max);
+        }
+
         #region Converter
         public static implicit operator AABB(Bounds bb) {
             return new AABB(bb.min, bb.max);
@@ -69,6 +80,18 @@ namespace Gist.BoundingVolume {
             var b = new Bounds();
             b.SetMinMax(aa.min, aa.max);
             return b;
+        }
+        #endregion
+
+        #region MemoryPool
+        public static AABB New() {
+            return new AABB();
+        }
+        public static void Free(AABB aabb) {
+            aabb.Clear();
+        }
+        public static IMemoryPool<AABB> CreateAABBPool() {
+            return new OutsourceMemoryPool<AABB>(New, Free);
         }
         #endregion
     }
