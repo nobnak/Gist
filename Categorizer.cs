@@ -13,7 +13,7 @@ namespace Gist {
         public Categorizer(System.Func<S, T> categorize) {
             Set(categorize);
             this.dataInCategory = new Dictionary<T, List<S>> ();
-            this.cagePool = new MemoryPool<List<S>> ();
+            this.cagePool = new MemoryPool<List<S>>(() => new List<S>(), (l) => l.Clear(), (l) => { });
         }
 
         #region Add

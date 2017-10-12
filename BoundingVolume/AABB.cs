@@ -72,6 +72,12 @@ namespace Gist.BoundingVolume {
             Set(bb.min, bb.max);
         }
 
+        #region Object
+        public override string ToString() {
+            return string.Format("AABB(center={0}, size={1})", Center, Size);
+        }
+        #endregion
+
         #region Converter
         public static implicit operator AABB(Bounds bb) {
             return new AABB(bb.min, bb.max);
@@ -87,11 +93,13 @@ namespace Gist.BoundingVolume {
         public static AABB New() {
             return new AABB();
         }
-        public static void Free(AABB aabb) {
+        public static void Reset(AABB aabb) {
             aabb.Clear();
         }
+        public static void Delete(AABB aabb) {
+        }
         public static IMemoryPool<AABB> CreateAABBPool() {
-            return new OutsourceMemoryPool<AABB>(New, Free);
+            return new MemoryPool<AABB>(New, Reset, Delete);
         }
         #endregion
     }

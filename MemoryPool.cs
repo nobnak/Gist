@@ -10,24 +10,36 @@ namespace Gist {
     }
     #endregion
 
-    public abstract class AbstractMemoryPool<T> : IMemoryPool<T>, System.IDisposable {
+    public class MemoryPool<T> : IMemoryPool<T>, System.IDisposable {
         public event System.Action<T> OnNew;
         public event System.Action<T> OnFree;
+        
+        protected System.Func<T> create;
+        protected System.Action<T> reset;
+        protected System.Action<T> delete;
 
         protected Stack<T> _pool = new Stack<T>();
+
+        public MemoryPool(System.Func<T> create, System.Action<T> reset, System.Action<T> delete) {
+            this.create = create;
+            this.reset = reset;
+            this.delete = delete;
+        }
 
         #region IMemoryPool
         public T New() {
             lock (this) {
                 T o;
-                if (!TryPop (out o))
-                    o =Create ();
+                if (!TryPop(out o))
+                    o =create ();
+
                 NotifyOnNew (o);
                 return o;
             }
         }
         public IMemoryPool<T> Free(T used) {
             lock (this) {
+                reset(used);
                 Push (used);
                 NotifyOnFree (used);
                 return this;
@@ -38,13 +50,12 @@ namespace Gist {
         #region IDisposable implementation
         public virtual void Dispose () {
             if (_pool != null) {
-                _pool.Clear ();
+                while (_pool.Count > 0)
+                    delete(_pool.Pop());
                 _pool = null;
             }
         }
         #endregion
-
-        protected abstract T Create ();
 
         protected virtual bool TryPop (out T fresh) {
             if (_pool.Count > 0) {
@@ -65,32 +76,6 @@ namespace Gist {
         protected virtual void NotifyOnFree(T o) {
             if (OnFree != null)
                 OnFree (o);
-        }
-    }
-
-    public class MemoryPool<T> : AbstractMemoryPool<T> where T : new () {
-        protected override T Create () {
-            return new T ();
-        }
-    }
-
-    public class OutsourceMemoryPool<T> : AbstractMemoryPool<T> {
-        protected System.Func<T> create;
-        protected System.Action<T> delete;
-
-        public OutsourceMemoryPool(System.Func<T> create, System.Action<T> delete) {
-            this.create = create;
-            this.delete = delete;
-        }
-
-        public override void Dispose () {
-            while (_pool.Count > 0)
-                delete(_pool.Pop ());
-            base.Dispose ();
-        }
-
-        protected override T Create () {
-            return create ();
         }
     }
 
