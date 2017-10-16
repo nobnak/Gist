@@ -12,7 +12,6 @@ namespace Gist.GPUBuffer {
 
         protected int capacity;
         protected int count;
-        protected bool disposed;
         protected bool dataChanged;
         protected ComputeBufferType cbtype;
 
@@ -22,7 +21,6 @@ namespace Gist.GPUBuffer {
         public GPUList(int capacity, ComputeBufferType cbtype) {
             this.count = 0;
             this.capacity = 0;
-            this.disposed = false;
             this.dataChanged = false;
             this.cbtype = cbtype;
             Resize(capacity);
@@ -63,8 +61,7 @@ namespace Gist.GPUBuffer {
         }
 
         protected void ResizeComputeBuffer(int nextSize) {
-            if (buffer != null)
-                buffer.Dispose();
+            DisposeBuffer();
             buffer = new ComputeBuffer(nextSize, Marshal.SizeOf(typeof(T)), cbtype);
         }
         protected void EnsureCapacity(int minCapacity) {
@@ -74,10 +71,13 @@ namespace Gist.GPUBuffer {
 
         #region IDisposable
         public void Dispose() {
-            if (!disposed) {
-                disposed = true;
-                data = null;
+            DisposeBuffer();
+        }
+
+        private void DisposeBuffer() {
+            if (buffer != null) {
                 buffer.Dispose();
+                buffer = null;
             }
         }
         #endregion
