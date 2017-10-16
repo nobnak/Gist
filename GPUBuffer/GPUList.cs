@@ -61,24 +61,23 @@ namespace Gist.GPUBuffer {
         }
 
         protected void ResizeComputeBuffer(int nextSize) {
-            DisposeBuffer();
+            DisposeComputeBuffer();
             buffer = new ComputeBuffer(nextSize, Marshal.SizeOf(typeof(T)), cbtype);
         }
         protected void EnsureCapacity(int minCapacity) {
             if (minCapacity > capacity)
                 Resize(minCapacity.SmallestPowerOfTwoGreaterThan());
         }
-
-        #region IDisposable
-        public void Dispose() {
-            DisposeBuffer();
-        }
-
-        private void DisposeBuffer() {
+        private void DisposeComputeBuffer() {
             if (buffer != null) {
                 buffer.Dispose();
                 buffer = null;
             }
+        }
+
+        #region IDisposable
+        public void Dispose() {
+            DisposeComputeBuffer();
         }
         #endregion
 
