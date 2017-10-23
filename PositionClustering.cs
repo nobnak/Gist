@@ -75,6 +75,10 @@ namespace Gist {
                 yield return c;
         }
 
+        public virtual int ClusterCount {
+            get { return _clusters.Count; }
+        }
+
         protected virtual void NotifyOnUpdateCluster(List<Vector2> clusters) {
             if (OnUpdateCluster != null)
                 OnUpdateCluster (clusters);
