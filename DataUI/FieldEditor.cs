@@ -346,5 +346,15 @@ namespace Gist.DataUI {
 			public override void Load () {}
 			public override void Save () {}
 		}
-	}
+
+        public class GUIAux : BaseGUIField {
+            public GUIAux(System.Action<object, FieldInfo> gui, object data, FieldInfo fi) : base(data, fi) {
+                _onGUI = () => gui(data, fi);
+            }
+            public GUIAux(System.Action gui) : this((data,fi)=>gui(), null, default(FieldInfo)) { }
+
+            public override void Load() { }
+            public override void Save() { }
+        }
+    }
 }
