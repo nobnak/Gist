@@ -9,7 +9,7 @@ namespace Gist.Scoped {
         public ScopedObject(T data) : base(data) {  }
 
         public override void Disposer(T data) {
-            Release(Data);
+            ObjectDestructor.Destroy(data);
         }
 
         public static implicit operator ScopedObject<T>(T data) {
@@ -17,13 +17,6 @@ namespace Gist.Scoped {
         }
         public static implicit operator T(ScopedObject<T> scoped) {
             return scoped.Data;
-        }
-
-        public static void Release(Object obj) {
-            if (Application.isPlaying)
-                Object.Destroy(obj);
-            else
-                Object.DestroyImmediate(obj);
         }
     }
 
