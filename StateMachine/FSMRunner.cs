@@ -28,12 +28,13 @@ namespace Gist.StateMachine {
     public interface IFSM {
         void Update();
     }
+    
     public class FSM<T> : System.IDisposable, IFSM where T : struct {
-        Dictionary<T, StateData> _stateMap = new Dictionary<T, StateData>();
-
-        FSMRunner _runner;
-        StateData _current;
-        StateData _last;
+        protected Dictionary<T, StateData> _stateMap = new Dictionary<T, StateData>();
+        protected FSMRunner _runner;
+        
+        protected StateData _current;
+        protected StateData _last;
 
         public FSM(MonoBehaviour target) {
             if ((_runner = target.GetComponent<FSMRunner> ()) == null)
@@ -56,6 +57,9 @@ namespace Gist.StateMachine {
                 Debug.LogWarningFormat ("There is no state {0}", nextStateName);
                 return this;
             }
+            if (next.name.Equals(nextStateName))
+                return this;
+
             _last = _current;
             _current = next;
             if (_last != null)
@@ -64,8 +68,9 @@ namespace Gist.StateMachine {
             return this;
         }
         public void Update() {
-            if (_current != null)
-                _current.UpdateState (this);
+            if (_current != null) {
+                _current.UpdateState(this);
+            }
         }
         public bool TryGetState(T name, out StateData state) {
             return _stateMap.TryGetValue (name, out state);
