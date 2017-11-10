@@ -57,13 +57,15 @@ namespace Gist.StateMachine {
                 Debug.LogWarningFormat ("There is no state {0}", nextStateName);
                 return this;
             }
-            if (next.name.Equals(nextStateName))
-                return this;
 
+            if (_current != null) {
+                if (_current.name.Equals(nextStateName))
+                    return this;
+
+                _current.ExitState(this);
+            }
             _last = _current;
             _current = next;
-            if (_last != null)
-                _last.ExitState (this);
             _current.EnterState (this);
             return this;
         }
