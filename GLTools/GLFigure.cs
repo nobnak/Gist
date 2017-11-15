@@ -4,26 +4,21 @@ using System.Collections.Generic;
 
 namespace Gist {
 	public class GLFigure : System.IDisposable {
-        public const string PROP_COLOR = "_Color";
-        public const string PROP_SRC_BLEND = "_SrcBlend";
-        public const string PROP_DST_BLEND = "_DstBlend";
-        public const string PROP_ZWRITE = "_ZWrite";
-        public const string PROP_ZTEST = "_ZTest";
-        public const string PROP_CULL = "_Cull";
-        public const string PROP_ZBIAS = "_ZBias";
 
 		public const float TWO_PI_RAD = 2f * Mathf.PI;
 		public const int SEGMENTS = 36;
         public const float FAN_START_ANGLE = 90f;
-		public const string LINE_SHADER = "Hidden/Internal-Colored";
 
         public static readonly Vector3[] QUAD = new Vector3[]{
             new Vector3(-0.5f, -0.5f, 0f), new Vector3(-0.5f,  0.5f, 0f),
             new Vector3( 0.5f,  0.5f, 0f), new Vector3( 0.5f, -0.5f, 0f)            
         };
-        
-        public enum ZTestEnum { NEVER = 1, LESS = 2, EQUAL = 3, LESSEQUAL = 4,
-            GREATER = 5, NOTEQUAL = 6, GREATEREQUAL = 7, ALWAYS = 8 };
+
+        GLMaterial glmat;
+
+		public GLFigure() {
+            glmat = new GLMaterial();
+        }
 
         #region Static
         static GLFigure _instance;
@@ -34,26 +29,16 @@ namespace Gist {
             }
         }
         #endregion
-
-        Material _lineMat;
-
-		public GLFigure() {
-			var lineShader = Shader.Find (LINE_SHADER);
-			if (lineShader == null)
-				Debug.LogErrorFormat ("Line Shader not found : {0}", LINE_SHADER);
-			_lineMat = new Material (lineShader);
-		}
-
-        public bool ZWriteMode {
-            get { return _lineMat.GetInt (PROP_ZWRITE) == 1; }
-            set { _lineMat.SetInt (PROP_ZWRITE, value ? 1 : 0); }
+        #region IDisposable implementation
+        public void Dispose() {
+            if (glmat != null) {
+                glmat.Dispose();
+                glmat = null;
+            }
         }
-        public ZTestEnum ZTestMode {
-            get { return (ZTestEnum)_lineMat.GetInt (PROP_ZTEST); }
-            set { _lineMat.SetInt (PROP_ZTEST, (int)value); }
-        }
+        #endregion
 
-		public void DrawCircle(Vector3 center, Quaternion look, Vector2 size, Color color) {
+        public void DrawCircle(Vector3 center, Quaternion look, Vector2 size, Color color) {
 			var scale = new Vector3 (size.x, size.y, 1f);
 			var modelMat = Matrix4x4.TRS (center, look, scale);
 			var cameraMat = Camera.current.worldToCameraMatrix;
@@ -213,14 +198,13 @@ namespace Gist {
         }
 
         bool StartDraw (Matrix4x4 modelViewMat, Color color, int mode) {
-            if (_lineMat == null)
+            if (glmat == null)
                 return false;
-            _lineMat.SetPass (0);
             GL.PushMatrix ();
             GL.LoadIdentity ();
             GL.MultMatrix (modelViewMat);
             GL.Begin (mode);
-            GL.Color (color);
+            glmat.Color(color);
             return true;
         }
 
@@ -228,11 +212,5 @@ namespace Gist {
             GL.End ();
             GL.PopMatrix ();
         }
-
-		#region IDisposable implementation
-		public void Dispose () {
-			GameObject.DestroyImmediate(_lineMat);
-		}
-		#endregion
 	}
 }
