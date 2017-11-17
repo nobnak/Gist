@@ -49,6 +49,9 @@ namespace Gist.BoundingVolume {
         public void Encapsulate(AABB2D b) {
             Encapsulate(b.min, b.max);
         }
+        public void Encapsulate(Rect r) {
+            Encapsulate(r.min, r.max);
+        }
         public void Encapsulate(Vector2 point) {
             Encapsulate(point, point);
         }

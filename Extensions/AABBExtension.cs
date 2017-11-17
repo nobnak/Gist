@@ -41,6 +41,12 @@ namespace Gist.Extensions.AABB {
             var extent = absMat.MultiplyVector (local.extents);
             return new Bounds (center, 2f * extent);
         }
+        public static Rect EncapsulateInTargetSpace(this Rect local, Matrix4x4 localToTargetMat) {
+            var absMat = localToTargetMat.Absolute();
+            var center = localToTargetMat.MultiplyPoint3x4(local.center);
+            var size = absMat.MultiplyVector(local.size);
+            return new Rect(center, size);
+        }
         public static Bounds EncapsulateVertices(this IEnumerable<Vector3> vertices) { 
             var minx = float.MaxValue;
             var miny = float.MaxValue;
