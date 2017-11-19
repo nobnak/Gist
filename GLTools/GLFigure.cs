@@ -14,7 +14,7 @@ namespace Gist {
             new Vector3( 0.5f,  0.5f, 0f), new Vector3( 0.5f, -0.5f, 0f)            
         };
 
-        GLMaterial glmat;
+        public GLMaterial glmat { get; protected set; }
 
 		public GLFigure() {
             glmat = new GLMaterial();
