@@ -45,7 +45,8 @@ namespace Gist.Extensions.AABB {
             var absMat = localToTargetMat.Absolute();
             var center = localToTargetMat.MultiplyPoint3x4(local.center);
             var size = absMat.MultiplyVector(local.size);
-            return new Rect(center, size);
+            var min = center - 0.5f * size;
+            return new Rect(min, size);
         }
         public static Bounds EncapsulateVertices(this IEnumerable<Vector3> vertices) { 
             var minx = float.MaxValue;
