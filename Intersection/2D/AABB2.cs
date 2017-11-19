@@ -1,19 +1,21 @@
-﻿using Gist.Pooling;
+﻿using System.Collections.Generic;
+using Gist.Pooling;
 using UnityEngine;
 
-namespace Gist.BoundingVolume {
+namespace Gist.Intersection {
 
-    public class AABB2D {
+    public class AABB2 : IConvex2Polytope {
         public static readonly Vector2 DEFAULT_MIN = new Vector2(float.MaxValue, float.MaxValue);
         public static readonly Vector2 DEFAULT_MAX = new Vector2(float.MinValue, float.MinValue);
         
         protected Vector2 min;
         protected Vector2 max;
+        protected Rect bounds;
 
-        public AABB2D(Vector2 min, Vector2 max) {
+        public AABB2(Vector2 min, Vector2 max) {
             Set(min, max);
         }
-        public AABB2D() : this(DEFAULT_MIN, DEFAULT_MAX) { }
+        public AABB2() : this(DEFAULT_MIN, DEFAULT_MAX) { }
 
         public bool Empty { get { return min.x > max.x || min.y > max.y; } }
         public Vector2 Min {  get { return min; } }
@@ -36,6 +38,25 @@ namespace Gist.BoundingVolume {
             }
         }
 
+        #region IConvex2Polytope
+        public IEnumerable<Vector2> Normals() {
+            yield return Vector2.right;
+            yield return Vector2.up;
+        }
+        public IEnumerable<Vector2> Vertices() {
+            yield return min;
+            yield return new Vector2(min.x, max.y);
+            yield return max;
+            yield return new Vector2(max.x, min.y);
+        }
+        public Rect WorldBounds {
+            get { return bounds; }
+        }
+        public Matrix4x4 Model {
+            get { return Matrix4x4.identity; }
+        }
+        #endregion
+
         public void Encapsulate(Vector2 bmin, Vector2 bmax) {
             for (var i = 0; i < 2; i++) {
                 var a0 = min[i];
@@ -46,7 +67,7 @@ namespace Gist.BoundingVolume {
                 max[i] = (a1 > b1 ? a1 : b1);
             }
         }
-        public void Encapsulate(AABB2D b) {
+        public void Encapsulate(AABB2 b) {
             Encapsulate(b.min, b.max);
         }
         public void Encapsulate(Rect r) {
@@ -68,6 +89,7 @@ namespace Gist.BoundingVolume {
         public void Set(Vector2 min, Vector2 max) {
             this.min = min;
             this.max = max;
+            this.bounds = new Rect(min, max - min);
         }
         public void Set(Bounds bb) {
             Set(bb.min, bb.max);
@@ -75,15 +97,15 @@ namespace Gist.BoundingVolume {
 
         #region Object
         public override string ToString() {
-            return string.Format("AABB2D(center={0}, size={1})", Center, Size);
+            return string.Format("AABB2(center={0}, size={1})", Center, Size);
         }
         #endregion
 
         #region Converter
-        public static implicit operator AABB2D(Rect bb) {
-            return new AABB2D(bb.min, bb.max);
+        public static implicit operator AABB2(Rect bb) {
+            return new AABB2(bb.min, bb.max);
         }
-        public static implicit operator Rect(AABB2D aa) {
+        public static implicit operator Rect(AABB2 aa) {
             var b = new Rect();
             b.min = aa.min;
             b.max = aa.max;
@@ -92,16 +114,16 @@ namespace Gist.BoundingVolume {
         #endregion
 
         #region MemoryPool
-        public static AABB2D New() {
-            return new AABB2D();
+        public static AABB2 New() {
+            return new AABB2();
         }
-        public static void Reset(AABB2D aabb) {
+        public static void Reset(AABB2 aabb) {
             aabb.Clear();
         }
-        public static void Delete(AABB2D aabb) {
+        public static void Delete(AABB2 aabb) {
         }
-        public static IMemoryPool<AABB2D> CreateAABBPool() {
-            return new MemoryPool<AABB2D>(New, Reset, Delete);
+        public static IMemoryPool<AABB2> CreateAABBPool() {
+            return new MemoryPool<AABB2>(New, Reset, Delete);
         }
         #endregion
     }
