@@ -30,7 +30,9 @@ namespace Gist {
             if (Valid)
                 return;
             internalValidity = true;
-            Validation();
+
+            if (Validation != null)
+                Validation();
         }
     }
 }
