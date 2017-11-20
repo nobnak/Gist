@@ -37,6 +37,10 @@ namespace Gist {
             get { return (ZTestEnum)_lineMat.GetInt (PROP_ZTEST); }
             set { _lineMat.SetInt (PROP_ZTEST, (int)value); }
         }
+        public float ZOffset {
+            get { return _lineMat.GetFloat(PROP_ZBIAS); }
+            set { _lineMat.SetFloat(PROP_ZBIAS, value); }
+        }
 
         public bool Color (UnityEngine.Color color) {
             if (_lineMat == null)
