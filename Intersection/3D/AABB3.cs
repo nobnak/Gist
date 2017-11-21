@@ -1,9 +1,10 @@
-﻿using Gist.Pooling;
+﻿using System.Collections.Generic;
+using Gist.Pooling;
 using UnityEngine;
 
 namespace Gist.Intersection {
 
-    public class AABB3 {
+    public class AABB3 : IConvex3Polytope {
         public static readonly Vector3 DEFAULT_MIN = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
         public static readonly Vector3 DEFAULT_MAX = new Vector3(float.MinValue, float.MinValue, float.MinValue);
         
@@ -70,6 +71,39 @@ namespace Gist.Intersection {
         public void Set(Bounds bb) {
             Set(bb.min, bb.max);
         }
+
+        #region IConvex3Polytope
+        public IEnumerable<Vector3> Normals() {
+            yield return Vector3.right;
+            yield return Vector3.up;
+            yield return Vector3.forward;
+        }
+
+        public IEnumerable<Vector3> Edges() {
+            return Normals();
+        }
+
+        public IEnumerable<Vector3> Vertices() {
+            for (var i = 0; i < 8; i++)
+                yield return new Vector3(
+                    (i & 1) == 0 ? min.x : max.x,
+                    (i & 2) == 0 ? min.y : max.y,
+                    (i & 4) == 0 ? min.z : max.z);
+        }
+
+        public Bounds LocalBounds() {
+            return this;
+        }
+        public Bounds WorldBounds() {
+            return this;
+        }
+
+        public IConvex3Polytope DrawGizmos() {
+            var size = max - min;
+            Gizmos.DrawWireCube(min + 0.5f * size, size);
+            return this;
+        }
+        #endregion
 
         #region Object
         public override string ToString() {
