@@ -1,19 +1,19 @@
 ﻿using Gist.Pooling;
 using UnityEngine;
 
-namespace Gist.BoundingVolume {
+namespace Gist.Intersection {
 
-    public class AABB {
+    public class AABB3 {
         public static readonly Vector3 DEFAULT_MIN = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
         public static readonly Vector3 DEFAULT_MAX = new Vector3(float.MinValue, float.MinValue, float.MinValue);
         
         protected Vector3 min;
         protected Vector3 max;
 
-        public AABB(Vector3 min, Vector3 max) {
+        public AABB3(Vector3 min, Vector3 max) {
             Set(min, max);
         }
-        public AABB() : this(DEFAULT_MIN, DEFAULT_MAX) { }
+        public AABB3() : this(DEFAULT_MIN, DEFAULT_MAX) { }
 
         public bool Empty { get { return min.x > max.x || min.y > max.y || min.z > max.z; } }
         public Vector3 Min {  get { return min; } }
@@ -46,7 +46,7 @@ namespace Gist.BoundingVolume {
                 max[i] = (a1 > b1 ? a1 : b1);
             }
         }
-        public void Encapsulate(AABB b) {
+        public void Encapsulate(AABB3 b) {
             Encapsulate(b.min, b.max);
         }
         public void Encapsulate(Vector3 point) {
@@ -78,10 +78,10 @@ namespace Gist.BoundingVolume {
         #endregion
 
         #region Converter
-        public static implicit operator AABB(Bounds bb) {
-            return new AABB(bb.min, bb.max);
+        public static implicit operator AABB3(Bounds bb) {
+            return new AABB3(bb.min, bb.max);
         }
-        public static implicit operator Bounds(AABB aa) {
+        public static implicit operator Bounds(AABB3 aa) {
             var b = new Bounds();
             b.SetMinMax(aa.min, aa.max);
             return b;
@@ -89,16 +89,16 @@ namespace Gist.BoundingVolume {
         #endregion
 
         #region MemoryPool
-        public static AABB New() {
-            return new AABB();
+        public static AABB3 New() {
+            return new AABB3();
         }
-        public static void Reset(AABB aabb) {
+        public static void Reset(AABB3 aabb) {
             aabb.Clear();
         }
-        public static void Delete(AABB aabb) {
+        public static void Delete(AABB3 aabb) {
         }
-        public static IMemoryPool<AABB> CreateAABBPool() {
-            return new MemoryPool<AABB>(New, Reset, Delete);
+        public static IMemoryPool<AABB3> CreateAABBPool() {
+            return new MemoryPool<AABB3>(New, Reset, Delete);
         }
         #endregion
     }
