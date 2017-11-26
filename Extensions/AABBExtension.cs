@@ -5,6 +5,7 @@ using System.Collections.Generic;
 namespace Gist.Extensions.AABB {
 
     public static class AABBExtension {
+
         #region Extensions
         public static Bounds Encapsulate(this IEnumerable<Bounds> bounds) {
             var resmin = Min ();
@@ -39,6 +40,13 @@ namespace Gist.Extensions.AABB {
             var center = localToTargetMat.MultiplyPoint3x4 (local.center);
             var extent = absMat.MultiplyVector (local.extents);
             return new Bounds (center, 2f * extent);
+        }
+        public static Rect EncapsulateInTargetSpace(this Rect local, Matrix4x4 localToTargetMat) {
+            var absMat = localToTargetMat.Absolute();
+            var center = localToTargetMat.MultiplyPoint3x4(local.center);
+            var size = absMat.MultiplyVector(local.size);
+            var min = center - 0.5f * size;
+            return new Rect(min, size);
         }
         public static Bounds EncapsulateVertices(this IEnumerable<Vector3> vertices) { 
             var minx = float.MaxValue;
@@ -77,6 +85,11 @@ namespace Gist.Extensions.AABB {
                 absM [i] = (j < 0 ? -j : j);
             }
             return absM;
+        }
+        public static Vector3 SampleIn(this Bounds bounds) {
+            var min = bounds.min;
+            var size = bounds.size;
+            return new Vector3(min.x + size.x * Random.value, min.y + size.y * Random.value, min.z + size.z * Random.value);
         }
         #endregion
 

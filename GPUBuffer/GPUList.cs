@@ -21,14 +21,19 @@ namespace Gist.GPUBuffer {
         public GPUList(int capacity, ComputeBufferType cbtype) {
             this.count = 0;
             this.capacity = 0;
-            this.dataChanged = false;
+            this.dataChanged = true;
             this.cbtype = cbtype;
             Resize(capacity);
         }
         public GPUList(int capacity) : this(capacity, ComputeBufferType.Default) { }
         public GPUList() : this(DEFAULT_CAPACITY) { }
 
-        public ComputeBuffer Buffer { get { return buffer; } }
+        public ComputeBuffer Buffer {
+            get {
+                Upload();
+                return buffer;
+            }
+        }
         public T[] Data { get { return data;  } }
         public int Capacity {
             get { return capacity; }
@@ -61,6 +66,7 @@ namespace Gist.GPUBuffer {
         }
 
         protected void ResizeComputeBuffer(int nextSize) {
+            dataChanged = true;
             DisposeComputeBuffer();
             buffer = new ComputeBuffer(nextSize, Marshal.SizeOf(typeof(T)), cbtype);
         }
