@@ -80,12 +80,29 @@ namespace Gist.StateMachine {
         }
         #endregion
 
+        public class Transition {
+            protected StateData _current;
+            protected StateData _last;
+
+            public T Current { get { return (_current == null ? default(T) : _current.name); } }
+            public T Last { get { return (_last == null ? default(T) : _last.name); } }
+
+            public Transition Goto(FSM<T> parent, StateData next) {
+                _last = _current;
+                _current = next;
+                if (_last != null)
+                    _last.ExitState(parent);
+                _current.EnterState(parent);
+                return this;
+            }
+        }
+
         public class StateData { 
             public readonly T name;
 
-            System.Action<FSM<T>> _enter;
-            System.Action<FSM<T>> _update;
-            System.Action<FSM<T>> _exit;
+            protected System.Action<FSM<T>> _enter;
+            protected System.Action<FSM<T>> _update;
+            protected System.Action<FSM<T>> _exit;
 
             public StateData(T name) {
                 this.name = name;
