@@ -7,11 +7,11 @@ namespace Gist.Extensions.Behaviour {
     public static class BehaviourExtension {
 
         public static bool IsActiveAndEnabledAlsoInEditMode(this MonoBehaviour b) {
+            var result = b.isActiveAndEnabled;
             #if UNITY_EDITOR
-            return (Application.isPlaying ? b.isActiveAndEnabled : b.runInEditMode);
-            #else
-            return b.isActiveAndEnabled;
+            result = result && (Application.isPlaying || b.runInEditMode);
             #endif
+            return result;
         }
     }
 }

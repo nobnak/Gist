@@ -1,44 +1,71 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace Gist {
 
     public class Validator {
 
         public event System.Action Validation;
+        public event System.Action Validated;
+        public event System.Action Invalidated;
 
         protected bool initialValidity;
-        protected bool internalValidity;
-        protected System.Func<bool> extraValidity;
+        protected bool validity;
+        protected System.Func<bool>[] checker;
 
         public Validator(bool initialValidity) {
             this.initialValidity = initialValidity;
-            this.internalValidity = initialValidity;
+            this.validity = initialValidity;
         }
         public Validator() : this(false) { }
 
         public void Reset() {
-            internalValidity = initialValidity;
+            validity = initialValidity;
             Validation = null;
-            extraValidity = null;
+            checker = null;
         }
-        public void SetExtraValidityChecker(System.Func<bool> extraValidity) {
-            this.extraValidity = extraValidity;
+        public void SetCheckers(params System.Func<bool>[] checkers) {
+            this.checker = checkers;
         }
-        public bool Valid {
-            get { return internalValidity && (extraValidity == null || extraValidity()); }
-        }
+        public bool IsValid { get { return validity; } }
         public void Invalidate() {
-            internalValidity = false;
+            validity = false;
+            NotifyInvalidated();
         }
-        public void CheckValidation() {
-            if (Valid)
-                return;
-            internalValidity = true;
 
+        public bool CheckValidation() {
+            if (validity)
+                return true;
+
+            Validate();
+
+            var result = Check();
+            if (result) {
+                validity = true;
+                NotifyValidated();
+            }
+
+            return result;
+        }
+
+        protected void Validate() {
             if (Validation != null)
                 Validation();
         }
+        protected bool Check() {
+            return checker == null || checker.All(c => c());
+        }
+
+        protected void NotifyInvalidated() {
+            if (Invalidated != null)
+                Invalidated();
+        }
+        protected void NotifyValidated() {
+            if (Validated != null)
+                Validated();
+        }
+
     }
 }
