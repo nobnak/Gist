@@ -15,8 +15,14 @@ namespace Gist.Intersection {
         protected Matrix4x4 model;
         protected Rect bounds;
 
+        protected Vector2 xaxis;
+        protected Vector2 yaxis;
+
         public OBB2(Vector2 center, Vector2 size, Vector2 xaxis) {
             var yaxis = new Vector2(-xaxis.y, xaxis.x);
+            this.xaxis = xaxis;
+            this.yaxis = yaxis;
+
             xaxis *= size.x;
             yaxis *= size.y;
 
@@ -29,8 +35,8 @@ namespace Gist.Intersection {
         }
 
         public IEnumerable<Vector2> Normals() {
-            yield return model.MultiplyVector(Vector2.right);
-            yield return model.MultiplyVector(Vector2.up);
+            yield return xaxis;
+            yield return yaxis;
         }
 
         public IEnumerable<Vector2> Vertices() {
