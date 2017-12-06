@@ -29,14 +29,16 @@ namespace Gist {
         public void SetCheckers(params System.Func<bool>[] checkers) {
             this.checker = checkers;
         }
-        public bool IsValid { get { return validity; } }
+        public bool IsValid {
+            get { return validity && Check(); }
+        }
         public void Invalidate() {
             validity = false;
             NotifyInvalidated();
         }
 
         public bool CheckValidation() {
-            if (validity)
+            if (IsValid)
                 return true;
 
             Validate();
