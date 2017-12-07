@@ -5,8 +5,7 @@ using UnityEngine;
 namespace Gist.Extensions.ComponentExt {
 
     public static class ComponentExtension {
-        public static IEnumerable<T> AggregateComponentsInChildren<T>(this Transform parent)
-            where T : Component {
+        public static IEnumerable<T> AggregateComponentsInChildren<T>(this Transform parent) {
 
             if (parent == null)
                 yield break;
