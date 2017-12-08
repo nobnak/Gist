@@ -21,7 +21,7 @@ namespace Gist {
             set {
                 if (data.CompareTo(value) != 0) {
                     data = value;
-                    NotifyChanged();
+                    ForceNotifyChanged();
                 }
             }
         }
@@ -32,7 +32,7 @@ namespace Gist {
             return new Reactive<T>(data);
         }
 
-        protected void NotifyChanged() {
+        public void ForceNotifyChanged() {
             if (Changed != null)
                 Changed(this);
         }
