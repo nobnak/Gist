@@ -1,9 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace Gist {
-        
+namespace Blending.Gist {
+
     public static class ObjectDestructor {
         public static void Destroy(Object obj) {
             if (Application.isPlaying)

@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using Blending.Samples;
-using UnityEngine;
 
-namespace Gist {
+namespace Blending.Gist {
 
     public static class EnumOperator<T> where T : IComparable {
 

@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace Gist {
+﻿namespace Blending.Gist {
 
     [System.Serializable]
     public class Reactive<T> where T : System.IComparable {

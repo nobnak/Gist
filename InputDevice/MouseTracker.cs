@@ -1,10 +1,6 @@
-﻿using Gist;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace Gist.InputDevice {
+namespace Blending.Gist.InputDevice {
 
     public class MouseTracker {
         [System.Flags]

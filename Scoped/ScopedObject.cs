@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace Gist.Scoped {
+namespace Blending.Gist.Scoped {
 
     public class ScopedObject<T> : Scoped<T> where T : Object {
 

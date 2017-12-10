@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Gist.Extensions.Int {
+namespace Blending.Gist.Extensions.Int {
     
     public static class IntExtension {
 
