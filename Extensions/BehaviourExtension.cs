@@ -7,7 +7,7 @@ namespace nobnak.Gist.Extensions.Behaviour {
     public static class BehaviourExtension {
 
         public static bool IsActiveAndEnabledAlsoInEditMode(this MonoBehaviour b) {
-            var result = b.isActiveAndEnabled;
+            var result = b != null && b.isActiveAndEnabled;
             #if UNITY_EDITOR
             result = result && (Application.isPlaying || b.runInEditMode);
             #endif

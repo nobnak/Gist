@@ -16,4 +16,9 @@ namespace nobnak.Gist {
             }
             return null;
         }
-    }}
+
+        public static Matrix4x4 LocalToParent(this Transform tr) {
+            return Matrix4x4.TRS(tr.localPosition, tr.localRotation, tr.localScale);
+        }
+    }
+}
