@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Gist.Intersection {
+namespace nobnak.Gist.Intersection {
 
     public interface IConvex3Polytope {
 

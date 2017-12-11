@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Gist {
+namespace nobnak.Gist {
 
     [System.Serializable]
     public class Reactive<T> where T : System.IComparable {

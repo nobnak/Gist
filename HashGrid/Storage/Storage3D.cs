@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Gist.HashGridSystem.Storage {
+namespace nobnak.Gist.HashGridSystem.Storage {
     
     public class Storage3D<T> : System.IDisposable, IEnumerable<T> where T : class {
         System.Func<T, Vector3> _GetPosition;

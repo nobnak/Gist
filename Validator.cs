@@ -1,9 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using System.Linq;
+﻿using System.Linq;
 
-namespace Gist {
+namespace nobnak.Gist {
 
     public class Validator {
 

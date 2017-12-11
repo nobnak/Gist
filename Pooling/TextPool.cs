@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Gist.Pooling {
+namespace nobnak.Gist.Pooling {
     
     public class TextPool : MonoBehaviour {
         [SerializeField] protected TextMesh fab;

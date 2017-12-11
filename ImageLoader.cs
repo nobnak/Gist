@@ -2,7 +2,7 @@
 using System.Collections;
 using System.IO;
 
-namespace Gist {
+namespace nobnak.Gist {
     
     public class ImageLoader : System.IDisposable {
         public enum StateEnum { None = 0, Load }

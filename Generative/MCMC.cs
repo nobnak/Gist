@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Gist {
+namespace nobnak.Gist {
 
     public class MCMC {
         public const float EPSILON = 1e-6f;

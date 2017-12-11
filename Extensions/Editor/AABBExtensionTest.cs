@@ -4,7 +4,7 @@ using UnityEngine.TestTools;
 using NUnit.Framework;
 using System.Collections;
 
-namespace Gist.Extensions.AABB.Test {
+namespace nobnak.Gist.Extensions.AABB.Test {
 
     public class AABBExtensionTest {
         public const float EPSILON = 1e-3f;

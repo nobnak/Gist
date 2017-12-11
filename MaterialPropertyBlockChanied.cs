@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace Gist {
+namespace nobnak.Gist {
     public interface IBlock<T> {
         T Apply ();
 

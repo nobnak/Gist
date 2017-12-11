@@ -1,10 +1,10 @@
-﻿using Gist.Extensions.Int;
+﻿using nobnak.Gist.Extensions.Int;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
-namespace Gist.GPUBuffer {
+namespace nobnak.Gist.GPUBuffer {
 
     public class GPUList<T> : System.IDisposable, IList<T> where T : struct {
         public const int MIN_CAPACITY = 1;

@@ -1,9 +1,9 @@
-﻿using Gist.Extensions.AABB;
+﻿using nobnak.Gist.Extensions.AABB;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Gist.Intersection {
+namespace nobnak.Gist.Intersection {
 
     public class OBB2 : IConvex2Polytope {
         public static readonly Vector2[] VERTICES = new Vector2[] {

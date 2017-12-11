@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Gist {
+namespace nobnak.Gist {
 
     public static class CameraCrop {
         public static void Crop (Camera worldView, Camera[] localViews, Data data) {

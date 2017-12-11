@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-namespace Gist {
+namespace nobnak.Gist {
     #region Interfaces
     public interface IReadOnlyCollection<Value> : IEnumerable<Value> {
         int Count { get; }

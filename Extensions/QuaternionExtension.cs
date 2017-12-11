@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace Gist.Extension.QuaternionExt {
+namespace nobnak.Gist.Extension.QuaternionExt {
 	public static class QuaternionExtension {
 		public static readonly Vector4 IDENTITY = new Vector4(0, 0, 0, 1);
 

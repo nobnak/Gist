@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Gist.Extensions.AABB {
+namespace nobnak.Gist.Extensions.AABB {
 
     public static class AABBExtension {
 

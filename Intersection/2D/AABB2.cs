@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Gist.Pooling;
+using nobnak.Gist.Pooling;
 using UnityEngine;
 
-namespace Gist.Intersection {
+namespace nobnak.Gist.Intersection {
 
     public class AABB2 : IConvex2Polytope {
         public static readonly Vector2 DEFAULT_MIN = new Vector2(float.MaxValue, float.MaxValue);

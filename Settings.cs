@@ -2,7 +2,7 @@
 using System.Collections;
 using System.IO;
 
-namespace Gist {
+namespace nobnak.Gist {
     public abstract class Settings : MonoBehaviour {
         public enum PathTypeEnum { StreamingAssets = 0, MyDocuments }
 

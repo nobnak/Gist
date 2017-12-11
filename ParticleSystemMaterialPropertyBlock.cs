@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace Gist {
+namespace nobnak.Gist {
 
     [RequireComponent(typeof(ParticleSystem))]
     public class ParticleSystemMaterialPropertyBlock : MonoBehaviour {

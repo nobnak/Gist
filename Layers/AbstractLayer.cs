@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Gist.Layers {
+namespace nobnak.Gist.Layers {
 
     public abstract class AbstractLayer : MonoBehaviour {
         const float EPSILON = 1e-3f;

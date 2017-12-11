@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Gist.Events {
+namespace nobnak.Gist.Events {
         
     public class ListenerMaterial : MonoBehaviour {
         [SerializeField]

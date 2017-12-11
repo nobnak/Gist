@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Gist.HashGridSystem.Storage {
+namespace nobnak.Gist.HashGridSystem.Storage {
 
     public class Storage2D<T> : System.IDisposable, IEnumerable<T> where T : class {
         

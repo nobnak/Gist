@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-namespace Gist.Editor {
+namespace nobnak.Gist.Editor {
 
     public class CopyPasteComponentsWindow : EditorWindow {
         GameObject objectFrom;

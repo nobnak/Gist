@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Gist.Layers;
+using nobnak.Gist.Layers;
 
-namespace Gist {
+namespace nobnak.Gist {
     
     [ExecuteInEditMode]
     public class CameraSNTG : AbstractSimplexNoiseTextureGeenerator {

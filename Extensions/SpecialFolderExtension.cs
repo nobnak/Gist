@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
-namespace Gist.Extensions.SpecialFolder {
+namespace nobnak.Gist.Extensions.SpecialFolder {
 
     public static class SpecialFolderExtension {
         

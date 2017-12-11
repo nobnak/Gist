@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Gist {
+namespace nobnak.Gist {
 
     public class Checkin {
         protected int initCounter;

@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Gist.Extensions.AABB;
+using nobnak.Gist.Extensions.AABB;
 using System.Collections.Generic;
 
-namespace Gist.Intersection {
+namespace nobnak.Gist.Intersection {
 
     public class OBB3 : IConvex3Polytope {
         public Bounds localBounds;

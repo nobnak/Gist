@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Gist {
+namespace nobnak.Gist {
 
     public class AutoSceneSelector : MonoBehaviour {
         static readonly string[] FLAGS = new string[]{ "-scene" };

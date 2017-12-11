@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace Gist {
+namespace nobnak.Gist {
     [ExecuteInEditMode]
     public class ScreenNoiseMap : MonoBehaviour {
         public enum DebugModeEnum { None = 0, ShowNormal, ShowHeight }

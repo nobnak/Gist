@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace Gist {
+namespace nobnak.Gist {
 
 	public static class Sampler {
 		public const float TWO_PI = 2f * Mathf.PI;

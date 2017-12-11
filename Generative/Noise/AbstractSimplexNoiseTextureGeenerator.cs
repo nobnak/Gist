@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Gist.Layers;
-using Gist.Events;
+using nobnak.Gist.Layers;
+using nobnak.Gist.Events;
 
-namespace Gist {
+namespace nobnak.Gist {
     [ExecuteInEditMode]
     public abstract class AbstractSimplexNoiseTextureGeenerator : MonoBehaviour, IGenerativeTexture<Vector3> {
         public const float SEED_SIZE = 100f;

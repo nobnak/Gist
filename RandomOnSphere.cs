@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Gist {
+namespace nobnak.Gist {
 
 	public static class RandomOnSphere {
 		public const float AROUND_IN_DEG = 360f;

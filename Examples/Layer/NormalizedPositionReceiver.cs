@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Gist.Layers;
+using nobnak.Gist.Layers;
 
-namespace Gist.Examples.Layer {
+namespace nobnak.Gist.Examples.Layer {
 
     public class NormalizedPositionReceiver : MonoBehaviour {
         [SerializeField]

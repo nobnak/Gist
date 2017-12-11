@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-namespace Gist {
+namespace nobnak.Gist {
 /*
  * A speed-improved simplex noise algorithm for 2D, 3D and 4D in Java.
  *

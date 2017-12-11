@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Gist.Extensions.ComponentExt {
+namespace nobnak.Gist.Extensions.ComponentExt {
 
     public static class ComponentExtension {
         public static IEnumerable<T> AggregateComponentsInChildren<T>(this Transform parent) {

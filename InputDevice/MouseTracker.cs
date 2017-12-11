@@ -1,10 +1,10 @@
-﻿using Gist;
+﻿using nobnak.Gist;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Gist.InputDevice {
+namespace nobnak.Gist.InputDevice {
 
     public class MouseTracker {
         [System.Flags]

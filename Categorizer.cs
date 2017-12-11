@@ -1,9 +1,9 @@
-﻿using Gist.Pooling;
+﻿using nobnak.Gist.Pooling;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Gist {
+namespace nobnak.Gist {
 
     public class Categorizer<S, T> where T : System.IComparable<T> {
         protected System.Func<S, T> categorize;

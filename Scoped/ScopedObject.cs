@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Gist.Scoped {
+namespace nobnak.Gist.Scoped {
 
     public class ScopedObject<T> : Scoped<T> where T : Object {
 

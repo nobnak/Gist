@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Gist {
+namespace nobnak.Gist {
 	public class GLFigure : System.IDisposable {
 
 		public const float TWO_PI_RAD = 2f * Mathf.PI;

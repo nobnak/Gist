@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-namespace Gist.Extensions.Range {
+namespace nobnak.Gist.Extensions.Range {
 
     public static class RangeExtension {
     

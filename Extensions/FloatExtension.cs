@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-namespace Gist.Extension.FloatArray {
+namespace nobnak.Gist.Extension.FloatArray {
     public static class FloatArrayExtension {
 
         public static int GreatestLowerBound(this float[] list, float value) {

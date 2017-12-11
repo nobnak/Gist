@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Gist.Pooling {
+namespace nobnak.Gist.Pooling {
     #region Interface
     public interface IMemoryPool<T> {
         T New();

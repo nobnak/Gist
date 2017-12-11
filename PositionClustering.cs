@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Gist {
+namespace nobnak.Gist {
 
     public class PositionClustering : System.IDisposable {
         public System.Action<List<Vector2>> OnUpdateCluster;

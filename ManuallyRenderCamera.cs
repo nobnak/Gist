@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Profiling;
 
-namespace Gist {
+namespace nobnak.Gist {
 	public class ManuallyRenderCamera : System.IDisposable {
         public event System.Action<Camera> AfterCopyFrom;
 

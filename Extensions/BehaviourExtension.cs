@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Gist.Extensions.Behaviour {
+namespace nobnak.Gist.Extensions.Behaviour {
 
     public static class BehaviourExtension {
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Gist { 
+namespace nobnak.Gist { 
 
     #region Timer class
     public class Timer {

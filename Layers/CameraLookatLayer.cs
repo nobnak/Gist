@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace Gist.Layers {
+namespace nobnak.Gist.Layers {
 
     [ExecuteInEditMode]
     public class CameraLookatLayer : BaseLookatLayer {

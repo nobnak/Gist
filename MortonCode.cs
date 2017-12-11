@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace Gist {
+namespace nobnak.Gist {
     
     public static class MortonCode {
         public const int STRIDE_BITS = 8;

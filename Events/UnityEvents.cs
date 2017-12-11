@@ -2,7 +2,7 @@
 
 
 
-namespace Gist.Events {
+namespace nobnak.Gist.Events {
 
     [System.Serializable]
     public class TextureEvent : UnityEngine.Events.UnityEvent<Texture> {}

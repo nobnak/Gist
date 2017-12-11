@@ -5,7 +5,7 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Gist.GPUBuffer {
+namespace nobnak.Gist.GPUBuffer {
 
     public class TestGPUList {
 

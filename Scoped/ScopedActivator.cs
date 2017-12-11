@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Gist.Scoped {
+namespace nobnak.Gist.Scoped {
 
     public class ScopedRenderTextureActivator : System.IDisposable {
         protected RenderTexture prev;

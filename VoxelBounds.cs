@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Gist {
+namespace nobnak.Gist {
 
     public abstract class AbstractVoxelBounds {
     	public event System.Action<AbstractVoxelBounds> Changed;

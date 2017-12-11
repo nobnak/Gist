@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Gist.Intersection {
+namespace nobnak.Gist.Intersection {
         
     public static class Intersection2 {
         public const float E = 1e-6f;

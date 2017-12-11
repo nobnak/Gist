@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Gist;
+using nobnak.Gist;
 using System.Collections.Generic;
 
-namespace Gist {
+namespace nobnak.Gist {
 	[ExecuteInEditMode]
 	public class GLFigureTest : MonoBehaviour {
 		public Data[] dataset;

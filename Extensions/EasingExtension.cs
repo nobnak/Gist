@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace Gist.Extensions.Easing {
+namespace nobnak.Gist.Extensions.Easing {
 
 	public static class EasingExtension {
 

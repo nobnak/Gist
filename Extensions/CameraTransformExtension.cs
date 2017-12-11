@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Gist.Extensions.CameraExtension {
+namespace nobnak.Gist.Extensions.CameraExtension {
     
     public static class CameraTransformExtension {
         public static Vector3 ViewportToLocalPosition(this Camera c, Vector3 viewportPos) {

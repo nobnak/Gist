@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Gist;
+using nobnak.Gist;
 
-namespace Gist.Layers {
+namespace nobnak.Gist.Layers {
         
     [ExecuteInEditMode]
     public class LayerPanel : MonoBehaviour {

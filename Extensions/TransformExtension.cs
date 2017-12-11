@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Gist {
+namespace nobnak.Gist {
 
     public static class TransformExtension {
         public static Transform FindInChild(this Transform root, string name) {

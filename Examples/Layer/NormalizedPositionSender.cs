@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Gist.Events;
-using Gist.Layers;
+using nobnak.Gist.Events;
+using nobnak.Gist.Layers;
 
-    namespace Gist.Examples.Layer {
+    namespace nobnak.Gist.Examples.Layer {
         
     public class NormalizedPositionSender : MonoBehaviour {
         [SerializeField]

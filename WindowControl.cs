@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using UnityEngine;
 
-namespace Gist {
+namespace nobnak.Gist {
 
     public class WindowControl : MonoBehaviour {
         public const int GWL_STYLE = -16;

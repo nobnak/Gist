@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Gist {
+namespace nobnak.Gist {
     public class LODRenderTexture : System.IDisposable {
         public const int DEFAULT_ANTIALIASING = -1;
         public delegate void TargetSize(out int width, out int height);

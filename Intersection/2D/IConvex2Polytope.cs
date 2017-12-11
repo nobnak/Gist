@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Gist.Intersection {
+namespace nobnak.Gist.Intersection {
 
     public interface IConvex2Polytope {
 

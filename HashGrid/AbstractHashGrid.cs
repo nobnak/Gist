@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Gist.HashGridSystem.Storage;
+using nobnak.Gist.HashGridSystem.Storage;
 
-namespace Gist.HashGridSystem {
+namespace nobnak.Gist.HashGridSystem {
 
     public abstract class AbstractHashGrid : AbstractHashGrid<MonoBehaviour> {}
 

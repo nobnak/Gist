@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Gist.Events;
+using nobnak.Gist.Events;
 
-namespace Gist {
+namespace nobnak.Gist {
 
     public interface IGenerativeTexture<T> {
         int Width { get; }

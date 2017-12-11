@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace Gist {
+namespace nobnak.Gist {
 
     public class TestPreRendering : MonoBehaviour {
         public const float SEED_SCALE = 1000f;

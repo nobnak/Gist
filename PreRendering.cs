@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Gist {
+namespace nobnak.Gist {
     [RequireComponent(typeof(Camera))]
     public class PreRendering : MonoBehaviour {
         public Data data;
