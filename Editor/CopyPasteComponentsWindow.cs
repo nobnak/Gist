@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using UnityEditor;
 using UnityEngine;
-using UnityEditor;
 
 namespace nobnak.Gist.Editor {
 
@@ -18,10 +16,10 @@ namespace nobnak.Gist.Editor {
             objectFrom = ObjectField("From", objectFrom, true);
             objectTo = ObjectField ("To", objectTo, true);
 
-            GUI.enabled = (objectFrom != null && objectTo != null);
+            UnityEngine.GUI.enabled = (objectFrom != null && objectTo != null);
             if (GUILayout.Button ("Copy"))
                 Copy (objectFrom, objectTo);
-            GUI.enabled = true;
+            UnityEngine.GUI.enabled = true;
         }
 
         static void Copy(GameObject objectFrom, GameObject objectTo) {
