@@ -52,8 +52,10 @@ namespace nobnak.Gist.StateMachine {
         Queue<T> nextStateNameQueue;
 
         public FSM(MonoBehaviour target, TransitionModeEnum transitionMode) : base(transitionMode) {
-            if ((_runner = target.GetComponent<FSMRunner> ()) == null)
-                _runner = target.gameObject.AddComponent<FSMRunner> ();
+            if ((_runner = target.GetComponent<FSMRunner>()) == null) {
+                _runner = target.gameObject.AddComponent<FSMRunner>();
+                _runner.hideFlags = HideFlags.DontSaveInEditor;
+            }
             _runner.Add (this);
             _enabled = true;
             this.nextStateNameQueue = new Queue<T>();
