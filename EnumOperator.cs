@@ -24,7 +24,7 @@ namespace nobnak.Gist {
             return NAMES[index];
         }
 
-        internal static int FindIndex(T value) {
+        public static int FindIndex(T value) {
             return VALUES.Select((v,i)=>i).Where(i => VALUES[i].CompareTo(value) == 0).FirstOrDefault();
         }
     }
