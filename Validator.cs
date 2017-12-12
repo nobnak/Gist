@@ -30,14 +30,17 @@ namespace nobnak.Gist {
             get { return validity && Check(); }
         }
         public void Invalidate() {
-            validity = false;
-            NotifyInvalidated();
+            if (validity) {
+                validity = false;
+                NotifyInvalidated();
+            }
         }
 
         public bool CheckValidation() {
             if (IsValid)
                 return true;
 
+            Invalidate();
             Validate();
 
             var result = Check();
