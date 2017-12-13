@@ -28,7 +28,7 @@ namespace nobnak.Gist {
         public static implicit operator T(Reactive<T> reactive) {
             return reactive.data;
         }
-        public static explicit operator Reactive<T>(T data) {
+        public static implicit operator Reactive<T>(T data) {
             return new Reactive<T>(data);
         }
 
