@@ -215,12 +215,12 @@ namespace nobnak.Gist.DataUI {
 					GUILayout.BeginVertical();
 					GUILayout.BeginHorizontal();
 					GUILayout.Label(string.Format("{0} ", fi.Name), GUILayout.ExpandWidth(false));
-					var prevColor = GUI.color;
-					GUI.color = new Color(c.r, c.g, c.b);
+					var prevColor = UnityEngine.GUI.color;
+                    UnityEngine.GUI.color = new Color(c.r, c.g, c.b);
 					GUILayout.Label("■■■■■■", GUILayout.ExpandWidth(false));
-					GUI.color = new Color(c.a, c.a, c.a);
+                    UnityEngine.GUI.color = new Color(c.a, c.a, c.a);
 					GUILayout.Label("■■", GUILayout.ExpandWidth(false));
-					GUI.color = prevColor;
+                    UnityEngine.GUI.color = prevColor;
 					GUILayout.EndHorizontal();
 					GUILayout.BeginHorizontal();
 					for (var i = 0; i < 4; i++)
