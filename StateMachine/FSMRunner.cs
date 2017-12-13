@@ -75,6 +75,9 @@ namespace nobnak.Gist.StateMachine {
             set { _enabled = value; }
         }
 
+        public FSM<T> Init(T initialStateName = default(T)) {
+            return Goto(initialStateName);
+        }
         public FSM<T> Goto(T nextStateName) {
             switch (transitionMode) {
                 default:
