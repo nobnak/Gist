@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using UnityEngine;
 
 namespace nobnak.Gist {
 
@@ -8,13 +9,17 @@ namespace nobnak.Gist {
         public event System.Action Validated;
         public event System.Action Invalidated;
 
+        protected bool useCache;
+        protected int validatedFrameCount = -1;
+
         protected bool initialValidity;
         protected bool validity;
         protected System.Func<bool>[] checker;
 
-        public Validator(bool initialValidity) {
+        public Validator(bool initialValidity, bool useCache = true) {
             this.initialValidity = initialValidity;
             this.validity = initialValidity;
+            this.useCache = useCache;
         }
         public Validator() : this(false) { }
 
@@ -27,7 +32,9 @@ namespace nobnak.Gist {
             this.checker = checkers;
         }
         public bool IsValid {
-            get { return validity && Check(); }
+            get {
+                return validity && Check(true);
+            }
         }
         public void Invalidate() {
             if (validity) {
@@ -43,7 +50,7 @@ namespace nobnak.Gist {
             Invalidate();
             Validate();
 
-            var result = Check();
+            var result = Check(false);
             if (result) {
                 validity = true;
                 NotifyValidated();
@@ -56,8 +63,23 @@ namespace nobnak.Gist {
             if (Validation != null)
                 Validation();
         }
-        protected bool Check() {
-            return checker == null || checker.All(c => c());
+        protected bool Check(bool useChache) {
+            if (useCache && validatedFrameCount == Time.frameCount)
+                return true;
+
+            var result = _Check();
+            if (result)
+                validatedFrameCount = Time.frameCount;
+            return result;
+        }
+        protected bool _Check() { 
+            if (checker == null)
+                return true;
+
+            foreach (var c in checker)
+                if (!c())
+                    return false;
+            return true;
         }
 
         protected void NotifyInvalidated() {
