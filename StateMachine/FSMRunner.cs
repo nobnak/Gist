@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿//#define VERBOSE
+
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace nobnak.Gist.StateMachine {
@@ -52,15 +54,19 @@ namespace nobnak.Gist.StateMachine {
         Queue<T> nextStateNameQueue;
 
         public FSM(MonoBehaviour target, TransitionModeEnum transitionMode) : base(transitionMode) {
-            if ((_runner = target.GetComponent<FSMRunner>()) == null) {
-                _runner = target.gameObject.AddComponent<FSMRunner>();
-                _runner.hideFlags = HideFlags.DontSaveInEditor;
+            if (target != null) {
+                if ((_runner = target.GetComponent<FSMRunner>()) == null) {
+                    _runner = target.gameObject.AddComponent<FSMRunner>();
+                    _runner.hideFlags = HideFlags.DontSaveInEditor;
+                }
+                _runner.Add(this);
             }
-            _runner.Add (this);
             _enabled = true;
             this.nextStateNameQueue = new Queue<T>();
         }
-        public FSM(MonoBehaviour target):this(target, TransitionModeEnum.Queued) { }
+        public FSM(MonoBehaviour target) : this(target, TransitionModeEnum.Queued) { }
+        public FSM(TransitionModeEnum transitionMode) : this(null, transitionMode) { }
+        public FSM() : this(null) { }
 
             public StateData State(T name) {
             StateData state;
@@ -76,7 +82,7 @@ namespace nobnak.Gist.StateMachine {
         }
 
         public FSM<T> Init(T initialStateName = default(T)) {
-            return Goto(initialStateName);
+            return GotoImmediate(initialStateName);
         }
         public FSM<T> Goto(T nextStateName) {
             switch (transitionMode) {
@@ -87,8 +93,10 @@ namespace nobnak.Gist.StateMachine {
             }
         }
         public FSM<T> GotoQueued(T nextStateName) {
+#if VERBOSE
             if (nextStateNameQueue.Count > 0)
                 Debug.LogFormat("The next state is already queued {0}", nextStateName);
+#endif
 
             Enqueue(nextStateName);
             return this;
@@ -113,14 +121,14 @@ namespace nobnak.Gist.StateMachine {
             return _stateMap.TryGetValue (name, out state);
         }
 
-        #region IDisposable implementation
+#region IDisposable implementation
         public override void Dispose () {
             if (_runner != null) {
                 _runner.Remove (this);
                 _runner = null;
             }
         }
-        #endregion
+#endregion
 
         protected void _Goto(T nextStateName) {
             StateData next;
@@ -163,7 +171,7 @@ namespace nobnak.Gist.StateMachine {
             return result;
         }
 
-        #region Classes
+#region Classes
         public class StateData { 
             public readonly T name;
 
@@ -204,6 +212,6 @@ namespace nobnak.Gist.StateMachine {
                 return this;
             }
         }
-        #endregion
+#endregion
     }
 }
