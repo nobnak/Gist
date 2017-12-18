@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace nobnak.Gist {
 	public class GLFigure : System.IDisposable {
@@ -15,6 +16,7 @@ namespace nobnak.Gist {
         };
 
         public GLMaterial glmat { get; protected set; }
+        public Color CurrentColor { get; set; }
 
 		public GLFigure() {
             glmat = new GLMaterial();
@@ -42,41 +44,83 @@ namespace nobnak.Gist {
 			var scale = new Vector3 (size.x, size.y, 1f);
 			var modelMat = Matrix4x4.TRS (center, look, scale);
 			var cameraMat = Camera.current.worldToCameraMatrix;
-			DrawCircle (cameraMat * modelMat, color);
+            CurrentColor = color;
+            DrawCircle(cameraMat * modelMat);
 		}
 		public void FillCircle(Vector3 center, Quaternion look, Vector2 size, Color color) {
 			var scale = new Vector3 (size.x, size.y, 1f);
 			var modelMat = Matrix4x4.TRS (center, look, scale);
 			var cameraMat = Camera.current.worldToCameraMatrix;
-			FillCircle (cameraMat * modelMat, color);
+            CurrentColor = color;
+            FillCircle(cameraMat * modelMat);
         }
         public void DrawFan(Vector3 center, Quaternion look, Vector2 size, Color color, float fromAngle, float toAngle) {
             var scale = new Vector3 (size.x, size.y, 1f);
             var modelMat = Matrix4x4.TRS (center, look, scale);
             var cameraMat = Camera.current.worldToCameraMatrix;
-            DrawFan (cameraMat * modelMat, color, fromAngle, toAngle);
+            CurrentColor = color;
+            DrawFan(cameraMat * modelMat, fromAngle, toAngle);
         }
         public void FillFan(Vector3 center, Quaternion look, Vector2 size, Color color, float fromAngle, float toAngle) {
             var scale = new Vector3 (size.x, size.y, 1f);
             var modelMat = Matrix4x4.TRS (center, look, scale);
             var cameraMat = Camera.current.worldToCameraMatrix;
-            FillFan (cameraMat * modelMat, color, fromAngle, toAngle);
+            CurrentColor = color;
+            FillFan(cameraMat * modelMat, fromAngle, toAngle);
         }
         public void DrawQuad(Vector3 center, Quaternion look, Vector2 size, Color color) {
             var scale = new Vector3 (size.x, size.y, 1f);
             var modelMat = Matrix4x4.TRS (center, look, scale);
             var cameraMat = Camera.current.worldToCameraMatrix;
-            DrawQuad (cameraMat * modelMat, color);
+            CurrentColor = color;
+            DrawQuad(cameraMat * modelMat);
         }
         public void FillQuad(Vector3 center, Quaternion look, Vector2 size, Color color) {
             var scale = new Vector3 (size.x, size.y, 1f);
             var modelMat = Matrix4x4.TRS (center, look, scale);
             var cameraMat = Camera.current.worldToCameraMatrix;
-            FillQuad (cameraMat * modelMat, color);
+            CurrentColor = color;
+            FillQuad (cameraMat * modelMat);
+        }
+        
+        [System.Obsolete]
+        public void DrawCircle(Matrix4x4 modelViewMat, Color color) {
+            CurrentColor = color;
+            DrawCircle(modelViewMat);
+        }
+        [System.Obsolete]
+        public void FillCircle(Matrix4x4 modelViewMat, Color color) {
+            CurrentColor = color;
+            FillCircle(modelViewMat);
+        }
+        [System.Obsolete]
+        public void DrawFan(Matrix4x4 modelViewMat, Color color, float fromAngle, float toAngle) {
+            CurrentColor = color;
+            DrawFan(modelViewMat, fromAngle, toAngle);
+        }
+        [System.Obsolete]
+        public void FillFan(Matrix4x4 modelViewMat, Color color, float fromAngle, float toAngle) {
+            CurrentColor = color;
+            FillFan(modelViewMat, fromAngle, toAngle);
+        }
+        [System.Obsolete]
+        public void DrawQuad(Matrix4x4 modelViewMat, Color color) {
+            CurrentColor = color;
+            DrawQuad(modelViewMat);
+        }
+        [System.Obsolete]
+        public void FillQuad(Matrix4x4 modelViewMat, Color color) {
+            CurrentColor = color;
+            FillQuad(modelViewMat);
+        }
+        [System.Obsolete]
+        public void DrawLines(IEnumerable<Vector3> vertices, Matrix4x4 modelViewMat, Color color) {
+            CurrentColor = color;
+            DrawLines(vertices, modelViewMat);
         }
 
-		public void DrawCircle (Matrix4x4 modelViewMat, Color color) {
-            if (!StartDraw (modelViewMat, color, GL.LINES))
+        public void DrawCircle (Matrix4x4 modelViewMat) {
+            if (!StartDraw (modelViewMat, GL.LINES))
                 return;
             try {
     			var dr = TWO_PI_RAD / SEGMENTS;
@@ -90,8 +134,8 @@ namespace nobnak.Gist {
                 EndDraw ();
             }
 		}
-        public void FillCircle(Matrix4x4 modelViewMat, Color color) {
-            if (!StartDraw (modelViewMat, color, GL.TRIANGLES))
+        public void FillCircle(Matrix4x4 modelViewMat) {
+            if (!StartDraw (modelViewMat, GL.TRIANGLES))
                 return;
             try {
     			var dr = TWO_PI_RAD / SEGMENTS;
@@ -106,9 +150,8 @@ namespace nobnak.Gist {
                 EndDraw ();
             }
 		}
-
-        public void DrawFan(Matrix4x4 modelViewMat, Color color, float fromAngle, float toAngle) {
-            if (!StartDraw (modelViewMat, color, GL.LINES))
+        public void DrawFan(Matrix4x4 modelViewMat, float fromAngle, float toAngle) {
+            if (!StartDraw (modelViewMat, GL.LINES))
                 return;
 
             try {
@@ -129,8 +172,8 @@ namespace nobnak.Gist {
                 EndDraw ();
             }
         }
-        public void FillFan(Matrix4x4 modelViewMat, Color color, float fromAngle, float toAngle) {
-            if (!StartDraw (modelViewMat, color, GL.TRIANGLES))
+        public void FillFan(Matrix4x4 modelViewMat, float fromAngle, float toAngle) {
+            if (!StartDraw (modelViewMat, GL.TRIANGLES))
                 return;
             try {
                 var radFrom = (fromAngle + FAN_START_ANGLE) * Mathf.Deg2Rad;
@@ -147,9 +190,8 @@ namespace nobnak.Gist {
                 EndDraw ();
             }
         }
-
-        public void DrawQuad(Matrix4x4 modelViewMat, Color color) {
-            if (!StartDraw (modelViewMat, color, GL.LINES))
+        public void DrawQuad(Matrix4x4 modelViewMat) {
+            if (!StartDraw (modelViewMat, GL.LINES))
                 return;
             try {
                 var v = QUAD [0];
@@ -162,8 +204,8 @@ namespace nobnak.Gist {
                 EndDraw ();
             }
         }
-        public void FillQuad(Matrix4x4 modelViewMat, Color color) {
-            if (!StartDraw (modelViewMat, color, GL.QUADS))
+        public void FillQuad(Matrix4x4 modelViewMat) {
+            if (!StartDraw (modelViewMat, GL.QUADS))
                 return;
             try {
                 for (var i = 0; i < QUAD.Length; i++)
@@ -172,11 +214,9 @@ namespace nobnak.Gist {
                 EndDraw ();
             }
         }
-		public void DrawLines(IEnumerable<Vector3> vertices, Transform trs, Color color) {
-			DrawLines (vertices, Camera.current.worldToCameraMatrix * trs.localToWorldMatrix, color);
-		}
-        public void DrawLines(IEnumerable<Vector3> vertices, Matrix4x4 modelViewMat, Color color) {
-            if (!StartDraw (modelViewMat, color, GL.LINES))
+
+        public void DrawLines(IEnumerable<Vector3> vertices, Matrix4x4 modelViewMat) {
+            if (!StartDraw (modelViewMat, GL.LINES))
                 return;
             try {
     			var iter = vertices.GetEnumerator ();
@@ -191,22 +231,30 @@ namespace nobnak.Gist {
             } finally {
                 EndDraw ();
             }
-		}
+        }
+        public void DrawLines(IEnumerable<Vector3> vertices, Transform trs, Color color) {
+            CurrentColor = color;
+            DrawLines(vertices, Camera.current.worldToCameraMatrix * trs.localToWorldMatrix);
+        }
+
 
         Vector3 PositionFromAngle(float rad, float size) {
             return new Vector3(0.5f * size * Mathf.Cos (rad), 0.5f * size * Mathf.Sin (rad), 0f);            
         }
 
-        bool StartDraw (Matrix4x4 modelViewMat, Color color, int mode) {
+        bool StartDraw(Matrix4x4 modelViewMat, int mode) {
             if (glmat == null)
                 return false;
             GL.PushMatrix ();
             GL.LoadIdentity ();
             GL.MultMatrix (modelViewMat);
+            glmat.SetPass();
+
             GL.Begin (mode);
-            glmat.Color(color);
+            glmat.Color(CurrentColor);
             return true;
         }
+
 
         static void EndDraw () {
             GL.End ();

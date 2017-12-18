@@ -42,10 +42,12 @@ namespace nobnak.Gist {
             set { _lineMat.SetFloat(PROP_ZBIAS, value); }
         }
 
+        public void SetPass(int pass = 0) {
+            _lineMat.SetPass(pass);
+        }
         public bool Color (UnityEngine.Color color) {
             if (_lineMat == null)
                 return false;
-            _lineMat.SetPass (0);
             GL.Color (color);
             return true;
         }
