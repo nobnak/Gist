@@ -7,7 +7,7 @@ namespace nobnak.Gist.Primitive {
     public class DefferedMatrix {
 
         protected bool valid;
-        protected Matrix4x4[] chainOfMatrices;
+        protected Matrix4x4[] chainOfMatrices = new Matrix4x4[0];
 
         protected Matrix4x4 mergedMatrix;
         protected Matrix4x4 inverseMatrix;
