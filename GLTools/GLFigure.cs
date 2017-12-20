@@ -118,6 +118,11 @@ namespace nobnak.Gist {
             CurrentColor = color;
             DrawLines(vertices, modelViewMat);
         }
+        [System.Obsolete]
+        public void DrawLines(IEnumerable<Vector3> vertices, Transform trs, Color color) {
+            CurrentColor = color;
+            DrawLines(vertices, Camera.current.worldToCameraMatrix * trs.localToWorldMatrix);
+        }
 
         public void DrawCircle (Matrix4x4 modelViewMat) {
             if (!StartDraw (modelViewMat, GL.LINES))
@@ -232,10 +237,6 @@ namespace nobnak.Gist {
                 EndDraw ();
             }
         }
-        public void DrawLines(IEnumerable<Vector3> vertices, Transform trs, Color color) {
-            CurrentColor = color;
-            DrawLines(vertices, Camera.current.worldToCameraMatrix * trs.localToWorldMatrix);
-        }
 
 
         Vector3 PositionFromAngle(float rad, float size) {
@@ -243,8 +244,9 @@ namespace nobnak.Gist {
         }
 
         bool StartDraw(Matrix4x4 modelViewMat, int mode) {
-            if (glmat == null)
+            if (glmat == null || glmat.IsDisposed)
                 return false;
+
             GL.PushMatrix ();
             GL.LoadIdentity ();
             GL.MultMatrix (modelViewMat);

@@ -53,6 +53,7 @@ namespace nobnak.Gist {
         }
 
 		#region IDisposable implementation
+        public bool IsDisposed { get { return _lineMat == null; } }
 		public void Dispose () {
 			ObjectDestructor.Destroy(_lineMat);
 		}
