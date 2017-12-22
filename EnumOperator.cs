@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace nobnak.Gist {
 
-    public static class EnumOperator<T> where T : IComparable {
+    public static class EnumOperator<T> where T : IComparable, IFormattable, IConvertible {
 
         public static readonly string[] NAMES = System.Enum.GetNames(typeof(T));
         public static readonly T[] VALUES = System.Enum.GetValues(typeof(T)).Cast<T>().ToArray();
@@ -25,7 +25,7 @@ namespace nobnak.Gist {
         }
 
         public static int FindIndex(T value) {
-            return VALUES.Select((v,i)=>i).Where(i => VALUES[i].CompareTo(value) == 0).FirstOrDefault();
+            return VALUES.Select((v, i) => i).Where(i => VALUES[i].CompareTo(value) == 0).FirstOrDefault();
         }
     }
 }
