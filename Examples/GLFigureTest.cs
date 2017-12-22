@@ -29,7 +29,8 @@ namespace nobnak.Gist {
 				dataset [i].Draw (_fig);
 
 			if (lines.Length >= 2) {
-				_fig.DrawLines (GenerateVertices(), transform, Color.white);
+                _fig.CurrentColor = Color.white;
+                _fig.DrawLines (GenerateVertices(), transform);
 			}
 		}
 		IEnumerable<Vector3> GenerateVertices() {

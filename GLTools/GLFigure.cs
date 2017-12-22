@@ -237,6 +237,9 @@ namespace nobnak.Gist {
                 EndDraw ();
             }
         }
+        public void DrawLines(IEnumerable<Vector3> vertices, Transform trs) {
+            DrawLines(vertices, Camera.current.worldToCameraMatrix * trs.localToWorldMatrix);
+        }
 
 
         Vector3 PositionFromAngle(float rad, float size) {
