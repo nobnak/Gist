@@ -20,6 +20,9 @@ namespace nobnak.Gist.Extensions.ComponentExt {
                         yield return c;
             }
         }
+        public static bool IsActiveLayer(this Component c) {
+            return (Camera.current.cullingMask & (1 << c.gameObject.layer)) != 0;
+        }
     }
 
 }
