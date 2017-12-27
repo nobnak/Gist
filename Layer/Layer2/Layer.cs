@@ -69,5 +69,9 @@ namespace nobnak.Gist.Layer2 {
             LocalToLayer.Reset(local);
             LocalToWorld.Reset(layer, local);
         }
+
+        public interface IMessageReceiver {
+            void CrownLayer(Layer layer);
+        }
     }
 }
