@@ -8,7 +8,7 @@ namespace nobnak.Gist.Scoped {
 
         public ScopedObject(T data) : base(data) {  }
 
-        public override void Disposer(T data) {
+        protected override void Disposer(T data) {
             ObjectDestructor.Destroy(data);
         }
 
@@ -27,19 +27,26 @@ namespace nobnak.Gist.Scoped {
             this.disposer = disposer;
         }
 
-        public override void Disposer(T data) {
+        protected override void Disposer(T data) {
             disposer(data);
         }
     }
 
     public abstract class Scoped<T> : System.IDisposable {
-        public T Data { get; protected set; }
-        public bool Disposed { get; protected set; }
+        protected T data;
 
         public Scoped(T data) {
-            this.Data = data;
-            this.Disposed = false;
+            Create(data);
         }
+
+        public virtual T Data {
+            get { return data; }
+            set {
+                Dispose();
+                Create(value);
+            }
+        }
+        public virtual bool Disposed { get; protected set; }
 
         public void Dispose() {
             if (!Disposed) {
@@ -48,6 +55,10 @@ namespace nobnak.Gist.Scoped {
             }
         }
 
-        public abstract void Disposer(T data);
+        protected virtual void Create(T data) {
+            this.data = data;
+            this.Disposed = false;
+        }
+        protected abstract void Disposer(T data);
     }
 }
