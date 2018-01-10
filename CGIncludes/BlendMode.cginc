@@ -49,10 +49,44 @@
 
 
 
-#define blend_mode3(_target, _blend, _mode) (blend##_mode((_target).rgb, (_blend).rgb))
-#define blend_mode4(_target, _blend, _mode) \
-	lerp(_target, float4(blend_mode3((_target).rgb, (_blend).rgb, _mode).rgb, 1), (_blend).a)
-
-
+float3 blend_mode3(float3 t, float3 b, int mode) {
+	switch (mode) {
+	default:
+		return blend0(t, b);
+	case 1:
+		return blend1(t, b);
+	case 2:
+		return blend2(t, b);
+	case 3:
+		return blend3(t, b);
+	case 4:
+		return blend4(t, b);
+	case 5:
+		return blend5(t, b);
+	case 6:
+		return blend6(t, b);
+	case 7:
+		return blend7(t, b);
+	case 8:
+		return blend8(t, b);
+	case 9:
+		return blend9(t, b);
+	case 10:
+		return blend10(t, b);
+	case 11:
+		return blend11(t, b);
+	case 12:
+		return blend12(t, b);
+	case 13:
+		return blend13(t, b);
+	case 14:
+		return blend14(t, b);
+	case 15:
+		return blend15(t, b);
+	}
+}
+float4 blend_mode4(float4 _target, float4 _blend, int _mode) {
+	return lerp(_target, float4(blend_mode3(_target.rgb, _blend.rgb, _mode), 1), _blend.a);
+}
 
 #endif
