@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using nobnak.Gist.Extensions.ComponentExt;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -25,7 +26,7 @@ namespace nobnak.Gist.Layers {
             UpdateAll ();
         }
         protected virtual void OnDrawGizmos() {
-            if (!isActiveAndEnabled || !cacheTr.initialized)
+            if (!isActiveAndEnabled || !cacheTr.initialized || !this.IsVisibleLayer())
                 return;
             
             var size = field.size;

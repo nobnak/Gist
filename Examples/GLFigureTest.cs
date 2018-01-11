@@ -2,6 +2,7 @@
 using System.Collections;
 using nobnak.Gist;
 using System.Collections.Generic;
+using nobnak.Gist.Extensions.ComponentExt;
 
 namespace nobnak.Gist {
 	[ExecuteInEditMode]
@@ -22,6 +23,9 @@ namespace nobnak.Gist {
 			}
 		}
 		void OnRenderObject() {
+            if (!this.IsVisibleLayer())
+                return;
+
 			if (dataset == null || lines == null)
 				return;
 			
