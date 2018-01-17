@@ -13,5 +13,8 @@ namespace nobnak.Gist.Extensions.Behaviour {
             #endif
             return result;
         }
+        public static bool IsActiveLayer(this MonoBehaviour b) {
+            return (Camera.current.cullingMask & (1 << b.gameObject.layer)) != 0;
+        }
     }
 }
