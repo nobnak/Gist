@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using nobnak.Gist.Extensions.ComponentExt;
 
 namespace nobnak.Gist {
         
@@ -36,6 +37,9 @@ namespace nobnak.Gist {
             }
         }
         void OnRenderObject() {
+            if (!this.IsVisibleLayer())
+                return;
+
             if (_fig == null || targetCam == null)
                 return;
             

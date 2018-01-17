@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using nobnak.Gist.Extensions.ComponentExt;
 
 namespace nobnak.Gist {
     [ExecuteInEditMode]
@@ -52,6 +53,9 @@ namespace nobnak.Gist {
             UpdateNoiseMap ();
     	}
         void OnRenderObject() {
+            if (!this.IsVisibleLayer())
+                return;
+
             if (debugMode != DebugModeEnum.None) {
                 if (debugMat != null) {
                     debugMat.shaderKeywords = null;
