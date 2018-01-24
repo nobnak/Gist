@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using nobnak.Gist.Extensions.ComponentExt;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,8 +14,8 @@ namespace nobnak.Gist.Extensions.Behaviour {
             #endif
             return result;
         }
-        public static bool IsActiveLayer(this MonoBehaviour b) {
-            return (Camera.current.cullingMask & (1 << b.gameObject.layer)) != 0;
+        public static bool CanRender(this MonoBehaviour b) {
+            return b.IsActiveAndEnabledAlsoInEditMode() && b.IsVisibleLayer();
         }
     }
 }
