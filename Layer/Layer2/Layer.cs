@@ -1,4 +1,5 @@
-﻿using nobnak.Gist.Primitive;
+﻿using nobnak.Gist.Extensions.ComponentExt;
+using nobnak.Gist.Primitive;
 using UnityEngine;
 
 namespace nobnak.Gist.Layer2 {
@@ -60,7 +61,9 @@ namespace nobnak.Gist.Layer2 {
         #endregion
         
         protected virtual void BroadcastCrownLayer() {
-            BroadcastMessage(MSG_CROWN_LAYER, this, SendMessageOptions.DontRequireReceiver);
+            foreach (var c in transform.AggregateComponentsInChildren<IMessageReceiver>()) {
+                c.CrownLayer(this);
+            }
         }
         protected virtual void GenerateLayerData() {
             var layer = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
