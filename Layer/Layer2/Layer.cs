@@ -11,6 +11,8 @@ namespace nobnak.Gist.Layer2 {
         public const float EPSILON = 1e-3f;
         public const float CIRCLE_INV_DEG = 1f / 360;
 
+        public Transform userRoot;
+
         public Layer() {
             LayerValidator = new Validator();
 
@@ -61,7 +63,8 @@ namespace nobnak.Gist.Layer2 {
         #endregion
         
         protected virtual void BroadcastCrownLayer() {
-            foreach (var c in transform.AggregateComponentsInChildren<IMessageReceiver>()) {
+            var root = (userRoot == null ? transform : userRoot);
+            foreach (var c in root.AggregateComponentsInChildren<IMessageReceiver>()) {
                 c.CrownLayer(this);
             }
         }
