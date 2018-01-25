@@ -27,8 +27,14 @@ namespace nobnak.Gist {
 			if (lineShader == null)
 				Debug.LogErrorFormat ("Line Shader not found : {0}", LINE_SHADER);
 			_lineMat = new Material (lineShader);
+            Reset();
 		}
 
+        public void Reset() {
+            ZWriteMode = false;
+            ZTestMode = ZTestEnum.LESSEQUAL;
+            ZOffset = 0f;
+        }
         public bool ZWriteMode {
             get { return _lineMat.GetInt (PROP_ZWRITE) == 1; }
             set { _lineMat.SetInt (PROP_ZWRITE, value ? 1 : 0); }
