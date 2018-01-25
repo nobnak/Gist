@@ -31,19 +31,28 @@ namespace nobnak.Gist.Intersection {
             var yaxis = new Vector2(-xaxis.y, xaxis.x);
             this.xaxis = xaxis;
             this.yaxis = yaxis;
-
             xaxis *= size.x;
             yaxis *= size.y;
 
-            var localToWorld = Matrix4x4.zero;
+            var localToWorld = Matrix4x4.identity;
             localToWorld[0] = xaxis.x; localToWorld[4] = yaxis.x; localToWorld[12] = center.x;
             localToWorld[1] = xaxis.y; localToWorld[5] = yaxis.y; localToWorld[13] = center.y;
-            localToWorld[15] = 1f;
             Reset(localToWorld);
         }
         public void Reset(Matrix4x4 localToWorld) {
             model.Reset(localToWorld);
             worldBounds = LOCAL_BOUNDS.EncapsulateInTargetSpace(localToWorld);
+        }
+        public static Matrix4x4 CalculateModelMatrix(Vector2 center, Vector2 size, Vector2 xaxis) {
+            xaxis.Normalize();
+            var yaxis = new Vector2(-xaxis.y, xaxis.x);
+            xaxis *= size.x;
+            yaxis *= size.y;
+
+            var localToWorld = Matrix4x4.identity;
+            localToWorld[0] = xaxis.x; localToWorld[4] = yaxis.x; localToWorld[12] = center.x;
+            localToWorld[1] = xaxis.y; localToWorld[5] = yaxis.y; localToWorld[13] = center.y;
+            return localToWorld;
         }
 
         #region IConvex2Polytope
@@ -73,17 +82,14 @@ namespace nobnak.Gist.Intersection {
         }
         public virtual bool Contains(Vector2 worldPoint) {
             var localPoint = (Vector2)model.InverseTransformPoint(worldPoint);
-            return Contains(LOCAL_MIN, LOCAL_MAX, localPoint);
+            var result = Contains(LOCAL_MIN, LOCAL_MAX, localPoint);
+            return result;
         }
         public static bool Contains(Vector2 min, Vector2 max, Vector2 point) {
-            var minx = min.x;
-            var miny = min.y;
-            var maxx = max.x;
-            var maxy = max.y;
             var px = point.x;
             var py = point.y;
 
-            return minx <= px && px < maxx && miny <= py && py < maxy;
+            return min.x <= px && px < max.x && min.y <= py && py < max.y;
         }
         #endregion
     }
