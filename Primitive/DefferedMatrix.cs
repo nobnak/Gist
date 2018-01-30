@@ -19,7 +19,14 @@ namespace nobnak.Gist.Primitive {
         public static Matrix4x4 operator*(DefferedMatrix l, Matrix4x4 r) {
             return l.Matrix * r;
         }
+        public static implicit operator DefferedMatrix(Matrix4x4 mat) {
+            return new DefferedMatrix(mat);
+        }
         #endregion
+
+        public DefferedMatrix(params Matrix4x4[] chainOfMatrices) {
+            Reset(chainOfMatrices);
+        }
 
         public void Reset(params Matrix4x4[] chainOfMatrices) {
             this.valid = false;
