@@ -10,14 +10,18 @@ namespace nobnak.Gist.Extensions.ComponentExt {
             if (parent == null)
                 yield break;
 
+            var found = false;
+            foreach (var comp in parent.GetComponents<T>()) {
+                found = true;
+                yield return comp;
+            }
+            if (found)
+                yield break;
+
             for (var i = 0; i < parent.childCount; i++) {
                 var child = parent.GetChild(i);
-                var comp = child.GetComponent<T>();
-                if (comp != null)
-                    yield return comp;
-                else
-                    foreach (var c in child.AggregateComponentsInChildren<T>())
-                        yield return c;
+                foreach (var c in child.AggregateComponentsInChildren<T>())
+                    yield return c;
             }
         }
         public static bool IsVisibleLayer(this Component c) {
