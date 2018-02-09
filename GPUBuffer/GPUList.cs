@@ -18,15 +18,15 @@ namespace nobnak.Gist.GPUBuffer {
         protected T[] data;
         protected ComputeBuffer buffer;
 
-        public GPUList(int capacity, ComputeBufferType cbtype) {
+        public GPUList(
+                int capacity = DEFAULT_CAPACITY, 
+                ComputeBufferType cbtype = ComputeBufferType.Default) {
             this.count = 0;
             this.capacity = 0;
             this.dataChanged = true;
             this.cbtype = cbtype;
             Resize(capacity);
         }
-        public GPUList(int capacity) : this(capacity, ComputeBufferType.Default) { }
-        public GPUList() : this(DEFAULT_CAPACITY) { }
 
         public ComputeBuffer Buffer {
             get {
