@@ -27,6 +27,14 @@ namespace nobnak.Gist.Extensions.ComponentExt {
         public static bool IsVisibleLayer(this Component c) {
             return (Camera.current.cullingMask & (1 << c.gameObject.layer)) != 0;
         }
-    }
 
+        public static void NotifySelf<I>(this Component me, System.Action<I> method) {
+            foreach (var i in me.GetComponents<I>())
+                method(i);
+        }
+        public static IEnumerable<O> NotifySelf<I, O>(this Component me, System.Func<I, O> method) {
+            foreach (var i in me.GetComponents<I>())
+                yield return method(i);
+        }
+    }
 }
