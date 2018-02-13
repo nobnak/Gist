@@ -10,9 +10,11 @@ namespace nobnak.Gist.GPUBuffer {
         public const int MIN_CAPACITY = 1;
         public const int DEFAULT_CAPACITY = 16;
 
+        public enum DirtyFlag { Clean = 0, Data, Buffer }
+
         protected int capacity;
         protected int count;
-        protected bool dataChanged;
+        protected DirtyFlag dirty;
         protected ComputeBufferType cbtype;
 
         protected T[] data;
@@ -23,7 +25,7 @@ namespace nobnak.Gist.GPUBuffer {
                 ComputeBufferType cbtype = ComputeBufferType.Default) {
             this.count = 0;
             this.capacity = 0;
-            this.dataChanged = true;
+            this.dirty = DirtyFlag.Data;
             this.cbtype = cbtype;
             Resize(capacity);
         }
@@ -31,10 +33,17 @@ namespace nobnak.Gist.GPUBuffer {
         public ComputeBuffer Buffer {
             get {
                 Upload();
+                dirty = DirtyFlag.Buffer;
                 return buffer;
             }
         }
-        public T[] Data { get { return data;  } }
+        public T[] Data {
+            get {
+                Download();
+                dirty = DirtyFlag.Data;
+                return data;
+            }
+        }
         public int Capacity {
             get { return capacity; }
             set { Resize(value); }
@@ -52,21 +61,23 @@ namespace nobnak.Gist.GPUBuffer {
             }
         }
         public bool Upload() {
-            if (dataChanged) {
-                dataChanged = false;
+            if (dirty == DirtyFlag.Data) {
+                dirty = DirtyFlag.Clean;
                 buffer.SetData(data);
-                buffer.SetCounterValue((uint)count);
+                //buffer.SetCounterValue((uint)count);
                 return true;
             }
             return false;
         }
         public void Download() {
-            dataChanged = false;
-            buffer.GetData(data);
+            if (dirty == DirtyFlag.Buffer) {
+                dirty = DirtyFlag.Clean;
+                buffer.GetData(data);
+            }
         }
 
         protected void ResizeComputeBuffer(int nextSize) {
-            dataChanged = true;
+            dirty = DirtyFlag.Data;
             DisposeComputeBuffer();
             buffer = new ComputeBuffer(nextSize, Marshal.SizeOf(typeof(T)), cbtype);
         }
@@ -95,7 +106,8 @@ namespace nobnak.Gist.GPUBuffer {
         public T this[int index] {
             get { return data[index]; }
             set {
-                dataChanged = true;
+                dirty = DirtyFlag.Data;
+                count = (index >= count ? (index + 1) : count);
                 data[index] = value;
             }
         }
@@ -106,24 +118,24 @@ namespace nobnak.Gist.GPUBuffer {
             return -1;
         }
         public void Insert(int index, T item) {
-            dataChanged = true;
+            dirty = DirtyFlag.Data;
             EnsureCapacity(count + 1);
             System.Array.Copy(data, index, data, index + 1, count - index);
             data[index] = item;
             count++;
         }
         public void RemoveAt(int index) {
-            dataChanged = true;
+            dirty = DirtyFlag.Data;
             System.Array.Copy(data, index + 1, data, index, count - (index + 1));
             count--;
         }
         public void Add(T item) {
-            dataChanged = true;
+            dirty = DirtyFlag.Data;
             EnsureCapacity(count + 1);
             data[count++] = item;
         }
         public void Clear() {
-            dataChanged = true;
+            dirty = DirtyFlag.Data;
             count = 0;
         }
         public bool Contains(T item) {
