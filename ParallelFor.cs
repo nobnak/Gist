@@ -44,7 +44,7 @@ namespace nobnak.Gist {
                     for (var k = j; k < toExclusive; k += numThreads)
                         body (k);
                 } catch (System.Exception e) {
-                    UnityEngine.Debug.LogError(e);
+                    UnityEngine.Debug.LogWarning(e);
                 } finally {
                     resets [ii].Set ();
                 }
