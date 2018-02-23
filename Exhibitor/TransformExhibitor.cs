@@ -72,14 +72,14 @@ namespace nobnak.Gist.Exhibitor {
             public Exhibit[] exhibits;
         }
         [System.Serializable]
-        public struct Exhibit {
+        public class Exhibit {
             public string name;
             public TransformData node;
         }
         [System.Serializable]
-        public struct TransformData {
+        public class TransformData {
             public Vector3 position;
-            public Quaternion rotation;
+            public Vector3 rotation;
             public Vector3 scale;
         }
     }
@@ -88,13 +88,13 @@ namespace nobnak.Gist.Exhibitor {
         public static TransformExhibitor.TransformData Encode(this Transform tr) {
             return new TransformExhibitor.TransformData() {
                 position = tr.localPosition,
-                rotation = tr.localRotation,
+                rotation = tr.localRotation.eulerAngles,
                 scale = tr.localScale
             };
         }
         public static void Decode(this Transform tr, TransformExhibitor.TransformData ndata) {
             tr.localPosition = ndata.position;
-            tr.localRotation = ndata.rotation;
+            tr.localRotation = Quaternion.Euler(ndata.rotation);
             tr.localScale = ndata.scale;
         }
     }
