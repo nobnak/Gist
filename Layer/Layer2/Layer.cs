@@ -1,5 +1,6 @@
 ﻿using nobnak.Gist.Extensions.ComponentExt;
 using nobnak.Gist.Primitive;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace nobnak.Gist.Layer2 {
@@ -10,8 +11,6 @@ namespace nobnak.Gist.Layer2 {
         public const string MSG_CROWN_LAYER = "CrownLayer";
         public const float EPSILON = 1e-3f;
         public const float CIRCLE_INV_DEG = 1f / 360;
-
-        public Transform userRoot;
 
         public Layer() {
             LayerValidator = new Validator();
@@ -27,6 +26,7 @@ namespace nobnak.Gist.Layer2 {
             LayerValidator.Validation += () => {
                 transform.hasChanged = false;
                 GenerateLayerData();
+                BroadcastUpdateLayer();
             };
             LayerValidator.SetCheckers(() => !transform.hasChanged);
             BroadcastCrownLayer();
@@ -63,10 +63,15 @@ namespace nobnak.Gist.Layer2 {
         #endregion
         
         protected virtual void BroadcastCrownLayer() {
-            var root = (userRoot == null ? transform : userRoot);
-            foreach (var c in root.AggregateComponentsInChildren<IMessageReceiver>()) {
+            foreach (var c in IterateListeners())
                 c.CrownLayer(this);
-            }
+        }
+        protected virtual void BroadcastUpdateLayer() {
+            foreach (var c in IterateListeners())
+                c.UpdateLayer(this);
+        }
+        protected virtual IEnumerable<ILayerListener> IterateListeners() {
+            return transform.AggregateComponentsInChildren<ILayerListener>(false);
         }
         protected virtual void GenerateLayerData() {
             var layer = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
@@ -76,8 +81,9 @@ namespace nobnak.Gist.Layer2 {
             LocalToWorld.Reset(layer, local);
         }
 
-        public interface IMessageReceiver {
+        public interface ILayerListener {
             void CrownLayer(Layer layer);
+            void UpdateLayer(Layer layer);
         }
     }
 }
