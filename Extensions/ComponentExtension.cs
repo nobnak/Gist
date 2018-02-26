@@ -5,7 +5,7 @@ using UnityEngine;
 namespace nobnak.Gist.Extensions.ComponentExt {
 
     public static class ComponentExtension {
-        public static IEnumerable<T> AggregateComponentsInChildren<T>(this Transform parent) {
+        public static IEnumerable<T> AggregateComponentsInChildren<T>(this Transform parent, bool blockTransmission) {
 
             if (parent == null)
                 yield break;
@@ -15,14 +15,17 @@ namespace nobnak.Gist.Extensions.ComponentExt {
                 found = true;
                 yield return comp;
             }
-            if (found)
+            if (found && blockTransmission)
                 yield break;
 
             for (var i = 0; i < parent.childCount; i++) {
                 var child = parent.GetChild(i);
-                foreach (var c in child.AggregateComponentsInChildren<T>())
+                foreach (var c in child.AggregateComponentsInChildren<T>(blockTransmission))
                     yield return c;
             }
+        }
+        public static IEnumerable<T> AggregateComponentsInChildren<T>(this Transform parent) {
+            return parent.AggregateComponentsInChildren<T>(true);
         }
         public static bool IsVisibleLayer(this Component c) {
             return (Camera.current.cullingMask & (1 << c.gameObject.layer)) != 0;
