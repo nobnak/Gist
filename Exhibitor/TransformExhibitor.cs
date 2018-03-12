@@ -19,6 +19,8 @@ namespace nobnak.Gist.Exhibitor {
         protected List<Transform>nodes = new List<Transform>();
         protected Validator validator = new Validator();
 
+        public Data CurrentData { get { return data; } set { data = value; } }
+
         #region Unity
         private void OnEnable() {
             validator.Reset();
