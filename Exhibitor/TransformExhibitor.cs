@@ -8,64 +8,26 @@ using UnityEngine;
 namespace nobnak.Gist.Exhibitor {
 
     [ExecuteInEditMode]
-    public class TransformExhibitor : MonoBehaviour {
+    public class TransformExhibitor 
+        : BaseExhibitor<Transform, TransformExhibitor.Exhibit, TransformExhibitor.Data> {
+        [SerializeField]
+        protected Data data;
 
-        public Layer layer;
-        public Transform parent;
-        public Transform nodefab;
-
-        [SerializeField] protected Data data;
-
-        protected List<Transform>nodes = new List<Transform>();
-        protected Validator validator = new Validator();
-
-        public Data CurrentData { get { return data; } set { data = value; } }
-
-        #region Unity
-        private void OnEnable() {
-            validator.Reset();
-            validator.Validation += () => {
-                Clear();
-                foreach (var exhibit in data.exhibits) {
-                    var n = Instantiate(nodefab);
-                    n.gameObject.name = exhibit.name;
-                    n.Decode(exhibit.node);
-                    Add(n);
-                }
-            };
-            validator.CheckValidation();
-        }
-        private void Update() {
-            validator.CheckValidation();
-        }
-        private void OnValidate() {
-            validator.Invalidate();
-        }
-        private void OnDisable() {
-            Clear();
-        }
-        #endregion
-
-        #region List
-        private void Add(Transform n) {
-            n.gameObject.hideFlags = HideFlags.DontSave;
-            n.SetParent(parent, false);
-            nodes.Add(n);
-            n.NotifySelf<IExhibitorListener>(l => l.ExhibitorOnParent(parent));
-        }
-        private void Remove(Transform n) {
-            nodes.Remove(n);
-            n.NotifySelf<IExhibitorListener>(l => l.ExhibitorOnUnparent(parent));
-        }
-        private void Clear() {
-            var removelist = new List<Transform>(nodes);
-            foreach (var n in removelist) {
-                if (n == null)
-                    continue;
-                Remove(n);
-                ObjectDestructor.Destroy(n.gameObject);
+        #region BaseExhibitor
+        public override Data CurrentData {
+            get { return data; }
+            set {
+                data = value;
+                Invalidate();
             }
-            nodes.Clear();
+        }
+        public override void Decode(Transform node, Exhibit info) {
+            node.gameObject.name = info.name;
+            node.Decode(info.node);
+        }
+        public override IEnumerable<Exhibit> IterateExhibitInfo() {
+            foreach (var exhibit in data.exhibits)
+                yield return exhibit;
         }
         #endregion
 
