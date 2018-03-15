@@ -28,7 +28,8 @@ namespace nobnak.Gist.Extensions.ComponentExt {
             return parent.AggregateComponentsInChildren<T>(true);
         }
         public static bool IsVisibleLayer(this Component c) {
-            return (Camera.current.cullingMask & (1 << c.gameObject.layer)) != 0;
+            return Camera.current != null && c != null 
+                && (Camera.current.cullingMask & (1 << c.gameObject.layer)) != 0;
         }
 
         public static void NotifySelf<I>(this Component me, System.Action<I> method) {
