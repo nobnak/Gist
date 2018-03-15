@@ -74,8 +74,11 @@ namespace nobnak.Gist.Layer2 {
             return transform.AggregateComponentsInChildren<ILayerListener>(false);
         }
         protected virtual void GenerateLayerData() {
+            var localScale = transform.localScale;
+            localScale.z = 1f;
+
             var layer = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
-            var local = Matrix4x4.Scale(transform.localScale);
+            var local = Matrix4x4.Scale(localScale);
             LayerToWorld.Reset(layer);
             LocalToLayer.Reset(local);
             LocalToWorld.Reset(layer, local);
