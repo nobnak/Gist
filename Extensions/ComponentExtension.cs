@@ -32,12 +32,21 @@ namespace nobnak.Gist.Extensions.ComponentExt {
                 && (Camera.current.cullingMask & (1 << c.gameObject.layer)) != 0;
         }
 
-        public static void NotifySelf<I>(this Component me, System.Action<I> method) {
-            foreach (var i in me.GetComponents<I>())
+        public static void NotifySelf<Input>(this Component me, System.Action<Input> method) {
+            foreach (var i in me.GetComponents<Input>())
                 method(i);
         }
-        public static IEnumerable<O> NotifySelf<I, O>(this Component me, System.Func<I, O> method) {
-            foreach (var i in me.GetComponents<I>())
+        public static IEnumerable<Output> NotifySelf<Input, Output>(this Component me, System.Func<Input, Output> method) {
+            foreach (var i in me.GetComponents<Input>())
+                yield return method(i);
+        }
+
+        public static void NotifySelfAndChildren<Input>(this Component me, System.Action<Input> method) {
+            foreach (var i in me.GetComponentsInChildren<Input>())
+                method(i);
+        }
+        public static IEnumerable<Output> NotifySelfAndChildren<Input, Output>(this Component me, System.Func<Input, Output> method) {
+            foreach (var i in me.GetComponentsInChildren<Input>())
                 yield return method(i);
         }
     }
