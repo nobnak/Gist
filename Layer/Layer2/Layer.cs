@@ -64,11 +64,11 @@ namespace nobnak.Gist.Layer2 {
         
         protected virtual void BroadcastCrownLayer() {
             foreach (var c in IterateListeners())
-                c.CrownLayer(this);
+                c.TargetOnChange(this);
         }
         protected virtual void BroadcastUpdateLayer() {
             foreach (var c in IterateListeners())
-                c.UpdateLayer(this);
+                c.TargetOnChange(this);
         }
         protected virtual IEnumerable<ILayerListener> IterateListeners() {
             return transform.AggregateComponentsInChildren<ILayerListener>(false);
@@ -84,9 +84,6 @@ namespace nobnak.Gist.Layer2 {
             LocalToWorld.Reset(layer, local);
         }
 
-        public interface ILayerListener {
-            void CrownLayer(Layer layer);
-            void UpdateLayer(Layer layer);
-        }
+        public interface ILayerListener : IChangeListener<Layer> {}
     }
 }
