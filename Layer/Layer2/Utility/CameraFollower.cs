@@ -32,7 +32,7 @@ namespace nobnak.Gist.Layer2 {
             var curr = target.transform.localScale;
             if (source.orthographic) {
                 var orthoSize = 2f * source.orthographicSize;
-                var next = new Vector3(orthoSize, orthoSize, 1f);
+                var next = orthoSize * Vector3.one;
                 if (curr != next) {
                     target.transform.localScale = next;
                     return true;
