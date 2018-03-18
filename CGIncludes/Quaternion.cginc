@@ -3,9 +3,12 @@
 
 #define HALF_DEG2RAD 8.72664625e-3
 
+float4 qnormalize(float3 xyz, float w) {
+	return normalize(float4(xyz, w));
+}
 float4 quaternion(float3 axis, float degree) {
 	float rad = degree * HALF_DEG2RAD;
-	axis = normalized(axis);
+	axis = normalize(axis);
 	return float4(axis * sin(rad), cos(rad));
 }
 float4 qmultiply(float4 a, float4 b) {
@@ -16,9 +19,6 @@ float3 qrotate(float4 q, float3 v) {
 }
 float3 qrotateinv(float4 q, float3 v) {
 	return qmultiply(qmultiply(float4(-q.xyz, q.w), float4(v, 0)), q).xyz;
-}
-float4 qnormalize(float3 xyz, float w) {
-	return normalized(float4(xyz, w));
 }
 float4x4 qmatrix(float4 q) {
 	float4x4 m = {
