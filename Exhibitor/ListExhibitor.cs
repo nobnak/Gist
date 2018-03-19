@@ -1,13 +1,13 @@
-﻿using nobnak.Gist;
-using nobnak.Gist.Extensions.ComponentExt;
+﻿using nobnak.Gist.Extensions.ComponentExt;
 using nobnak.Gist.Layer2;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace nobnak.Gist.Exhibitor {
-    
-    public abstract class BaseExhibitor<ArtWorkType, ExhibitInfoType, DataTransformType> : MonoBehaviour 
+
+    public abstract class ListExhibitor<ArtWorkType, DataTransformType> 
+        : MonoBehaviour, IExhibitor
         where ArtWorkType : Component {
 
         public Layer layer;
@@ -20,20 +20,12 @@ namespace nobnak.Gist.Exhibitor {
         public virtual Validator Validator { get { return validator; } }
 
         public abstract DataTransformType CurrentData { get; set; }
-        public abstract void Decode(ArtWorkType node, ExhibitInfoType info);
-        public abstract IEnumerable<ExhibitInfoType> IterateExhibitInfo();
+        protected abstract void Validate();
 
         #region Unity
         protected virtual void OnEnable() {
             validator.Reset();
-            validator.Validation += () => {
-                Clear();
-                foreach (var exhibit in IterateExhibitInfo()) {
-                    var n = Instantiate(nodefab);
-                    Decode(n, exhibit);
-                    Add(n);
-                }
-            };
+            validator.Validation += () => Validate();
             validator.CheckValidation();
         }
         protected virtual void Update() {
@@ -54,9 +46,17 @@ namespace nobnak.Gist.Exhibitor {
             nodes.Add(n);
             n.NotifySelf<IExhibitorListener>(l => l.ExhibitorOnParent(parent));
         }
+        protected virtual void AddRange(IEnumerable<ArtWorkType> niter) {
+            foreach (var n in niter)
+                Add(n);
+        }
         protected virtual void Remove(ArtWorkType n) {
             nodes.Remove(n);
             n.NotifySelf<IExhibitorListener>(l => l.ExhibitorOnUnparent(parent));
+        }
+        protected virtual void Removerange(IEnumerable<ArtWorkType> niter) {
+            foreach (var n in niter)
+                Remove(n);
         }
         protected virtual void Clear() {
             var removelist = new List<ArtWorkType>(nodes);
@@ -70,6 +70,15 @@ namespace nobnak.Gist.Exhibitor {
         }
         #endregion
 
+        #region IExhibitor
         public virtual void Invalidate() { validator.Invalidate(); }
+        public virtual string SerializeToJson() {
+            return JsonUtility.ToJson(CurrentData);
+        }
+        public virtual void DeserializeFromJson(string json) {
+            CurrentData = JsonUtility.FromJson<DataTransformType>(json);
+        }
+        #endregion
+
     }
 }

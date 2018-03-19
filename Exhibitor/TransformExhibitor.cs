@@ -3,17 +3,17 @@ using nobnak.Gist.Extensions.ComponentExt;
 using nobnak.Gist.Layer2;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace nobnak.Gist.Exhibitor {
 
     [ExecuteInEditMode]
-    public class TransformExhibitor 
-        : BaseExhibitor<Transform, TransformExhibitor.Exhibit, TransformExhibitor.Data> {
+    public class TransformExhibitor : ListExhibitor<Transform, TransformExhibitor.Data> {
         [SerializeField]
         protected Data data;
-
-        #region BaseExhibitor
+        
+        #region ListExhibitor
         public override Data CurrentData {
             get { return data; }
             set {
@@ -21,15 +21,26 @@ namespace nobnak.Gist.Exhibitor {
                 Invalidate();
             }
         }
-        public override void Decode(Transform node, Exhibit info) {
-            node.gameObject.name = info.name;
-            node.Decode(info.node);
-        }
-        public override IEnumerable<Exhibit> IterateExhibitInfo() {
-            foreach (var exhibit in data.exhibits)
-                yield return exhibit;
+        protected override void Validate() {
+            Clear();
+            if (data != null && data.exhibits != null)
+                AddRange(data.exhibits.Select(i => {
+                    var n = Instantiate(nodefab);
+                    return Decode(n, i);
+                }));
         }
         #endregion
+
+        public virtual Transform Decode(Transform node, Exhibit info) {
+            node.gameObject.name = info.name;
+            return Decode(node, info.node);
+        }
+        public static Transform Decode(Transform tr, TransformExhibitor.TransformData ndata) {
+            tr.localPosition = ndata.position;
+            tr.localRotation = Quaternion.Euler(ndata.rotation);
+            tr.localScale = ndata.scale;
+            return tr;
+        }
 
         [System.Serializable]
         public class Data {
@@ -46,20 +57,7 @@ namespace nobnak.Gist.Exhibitor {
             public Vector3 rotation;
             public Vector3 scale;
         }
+        
     }
 
-    public static class FieldStorageExt { 
-        public static TransformExhibitor.TransformData Encode(this Transform tr) {
-            return new TransformExhibitor.TransformData() {
-                position = tr.localPosition,
-                rotation = tr.localRotation.eulerAngles,
-                scale = tr.localScale
-            };
-        }
-        public static void Decode(this Transform tr, TransformExhibitor.TransformData ndata) {
-            tr.localPosition = ndata.position;
-            tr.localRotation = Quaternion.Euler(ndata.rotation);
-            tr.localScale = ndata.scale;
-        }
-    }
 }
