@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using nobnak.Gist.ObjectExt;
 
 namespace nobnak.Gist {
 
@@ -61,7 +62,7 @@ namespace nobnak.Gist {
 		#region IDisposable implementation
         public bool IsDisposed { get { return _lineMat == null; } }
 		public void Dispose () {
-			ObjectDestructor.Destroy(_lineMat);
+			_lineMat.Destroy();
 		}
 		#endregion
 	}

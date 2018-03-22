@@ -1,4 +1,5 @@
-﻿using System.Collections;
+using nobnak.Gist.ObjectExt;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,7 +10,7 @@ namespace nobnak.Gist.Scoped {
         public ScopedObject(T data) : base(data) {  }
 
         protected override void Disposer(T data) {
-            ObjectDestructor.Destroy(data);
+            data.Destroy();
         }
 
         public static implicit operator ScopedObject<T>(T data) {

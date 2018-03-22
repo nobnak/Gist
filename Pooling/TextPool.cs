@@ -1,4 +1,5 @@
-﻿using System.Collections;
+using nobnak.Gist.ObjectExt;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,7 +15,7 @@ namespace nobnak.Gist.Pooling {
             pool = new MemoryPool<TextMesh>(
                 () => Instantiate(fab, transform),
                 (tm) => tm.gameObject.SetActive(false),
-                (tm) => ObjectDestructor.Destroy(tm.gameObject));
+                (tm) => tm.Destroy());
         }
         protected virtual void OnDisable() {
             if (pool != null) {

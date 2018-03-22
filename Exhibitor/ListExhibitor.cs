@@ -1,8 +1,9 @@
-﻿using nobnak.Gist.Extensions.ComponentExt;
+using nobnak.Gist.Extensions.ComponentExt;
 using nobnak.Gist.Layer2;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using nobnak.Gist.ObjectExt;
 
 namespace nobnak.Gist.Exhibitor {
 
@@ -64,7 +65,7 @@ namespace nobnak.Gist.Exhibitor {
                 if (n == null)
                     continue;
                 Remove(n);
-                ObjectDestructor.Destroy(n.gameObject);
+				n.Destroy();
             }
             nodes.Clear();
         }
