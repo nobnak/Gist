@@ -13,6 +13,7 @@ namespace nobnak.Gist.Exhibitor {
 		public abstract void Invalidate();
 		public abstract string SerializeToJson();
 		public abstract void DeserializeFromJson(string json);
+		public abstract object RawData();
 		#endregion
 
 		#region GUI

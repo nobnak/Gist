@@ -1,4 +1,4 @@
-﻿using nobnak.Gist;
+using nobnak.Gist;
 using nobnak.Gist.Extensions.ComponentExt;
 using nobnak.Gist.Layer2;
 using System.Collections;
@@ -12,5 +12,6 @@ namespace nobnak.Gist.Exhibitor {
         void Invalidate();
         string SerializeToJson();
         void DeserializeFromJson(string json);
+		object RawData();
     }
 }

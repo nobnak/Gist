@@ -79,6 +79,7 @@ namespace nobnak.Gist.Exhibitor {
         public virtual void DeserializeFromJson(string json) {
             CurrentData = JsonUtility.FromJson<DataTransformType>(json);
         }
+		public virtual object RawData() { return CurrentData; }
         #endregion
 
     }
