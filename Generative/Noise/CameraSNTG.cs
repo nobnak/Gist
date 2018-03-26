@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using nobnak.Gist.Layers;
 
@@ -29,5 +29,13 @@ namespace nobnak.Gist {
         }
         #endregion
 
+		public Camera TargetCamera {
+			set {
+				targetCam = value;
+			}
+			get {
+				return targetCam;
+			}
+		}
     }
 }
