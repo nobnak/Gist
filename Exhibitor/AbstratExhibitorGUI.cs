@@ -7,7 +7,7 @@ using nobnak.Gist.ObjectExt;
 
 namespace nobnak.Gist.Exhibitor {
 
-	public abstract class AbstratExhibitorGUI : MonoBehaviour, IExhibitor {
+	public abstract class AbstractExhibitorGUI : MonoBehaviour, IExhibitor {
 
 		#region IExhibitor
 		public abstract void Invalidate();
