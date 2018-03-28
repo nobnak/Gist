@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using UnityEngine;
 
 namespace nobnak.Gist {
@@ -43,12 +43,12 @@ namespace nobnak.Gist {
             }
         }
 
-        public bool CheckValidation() {
-            if (IsValid)
+        public bool Validate(bool force = false) {
+            if (!force && IsValid)
                 return true;
 
             Invalidate();
-            Validate();
+            _Validate();
 
             var result = Check(false);
             if (result) {
@@ -59,7 +59,7 @@ namespace nobnak.Gist {
             return result;
         }
 
-        protected void Validate() {
+        protected void _Validate() {
             if (Validation != null)
                 Validation();
         }

@@ -27,10 +27,10 @@ namespace nobnak.Gist.Exhibitor {
         protected virtual void OnEnable() {
             validator.Reset();
             validator.Validation += () => Validate();
-            validator.CheckValidation();
+            validator.Validate();
         }
         protected virtual void Update() {
-            validator.CheckValidation();
+            validator.Validate();
         }
         protected virtual void OnValidate() {
             validator.Invalidate();
