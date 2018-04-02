@@ -1,4 +1,4 @@
-﻿using nobnak.Gist.Extensions.ComponentExt;
+using nobnak.Gist.Extensions.ComponentExt;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
