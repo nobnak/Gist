@@ -11,21 +11,24 @@ float4 quaternion(float3 axis, float degree) {
 	axis = normalize(axis);
 	return float4(axis * sin(rad), cos(rad));
 }
-float4 quaternion(float3 fromDir, float3 toDir) {
+float4 qfromto(float3 fromDir, float3 toDir) {
 	fromDir = normalize(fromDir);
 	toDir = normalize(toDir);
-	float deg = degrees(acos(dot(fromDir, toDir)));
+	float rad = acos(dot(fromDir, toDir));
 	float3 axis = normalize(cross(fromDir, toDir));
-	return quaternion(axis, deg);
+	return qnormalize(axis * sin(rad), cos(rad));
+}
+float4 __qmultiply(float4 a, float4 b) {
+	return float4(a.w * b.xyz + b.w * a.xyz + cross(a.xyz, b.xyz), a.w * b.w - dot(a.xyz, b.xyz));
 }
 float4 qmultiply(float4 a, float4 b) {
-	return qnormalize(a.w * b.xyz + b.w * a.xyz + cross(a.xyz, b.xyz), a.w * b.w - dot(a.xyz, b.xyz));
+	return normalize(__qmultiply(a, b));
 }
 float3 qrotate(float4 q, float3 v) {
-	return qmultiply(qmultiply(q, float4(v, 0)), float4(-q.xyz, q.w)).xyz;
+	return __qmultiply(__qmultiply(q, float4(v, 0)), float4(-q.xyz, q.w)).xyz;
 }
 float3 qrotateinv(float4 q, float3 v) {
-	return qmultiply(qmultiply(float4(-q.xyz, q.w), float4(v, 0)), q).xyz;
+	return __qmultiply(__qmultiply(float4(-q.xyz, q.w), float4(v, 0)), q).xyz;
 }
 float4x4 qmatrix(float4 q) {
 	float4x4 m = {
