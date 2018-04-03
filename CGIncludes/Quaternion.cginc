@@ -11,6 +11,13 @@ float4 quaternion(float3 axis, float degree) {
 	axis = normalize(axis);
 	return float4(axis * sin(rad), cos(rad));
 }
+float4 quaternion(float3 fromDir, float3 toDir) {
+	fromDir = normalized(fromDir);
+	toDir = normalized(toDir);
+	float deg = degrees(acos(dot(fromDir, toDir));
+	float3 axis = normalized(cross(fromDir, toDir));
+	return quaternion(axis, deg);
+}
 float4 qmultiply(float4 a, float4 b) {
 	return qnormalize(a.w * b.xyz + b.w * a.xyz + cross(a.xyz, b.xyz), a.w * b.w - dot(a.xyz, b.xyz));
 }
