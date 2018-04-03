@@ -14,7 +14,7 @@ float4 quaternion(float3 axis, float degree) {
 float4 qfromto(float3 fromDir, float3 toDir) {
 	fromDir = normalize(fromDir);
 	toDir = normalize(toDir);
-	float rad = acos(dot(fromDir, toDir));
+	float rad = 0.5 * acos(dot(fromDir, toDir));
 	float3 axis = normalize(cross(fromDir, toDir));
 	return qnormalize(axis * sin(rad), cos(rad));
 }
