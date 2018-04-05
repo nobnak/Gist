@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,7 +19,7 @@ namespace nobnak.Gist {
         public T Value {
             get { return data; }
             set {
-                if (data.CompareTo(value) != 0) {
+                if (data == null || data.CompareTo(value) != 0) {
                     data = value;
                     ForceNotifyChanged();
                 }
