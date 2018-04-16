@@ -13,10 +13,22 @@ namespace nobnak.Gist.Resizable {
 		[SerializeField]
 		protected int lod;
 		[SerializeField]
-		protected ResizableRenderTexture tex;
+		protected Vector2Int size;
 
+		protected Validator validator = new Validator();
+		protected ResizableRenderTexture tex;
+		
 		public LODRenderTexture() {
 			tex = new ResizableRenderTexture();
+
+			validator.Validation += () => {
+				var sizeLod = size;
+				if (lod > 0) {
+					sizeLod.x = sizeLod.x >> Lod;
+					sizeLod.y = sizeLod.y >> Lod;
+				}
+				tex.Size = sizeLod;
+			};
 		}
 
 		#region IDisposable implementation
@@ -31,17 +43,21 @@ namespace nobnak.Gist.Resizable {
 		#region public
 		public int Lod {
 			get { return lod; }
-			set { lod = Mathf.Max(0, value); }
+			set {
+				value = Mathf.Max(0, value);
+				if (lod != value) {
+					validator.Invalidate();
+					lod = value;
+				}
+			}
 		}
 		public Vector2Int Size {
-			get { return tex.Size; }
+			get { return size; }
 			set {
-				var size = value;
-				if (lod > 0) {
-					size.x = size.x >> Lod;
-					size.y = size.y >> Lod;
+				if (size != value) {
+					validator.Invalidate();
+					size = value;
 				}
-				tex.Size = size;
 			}
 		}
 		public Format Format {
@@ -51,7 +67,10 @@ namespace nobnak.Gist.Resizable {
 			}
 		}
 		public RenderTexture Texture {
-			get { return tex.Texture; }
+			get {
+				validator.Validate();
+				return tex.Texture;
+			}
 		}
 
         public void Clear(Color color, bool clearDepth = true, bool clearColor = true) {
