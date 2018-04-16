@@ -18,18 +18,14 @@ namespace nobnak.Gist.Resizable {
 		protected Validator validator = new Validator();
 		protected ResizableRenderTexture tex;
 		
-		public LODRenderTexture() {
-			tex = new ResizableRenderTexture();
+		public LODRenderTexture(Format format) {
+			tex = new ResizableRenderTexture(format);
 
 			validator.Validation += () => {
-				var sizeLod = size;
-				if (lod > 0) {
-					sizeLod.x = sizeLod.x >> Lod;
-					sizeLod.y = sizeLod.y >> Lod;
-				}
-				tex.Size = sizeLod;
+				tex.Size = LodSize;
 			};
 		}
+		public LODRenderTexture() : this(new Format()) { }
 
 		#region IDisposable implementation
 		public void Dispose() {
@@ -60,6 +56,16 @@ namespace nobnak.Gist.Resizable {
 				}
 			}
 		}
+		public Vector2Int LodSize {
+			get {
+				var sizeLod = size;
+				if (lod > 0) {
+					sizeLod.x = sizeLod.x >> Lod;
+					sizeLod.y = sizeLod.y >> Lod;
+				}
+				return sizeLod;
+			}
+		}
 		public Format Format {
 			get { return tex.Format; }
 			set {
@@ -87,10 +93,6 @@ namespace nobnak.Gist.Resizable {
             if (BeforeDestroyTexture != null)
                 BeforeDestroyTexture (this);
         }
-		
-		protected static int ParseAntiAliasing(int antiAliasing) {
-			return (antiAliasing > 0 ? antiAliasing : QualitySettings.antiAliasing);
-		}
 		#endregion
 	}
 }
