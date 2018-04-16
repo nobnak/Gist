@@ -15,6 +15,9 @@ namespace nobnak.Gist.Resizable {
 		public int antiAliasing;
 		public int depth;
 
+		public bool autoGenerateMips;
+		public bool useMipMap;
+
 		public Format() {
 			Reset();
 		}
@@ -26,6 +29,28 @@ namespace nobnak.Gist.Resizable {
 			wrapMode = TextureWrapMode.Clamp;
 			textureFormat = RenderTextureFormat.ARGB32;
 			readWrite = RenderTextureReadWrite.Default;
+
+			autoGenerateMips = false;
+			useMipMap = false;
+		}
+
+		public RenderTexture CreateTexture(int width, int height) {
+			var tex = new RenderTexture(width, height, 
+				depth, textureFormat, readWrite);
+			ApplyTo(tex);
+			return tex;
+		}
+		public void ApplyTo(RenderTexture tex) {
+			tex.filterMode = filterMode;
+			tex.wrapMode = wrapMode;
+			tex.antiAliasing = ParseAntiAliasing(antiAliasing);
+			tex.autoGenerateMips = autoGenerateMips;
+			tex.useMipMap = useMipMap;
+
+		}
+
+		public static int ParseAntiAliasing(int antiAliasing) {
+			return (antiAliasing > 0 ? antiAliasing : QualitySettings.antiAliasing);
 		}
 	}
 }

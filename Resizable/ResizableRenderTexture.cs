@@ -20,21 +20,7 @@ namespace nobnak.Gist.Resizable {
 		public ResizableRenderTexture(Format format) {
 			this.format = format;
 		}
-		public ResizableRenderTexture(
-			RenderTextureReadWrite readWrite = RenderTextureReadWrite.sRGB,
-			RenderTextureFormat textureFormat = RenderTextureFormat.ARGB32,
-			TextureWrapMode wrapMode = TextureWrapMode.Clamp,
-			FilterMode filterMode = FilterMode.Bilinear,
-			int antiAliasing = -1,
-			int depth = 24
-		) : this(new Format() {
-			readWrite = readWrite,
-			textureFormat = textureFormat,
-			wrapMode = wrapMode,
-			filterMode = filterMode,
-			antiAliasing = antiAliasing,
-			depth = depth
-		}) { }
+		public ResizableRenderTexture() : this(new Format()) { }
 
 		#region IDisposable implementation
 		public void Dispose() {
@@ -119,12 +105,7 @@ namespace nobnak.Gist.Resizable {
 				return;
 			}
 
-            tex = new RenderTexture (width, height, format.depth, format.textureFormat, format.readWrite);
-            tex.filterMode = FilterMode;
-            tex.wrapMode = WrapMode;
-            tex.antiAliasing = ParseAntiAliasing(format.antiAliasing);
-			tex.autoGenerateMips = false;
-			tex.useMipMap = false;
+            tex = format.CreateTexture(width, height);
 			Debug.LogFormat("Create ResizableRenderTexture : {0}\n{1}",
 				string.Format("size={0}x{1}", tex.width, tex.height),
 				string.Format("depth={0} format={1} readWrite={2} filter={3} wrap={4} antiAliasing={5}",
@@ -165,9 +146,6 @@ namespace nobnak.Gist.Resizable {
 				Object.Destroy(obj);
 			else
 				Object.DestroyImmediate(obj);
-		}
-		public static int ParseAntiAliasing(int antiAliasing) {
-			return (antiAliasing > 0 ? antiAliasing : QualitySettings.antiAliasing);
 		}
 	}
 }
