@@ -123,6 +123,8 @@ namespace nobnak.Gist.Resizable {
             tex.filterMode = FilterMode;
             tex.wrapMode = WrapMode;
             tex.antiAliasing = ParseAntiAliasing(format.antiAliasing);
+			tex.autoGenerateMips = false;
+			tex.useMipMap = false;
 			Debug.LogFormat("Create ResizableRenderTexture : {0}\n{1}",
 				string.Format("size={0}x{1}", tex.width, tex.height),
 				string.Format("depth={0} format={1} readWrite={2} filter={3} wrap={4} antiAliasing={5}",
