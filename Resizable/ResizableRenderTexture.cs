@@ -1,46 +1,40 @@
-using nobnak.Gist.ObjectExt;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace nobnak.Gist.Resizable {
+
+	[System.Serializable]
     public class ResizableRenderTexture : System.IDisposable {
         public const int DEFAULT_ANTIALIASING = 1;
 
         public event System.Action<RenderTexture> AfterCreateTexture;
         public event System.Action<RenderTexture> BeforeDestroyTexture;
 
-		protected Validator validator = new Validator();
+		[SerializeField]
+		protected Vector2Int size;
+		[SerializeField]
+		protected Format format;
+
+		protected bool valid = false;
 		protected RenderTexture tex;
 
-		protected RenderTextureReadWrite readWrite;
-		protected RenderTextureFormat format;
-		protected TextureWrapMode wrapMode;
-		protected FilterMode filterMode;
-		protected int antiAliasing;
-		protected Vector2Int size;
-		protected int depth;
-
-		public ResizableRenderTexture(int depth = 24, 
-			RenderTextureFormat format = RenderTextureFormat.ARGB32,
-            RenderTextureReadWrite readWrite = RenderTextureReadWrite.Default, 
-			int antiAliasing = 0,
+		public ResizableRenderTexture(Format format) {
+			this.format = format;
+		}
+		public ResizableRenderTexture(
+			RenderTextureReadWrite readWrite = RenderTextureReadWrite.sRGB,
+			RenderTextureFormat textureFormat = RenderTextureFormat.ARGB32,
+			TextureWrapMode wrapMode = TextureWrapMode.Clamp,
 			FilterMode filterMode = FilterMode.Bilinear,
-			TextureWrapMode wrapMode = TextureWrapMode.Clamp) {
-            this.depth = depth;
-            this.format = format;
-            this.readWrite = readWrite;
-            this.antiAliasing = ParseAntiAliasing (antiAliasing);
-			this.filterMode = FilterMode;
-			this.wrapMode = wrapMode;
-
-			validator.Reset();
-			validator.Validation += () => {
-				CreateTexture(size.x, size.y);
-			};
-			validator.SetCheckers(() =>
-				tex != null && tex.width == size.x && tex.height == size.y);
-        }
+			int antiAliasing = -1,
+			int depth = 24
+		) : this(new Format() {
+			readWrite = readWrite,
+			textureFormat = textureFormat,
+			wrapMode = wrapMode,
+			filterMode = filterMode,
+			antiAliasing = antiAliasing,
+			depth = depth
+		}) { }
 
 		#region IDisposable implementation
 		public void Dispose() {
@@ -53,39 +47,61 @@ namespace nobnak.Gist.Resizable {
 			get { return size; }
 			set {
 				if (size != value) {
-					validator.Invalidate();
+					Invalidate();
 					size = value;
 				}
 			}
 		}
 		public RenderTexture Texture {
 			get {
-				validator.Validate();
+				Validate();
 				return tex;
 			}
 		}
         public FilterMode FilterMode {
-			get { return filterMode; }
+			get { return format.filterMode; }
 			set {
-				if (filterMode != value) {
-					validator.Invalidate();
-					filterMode = value;
+				if (format.filterMode != value) {
+					Invalidate();
+					format.filterMode = value;
 				}
 			}
 		}
         public TextureWrapMode WrapMode {
-			get { return wrapMode; }
+			get { return format.wrapMode; }
 			set {
-				if (wrapMode != value) {
-					validator.Invalidate();
-					wrapMode = value;
+				if (format.wrapMode != value) {
+					Invalidate();
+					format.wrapMode = value;
 				}
 			}
 		}
-
-        public bool Update () {
-			return validator.Validate();
-        }
+		public RenderTextureReadWrite ReadWrite {
+			get { return format.readWrite; }
+			set {
+				if (format.readWrite != value) {
+					Invalidate();
+					format.readWrite = value;
+				}
+			}
+		}
+		public int AntiAliasing {
+			get { return format.antiAliasing; }
+			set {
+				if (format.antiAliasing != value) {
+					Invalidate();
+					format.antiAliasing = value;
+				}
+			}
+		}
+		public Format Format {
+			get { return format; }
+			set {
+				Invalidate();
+				format = value;
+			}
+		}
+		
         public void Clear(Color color, bool clearDepth = true, bool clearColor = true) {
             var active = RenderTexture.active;
             RenderTexture.active = tex;
@@ -103,11 +119,15 @@ namespace nobnak.Gist.Resizable {
 				return;
 			}
 
-            tex = new RenderTexture (width, height, depth, format, readWrite);
+            tex = new RenderTexture (width, height, format.depth, format.textureFormat, format.readWrite);
             tex.filterMode = FilterMode;
             tex.wrapMode = WrapMode;
-            tex.antiAliasing = antiAliasing;
-			Debug.LogFormat("ResizableRenderTexture.Create size={0}x{1}", width, height);
+            tex.antiAliasing = ParseAntiAliasing(format.antiAliasing);
+			Debug.LogFormat("Create ResizableRenderTexture : {0}\n{1}",
+				string.Format("size={0}x{1}", tex.width, tex.height),
+				string.Format("depth={0} format={1} readWrite={2} filter={3} wrap={4} antiAliasing={5}",
+				tex.depth, tex.format, (tex.sRGB ? "sRGB" : "Linear"),
+				tex.filterMode, tex.wrapMode, tex.antiAliasing));
             NotifyAfterCreateTexture ();
         }
         protected void NotifyAfterCreateTexture() {
@@ -121,12 +141,31 @@ namespace nobnak.Gist.Resizable {
 
         protected void ReleaseTexture() {
             NotifyBeforeDestroyTexture ();
-            tex.Destroy();
+            Release(tex);
             tex = null;
         }
-		protected static int ParseAntiAliasing(int antiAliasing) {
-			return (antiAliasing > 0 ? antiAliasing : QualitySettings.antiAliasing);
+		protected virtual void Invalidate() {
+			valid = false;
+		}
+		protected virtual void Validate() {
+			if (!valid) {
+				CreateTexture(size.x, size.y);
+				valid = CheckValidity();
+			}
+		}
+		protected virtual bool CheckValidity() {
+			return tex != null && tex.width == size.x && tex.height == size.y;
 		}
 		#endregion
+
+		public static void Release(Object obj) {
+			if (Application.isPlaying)
+				Object.Destroy(obj);
+			else
+				Object.DestroyImmediate(obj);
+		}
+		public static int ParseAntiAliasing(int antiAliasing) {
+			return (antiAliasing > 0 ? antiAliasing : QualitySettings.antiAliasing);
+		}
 	}
 }
