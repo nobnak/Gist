@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 
@@ -18,8 +19,27 @@ namespace nobnak.Gist.Resizable {
 		public bool autoGenerateMips;
 		public bool useMipMap;
 
+		public bool useDynamicScale;
+
+		public int anisoLevel;
+
 		public Format() {
 			Reset();
+		}
+
+		public override string ToString() {
+			var tmp = new StringBuilder();
+			tmp.AppendFormat("readWrite={0}, ", readWrite);
+			tmp.AppendFormat("textureFormat={0}, ", textureFormat);
+			tmp.AppendFormat("wrapMode={0}, ", wrapMode);
+			tmp.AppendFormat("filterMode={0}, ", filterMode);
+			tmp.AppendFormat("antiAliasing={0}, ", antiAliasing);
+			tmp.AppendFormat("depth={0}, ", depth);
+			tmp.AppendFormat("autoGenerateMips={0}, ", autoGenerateMips);
+			tmp.AppendFormat("useMipMap={0}, ", useMipMap);
+			tmp.AppendFormat("useDynamicScale={0}, ", useDynamicScale);
+			tmp.AppendFormat("anisoLevel={0}, ", anisoLevel);
+			return tmp.ToString();
 		}
 
 		public void Reset() {
@@ -32,21 +52,37 @@ namespace nobnak.Gist.Resizable {
 
 			autoGenerateMips = false;
 			useMipMap = false;
+
+			useDynamicScale = false;
+
+			anisoLevel = 0;
 		}
 
 		public RenderTexture CreateTexture(int width, int height) {
 			var tex = new RenderTexture(width, height, 
 				depth, textureFormat, readWrite);
-			ApplyTo(tex);
+			ApplyToNew(tex);
 			return tex;
 		}
-		public void ApplyTo(RenderTexture tex) {
+		public RenderTexture GetTexture(int width, int height) {
+			var tex = RenderTexture.GetTemporary(
+				width, height, depth, 
+				textureFormat, readWrite, 
+				ParseAntiAliasing(antiAliasing));
+			ApplyToExisting(tex);
+			return tex;
+		}
+		public void ApplyToNew(RenderTexture tex) {
+			tex.autoGenerateMips = autoGenerateMips;
+			tex.useMipMap = useMipMap;
+			ApplyToExisting(tex);
+		}
+		public  void ApplyToExisting(RenderTexture tex) {
 			tex.filterMode = filterMode;
 			tex.wrapMode = wrapMode;
 			tex.antiAliasing = ParseAntiAliasing(antiAliasing);
-			tex.autoGenerateMips = autoGenerateMips;
-			tex.useMipMap = useMipMap;
-
+			tex.useDynamicScale = useDynamicScale;
+			tex.anisoLevel = anisoLevel;
 		}
 
 		public static int ParseAntiAliasing(int antiAliasing) {

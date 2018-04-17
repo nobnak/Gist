@@ -4,8 +4,6 @@ namespace nobnak.Gist.Resizable {
 
 	[System.Serializable]
     public class ResizableRenderTexture : System.IDisposable {
-        public const int DEFAULT_ANTIALIASING = 1;
-
         public event System.Action<RenderTexture> AfterCreateTexture;
         public event System.Action<RenderTexture> BeforeDestroyTexture;
 
@@ -23,13 +21,13 @@ namespace nobnak.Gist.Resizable {
 		public ResizableRenderTexture() : this(new Format()) { }
 
 		#region IDisposable implementation
-		public void Dispose() {
+		public virtual void Dispose() {
 			ReleaseTexture();
 		}
 		#endregion
 
 		#region public
-		public Vector2Int Size {
+		public virtual Vector2Int Size {
 			get { return size; }
 			set {
 				if (size != value) {
@@ -38,13 +36,13 @@ namespace nobnak.Gist.Resizable {
 				}
 			}
 		}
-		public RenderTexture Texture {
+		public virtual RenderTexture Texture {
 			get {
 				Validate();
 				return tex;
 			}
 		}
-        public FilterMode FilterMode {
+        public virtual FilterMode FilterMode {
 			get { return format.filterMode; }
 			set {
 				if (format.filterMode != value) {
@@ -53,7 +51,7 @@ namespace nobnak.Gist.Resizable {
 				}
 			}
 		}
-        public TextureWrapMode WrapMode {
+        public virtual TextureWrapMode WrapMode {
 			get { return format.wrapMode; }
 			set {
 				if (format.wrapMode != value) {
@@ -62,7 +60,7 @@ namespace nobnak.Gist.Resizable {
 				}
 			}
 		}
-		public RenderTextureReadWrite ReadWrite {
+		public virtual RenderTextureReadWrite ReadWrite {
 			get { return format.readWrite; }
 			set {
 				if (format.readWrite != value) {
@@ -71,7 +69,7 @@ namespace nobnak.Gist.Resizable {
 				}
 			}
 		}
-		public int AntiAliasing {
+		public virtual int AntiAliasing {
 			get { return format.antiAliasing; }
 			set {
 				if (format.antiAliasing != value) {
@@ -80,7 +78,7 @@ namespace nobnak.Gist.Resizable {
 				}
 			}
 		}
-		public Format Format {
+		public virtual Format Format {
 			get { return format; }
 			set {
 				Invalidate();
@@ -88,16 +86,30 @@ namespace nobnak.Gist.Resizable {
 			}
 		}
 		
-        public void Clear(Color color, bool clearDepth = true, bool clearColor = true) {
+        public virtual void Clear(Color color, bool clearDepth = true, bool clearColor = true) {
             var active = RenderTexture.active;
             RenderTexture.active = tex;
             GL.Clear (clearDepth, clearColor, color);
             RenderTexture.active = active;
-        }
+		}
+		public virtual void Invalidate() {
+			valid = false;
+		}
+		public virtual void Validate() {
+			if (!valid) {
+				CreateTexture(size.x, size.y);
+				valid = CheckValidity();
+			}
+		}
+		public virtual void Release() {
+			if (tex != null) {
+				tex.Release();
+			}
+		}
 		#endregion
 
 		#region private
-		protected void CreateTexture(int width, int height) {
+		protected virtual void CreateTexture(int width, int height) {
             ReleaseTexture();
 
 			if (width < 2 || height < 2) {
@@ -108,34 +120,23 @@ namespace nobnak.Gist.Resizable {
             tex = format.CreateTexture(width, height);
 			Debug.LogFormat("Create ResizableRenderTexture : {0}\n{1}",
 				string.Format("size={0}x{1}", tex.width, tex.height),
-				string.Format("depth={0} format={1} readWrite={2} filter={3} wrap={4} antiAliasing={5}",
-				tex.depth, tex.format, (tex.sRGB ? "sRGB" : "Linear"),
-				tex.filterMode, tex.wrapMode, tex.antiAliasing));
+				format);
             NotifyAfterCreateTexture ();
         }
-        protected void NotifyAfterCreateTexture() {
+        protected virtual void NotifyAfterCreateTexture() {
             if (AfterCreateTexture != null)
                 AfterCreateTexture (tex);
         }
-        protected void NotifyBeforeDestroyTexture() {
+        protected virtual void NotifyBeforeDestroyTexture() {
             if (BeforeDestroyTexture != null)
                 BeforeDestroyTexture (tex);
         }
 
-        protected void ReleaseTexture() {
+        protected virtual void ReleaseTexture() {
             NotifyBeforeDestroyTexture ();
             Release(tex);
             tex = null;
         }
-		protected virtual void Invalidate() {
-			valid = false;
-		}
-		protected virtual void Validate() {
-			if (!valid) {
-				CreateTexture(size.x, size.y);
-				valid = CheckValidity();
-			}
-		}
 		protected virtual bool CheckValidity() {
 			return tex != null && tex.width == size.x && tex.height == size.y;
 		}
