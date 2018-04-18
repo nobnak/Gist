@@ -44,7 +44,7 @@ namespace nobnak.Gist.Resizable {
 
 		public void Reset() {
 			depth = 24;
-			antiAliasing = 0;
+			antiAliasing = 1;
 			filterMode = FilterMode.Bilinear;
 			wrapMode = TextureWrapMode.Clamp;
 			textureFormat = RenderTextureFormat.ARGB32;
