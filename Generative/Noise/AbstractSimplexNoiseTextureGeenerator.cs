@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using nobnak.Gist.Layers;
 using nobnak.Gist.Events;
+using nobnak.Gist.ObjectExt;
+using nobnak.Gist.Extensions.Texture2DExt;
 
 namespace nobnak.Gist {
     [ExecuteInEditMode]
@@ -95,8 +97,7 @@ namespace nobnak.Gist {
             width = 1 << bits;
             _texelSize.Set (1f / width, 1f / width);
             if (_noiseTex == null || _noiseTex.width != width) {
-                ReleaseTex ();
-                _noiseTex = new Texture2D (width, width, TextureFormat.ARGB32, false, true);
+				_noiseTex = _noiseTex.Create(width, width, TextureFormat.ARGB32, false, true);
                 _noiseTex.wrapMode = TextureWrapMode.Clamp;
                 _noiseTex.filterMode = FilterMode.Bilinear;
                 _noiseColors = _noiseTex.GetPixels ();
@@ -158,7 +159,7 @@ namespace nobnak.Gist {
             return (float)SimplexNoise.Noise (x, y, z);
         }
         protected virtual void ReleaseTex () {
-            DestroyImmediate(_noiseTex);
+			_noiseTex.Destroy();
         }
     }
 }
