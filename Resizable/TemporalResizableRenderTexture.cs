@@ -5,10 +5,10 @@ namespace nobnak.Gist.Resizable {
 	[System.Serializable]
     public class TemporalResizableRenderTexture : ResizableRenderTexture {
 
-		public TemporalResizableRenderTexture(Format format) {
+		public TemporalResizableRenderTexture(FormatRT format) {
 			this.format = format;
 		}
-		public TemporalResizableRenderTexture() : this(new Format()) { }
+		public TemporalResizableRenderTexture() : this(new FormatRT()) { }
 
 		#region public
 		public override void Release() {

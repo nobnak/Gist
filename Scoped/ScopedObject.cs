@@ -1,11 +1,9 @@
 using nobnak.Gist.ObjectExt;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace nobnak.Gist.Scoped {
 
-    public class ScopedObject<T> : Scoped<T> where T : Object {
+	public class ScopedObject<T> : Scoped<T> where T : Object {
 
         public ScopedObject(T data) : base(data) {  }
 

@@ -1,3 +1,5 @@
+using nobnak.Gist.Extensions.Texture2DExt;
+using nobnak.Gist.Resizable;
 using NonInstancedMaterialProperty;
 using System.IO;
 using UnityEngine;
@@ -6,26 +8,30 @@ namespace nobnak.Gist.Loader {
 
 	[System.Serializable]
 	public class ImageLoader : System.IDisposable {
+		public event System.Action<Texture2D> Changed;
+
 		[SerializeField]
 		FilePath file;
 		[SerializeField]
-		protected TextureFormat format = TextureFormat.ARGB32;
-		[SerializeField]
-		protected bool mipmap = true;
+		protected Format2D format = new Format2D(TextureFormat.ARGB32, true, false);
 
 		protected Reactive<string> reactivePath = new Reactive<string>();
 		protected Reactive<TextureFormat> reactiveFormat = new Reactive<TextureFormat>();
 		protected Reactive<bool> reactiveMipmap = new Reactive<bool>();
+		protected Reactive<bool> reactiveLinear = new Reactive<bool>();
 
 		protected Texture2D target;
 		protected FileSystemWatcher watcher = new FileSystemWatcher();
 		protected Validator validator = new Validator();
 
-		public ImageLoader() {
+		public ImageLoader() : this(TextureFormat.ARGB32, true, false) { }
+		public ImageLoader(TextureFormat format, bool mipmap, bool linear) {
 			validator.Reset();
 			validator.Validation += () => {
-				ApplyDataToReactive();
 				LoadTarget();
+			};
+			validator.Validated += () => {
+				NotifyChanged();
 			};
 
 			watcher.Changed += (s, e) => {
@@ -45,39 +51,63 @@ namespace nobnak.Gist.Loader {
 				validator.Invalidate();
 				ClearTarget();
 			};
+			reactiveLinear.Changed += v => {
+				validator.Invalidate();
+				ClearTarget();
+			};
 		}
 
-		public Texture2D Target {
+		#region public
+		public virtual Texture2D Target {
 			get {
 				validator.Validate();
 				return target;
 			}
 		}
-
-		public void Dispose() {
-			ClearTarget();
+		public virtual string CurrentFilePath {
+			get { return file.Path; }
+			set {
+				if (file.Path != value) {
+					validator.Invalidate();
+					file.Path = value;
+				}
+			}
 		}
 
-		#region Hidden
-		protected void ClearTarget() {
+		public virtual void Dispose() {
+			ClearTarget();
+		}
+		#endregion
+
+		#region private
+		protected virtual void NotifyChanged() {
+			if (Changed != null)
+				Changed(target);
+		}
+		protected virtual void ClearTarget() {
 			if (target != null) {
-				ObjectDestructor.Destroy(target);
+				target.Destroy();
 				target = null;
 			}
 		}
-		protected void ApplyDataToReactive() {
+		protected virtual void ApplyDataToReactive() {
 			reactivePath.Value = file.Path;
-			reactiveFormat.Value = format;
-			reactiveMipmap.Value = mipmap;
+			reactiveFormat.Value = format.textureFormat;
+			reactiveMipmap.Value = format.useMipMap;
+			reactiveLinear.Value = format.linear;
 		}
-		protected void LoadTarget() {
+		protected virtual bool LoadTarget() {
+			var result = false;
 			try {
-				if (target == null)
-					target = new Texture2D(2, 2, format, mipmap);
 				var path = file.Path;
-				if (!string.IsNullOrEmpty(path) && target.LoadImage(File.ReadAllBytes(path)))
+				result = (!string.IsNullOrEmpty(path)
+					&& (target == null
+					? (target = format.CreateTexture(2, 2))
+					: target).LoadImage(File.ReadAllBytes(path)));
+				if (result)
 					Debug.LogFormat("Load Image : {0}", path);
 			} catch { }
+			return result;
 		}
 
 		#endregion

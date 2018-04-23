@@ -1,3 +1,4 @@
+using nobnak.Gist.ObjectExt;
 using UnityEngine;
 
 namespace nobnak.Gist.Resizable {
@@ -10,15 +11,15 @@ namespace nobnak.Gist.Resizable {
 		[SerializeField]
 		protected Vector2Int size;
 		[SerializeField]
-		protected Format format;
+		protected FormatRT format;
 
 		protected bool valid = false;
 		protected RenderTexture tex;
 
-		public ResizableRenderTexture(Format format) {
+		public ResizableRenderTexture(FormatRT format) {
 			this.format = format;
 		}
-		public ResizableRenderTexture() : this(new Format()) { }
+		public ResizableRenderTexture() : this(new FormatRT()) { }
 
 		#region IDisposable implementation
 		public virtual void Dispose() {
@@ -78,7 +79,7 @@ namespace nobnak.Gist.Resizable {
 				}
 			}
 		}
-		public virtual Format Format {
+		public virtual FormatRT Format {
 			get { return format; }
 			set {
 				Invalidate();
@@ -102,9 +103,6 @@ namespace nobnak.Gist.Resizable {
 			}
 		}
 		public virtual void Release() {
-			if (tex != null) {
-				tex.Release();
-			}
 		}
 		#endregion
 
@@ -134,19 +132,13 @@ namespace nobnak.Gist.Resizable {
 
         protected virtual void ReleaseTexture() {
             NotifyBeforeDestroyTexture ();
-            Release(tex);
+            tex.Destroy();
             tex = null;
         }
 		protected virtual bool CheckValidity() {
 			return tex != null && tex.width == size.x && tex.height == size.y;
 		}
 		#endregion
-
-		public static void Release(Object obj) {
-			if (Application.isPlaying)
-				Object.Destroy(obj);
-			else
-				Object.DestroyImmediate(obj);
-		}
+		
 	}
 }

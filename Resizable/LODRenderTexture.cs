@@ -18,14 +18,14 @@ namespace nobnak.Gist.Resizable {
 		protected Validator validator = new Validator();
 		protected ResizableRenderTexture tex;
 		
-		public LODRenderTexture(Format format) {
+		public LODRenderTexture(FormatRT format) {
 			tex = new ResizableRenderTexture(format);
 
 			validator.Validation += () => {
 				tex.Size = LodSize;
 			};
 		}
-		public LODRenderTexture() : this(new Format()) { }
+		public LODRenderTexture() : this(new FormatRT()) { }
 
 		#region IDisposable implementation
 		public void Dispose() {
@@ -66,7 +66,7 @@ namespace nobnak.Gist.Resizable {
 				return sizeLod;
 			}
 		}
-		public Format Format {
+		public FormatRT Format {
 			get { return tex.Format; }
 			set {
 				tex.Format = value;

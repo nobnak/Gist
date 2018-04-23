@@ -14,6 +14,9 @@ namespace nobnak.Gist.Loader {
 			get {
 				return System.Environment.ExpandEnvironmentVariables(filepath);
 			}
+			set {
+				filepath = value;
+			}
 		}
 
 		public virtual bool TryLoad<Data>(out Data data) {
