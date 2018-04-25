@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 namespace nobnak.Gist {
@@ -208,7 +208,8 @@ namespace nobnak.Gist {
         }
         public Pair SetTexture(int name, Texture value) {
             CheckLoad ();
-            Block.SetTexture (name, value);
+			if(value != null)
+				Block.SetTexture (name, value);
             return this;
         }
         public Pair SetVector(string name, Vector4 value) {
