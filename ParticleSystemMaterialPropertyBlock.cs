@@ -5,16 +5,16 @@ namespace nobnak.Gist {
 
     [RequireComponent(typeof(ParticleSystem))]
     public class ParticleSystemMaterialPropertyBlock : MonoBehaviour {
-        MaterialPropertyBlockChanied block;
+        MaterialPropertyBlockMethodChain block;
 
         #region Unity
         void Awake () {
             var ps = GetComponent<ParticleSystem>();
             var renderer = ps.GetComponent<ParticleSystemRenderer> ();
-            block = new MaterialPropertyBlockChanied (renderer);
+            block = new MaterialPropertyBlockMethodChain (renderer);
     	}
         #endregion
 
-        public MaterialPropertyBlockChanied Block { get { return block; } }
+        public MaterialPropertyBlockMethodChain Block { get { return block; } }
     }
 }
