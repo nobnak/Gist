@@ -18,6 +18,9 @@ namespace nobnak.Gist.Loader {
 				filepath = value;
 			}
 		}
+		public virtual string FullPath {
+			get { return GetFullPath(Path); }
+		}
 
 		public virtual bool TryLoad<Data>(out Data data) {
 			string json;
@@ -30,6 +33,12 @@ namespace nobnak.Gist.Loader {
 			var json = JsonUtility.ToJson(data, true);
 			var result = Path.TrySave(json);
 			return result;
+		}
+
+		public static string GetFullPath(string path) {
+			if (!System.IO.Path.IsPathRooted(path))
+				path = System.IO.Path.Combine(Application.dataPath, path);
+			return path;
 		}
 
 	}
