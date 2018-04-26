@@ -22,13 +22,13 @@ namespace nobnak.Gist.Layers {
         public Vector2 size = Vector2.one;
         public Rect viewport = new Rect (0f, 0f, 1f, 1f);
 
-        MaterialPropertyBlockChanied block;
+        MaterialPropertyBlockMethodChain block;
 
         #region Unity
         void OnEnable() {
             Renderer rend;
             if ((rend = GetComponent<Renderer> ()) != null)
-                block = new MaterialPropertyBlockChanied (rend);
+                block = new MaterialPropertyBlockMethodChain (rend);
         }
         void Update() {
             if (targetCam == null)
