@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -199,12 +199,8 @@ namespace nobnak.Gist {
             if (!StartDraw (modelViewMat, GL.LINES))
                 return;
             try {
-                var v = QUAD [0];
-                for (var i = 0; i < QUAD.Length; i++) {
-                    GL.Vertex (v);
-                    v = QUAD [(i + 1) % QUAD.Length];
-                    GL.Vertex (v);
-                }
+				foreach (var v in IterateQuadLines())
+					GL.Vertex (v);
             } finally {
                 EndDraw ();
             }
@@ -220,23 +216,53 @@ namespace nobnak.Gist {
             }
         }
 
-        public void DrawLines(IEnumerable<Vector3> vertices, Matrix4x4 modelViewMat) {
-            if (!StartDraw (modelViewMat, GL.LINES))
-                return;
-            try {
-    			var iter = vertices.GetEnumerator ();
-    			while (iter.MoveNext ()) {
-    				var vfrom = iter.Current;
-    				if (!iter.MoveNext ())
-    					break;
-    				var vto = iter.Current;
-    				GL.Vertex (vfrom);
-    				GL.Vertex (vto);
-    			}
-            } finally {
-                EndDraw ();
-            }
-        }
+		public void DrawQuad(Matrix4x4 modelViewMat, float width) {
+			DrawLines(IterateQuadLines(), modelViewMat, width);
+		}
+
+		public void DrawLines(IEnumerable<Vector3> vertices, Matrix4x4 modelViewMat) {
+			if (!StartDraw (modelViewMat, GL.LINES))
+				return;
+			try {
+				var iter = vertices.GetEnumerator ();
+				while (iter.MoveNext ()) {
+					var vfrom = iter.Current;
+					if (!iter.MoveNext ())
+						break;
+					var vto = iter.Current;
+					GL.Vertex (vfrom);
+					GL.Vertex (vto);
+				}
+			} finally {
+				EndDraw ();
+			}
+		}
+		public void DrawLines(IEnumerable<Vector3> vertices, Matrix4x4 modelViewMat, float width) {
+			if (!StartDraw(Matrix4x4.identity, GL.TRIANGLE_STRIP))
+				return;
+			try {
+				var half = 0.5f * width;
+				var iter = vertices.GetEnumerator();
+				while (iter.MoveNext()) {
+					var vfrom = modelViewMat.MultiplyPoint3x4(iter.Current);
+					if (!iter.MoveNext())
+						break;
+					var vto = modelViewMat.MultiplyPoint3x4(iter.Current);
+
+					var span = vto - vfrom;
+					span.z = 0f;
+					var tan = half * span.normalized;
+					var nor = new Vector3(-tan.y, tan.x, 0f);
+
+					GL.Vertex(vfrom + nor - tan);
+					GL.Vertex(vto + nor + tan);
+					GL.Vertex(vfrom - nor - tan);
+					GL.Vertex(vto - nor + tan);
+				}
+			} finally {
+				EndDraw();
+			}
+		}
         public void DrawLines(IEnumerable<Vector3> vertices, Transform trs) {
             DrawLines(vertices, Camera.current.worldToCameraMatrix * trs.localToWorldMatrix);
         }
@@ -259,11 +285,20 @@ namespace nobnak.Gist {
             glmat.Color(CurrentColor);
             return true;
         }
-
+		protected IEnumerable<Vector3> IterateQuadLines() {
+			var vfrom = QUAD[0];
+			for (var i = 0; i < QUAD.Length; i++) {
+				var vto = QUAD[(i + 1) % QUAD.Length];
+				yield return vfrom;
+				yield return vto;
+				vfrom = vto;
+			}
+		}
 
         static void EndDraw () {
             GL.End ();
             GL.PopMatrix ();
         }
+
 	}
 }
