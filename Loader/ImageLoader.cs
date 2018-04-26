@@ -16,12 +16,9 @@ namespace nobnak.Gist.Loader {
 		protected Format2D format = new Format2D(TextureFormat.ARGB32, true, false);
 
 		protected Reactive<string> reactivePath = new Reactive<string>();
-		protected Reactive<TextureFormat> reactiveFormat = new Reactive<TextureFormat>();
-		protected Reactive<bool> reactiveMipmap = new Reactive<bool>();
-		protected Reactive<bool> reactiveLinear = new Reactive<bool>();
 
 		protected Texture2D target;
-		protected FileSystemWatcher watcher = new FileSystemWatcher();
+		protected FileSystemWatcher watcher;
 		protected Validator validator = new Validator();
 
 		public ImageLoader() : this(TextureFormat.ARGB32, true, false) { }
@@ -34,44 +31,36 @@ namespace nobnak.Gist.Loader {
 				NotifyChanged();
 			};
 
+			watcher = new FileSystemWatcher();
 			watcher.Changed += (s, e) => {
-				if (file.Path == e.FullPath)
-					validator.Invalidate();
+				validator.Invalidate();
 			};
 			
 			reactivePath.Changed += v => {
 				validator.Invalidate();
-				watcher.Path = Path.GetDirectoryName(v.Value);
+				file.Path = v;
+				watcher.Path = Path.GetDirectoryName(file.FullPath);
 			};
-			reactiveFormat.Changed += v => {
-				validator.Invalidate();
-				ClearTarget();
-			};
-			reactiveMipmap.Changed += v => {
-				validator.Invalidate();
-				ClearTarget();
-			};
-			reactiveLinear.Changed += v => {
-				validator.Invalidate();
-				ClearTarget();
-			};
+			
+			watcher.EnableRaisingEvents = true;
 		}
 
 		#region public
 		public virtual Texture2D Target {
 			get {
-				validator.Validate();
+				Validate();
 				return target;
 			}
 		}
+
+		public virtual bool Validate() {
+			ApplyDataToReactive();
+			return validator.Validate();
+		}
+
 		public virtual string CurrentFilePath {
 			get { return file.Path; }
-			set {
-				if (file.Path != value) {
-					validator.Invalidate();
-					file.Path = value;
-				}
-			}
+			set { reactivePath.Value = value; }
 		}
 
 		public virtual void Dispose() {
@@ -91,15 +80,12 @@ namespace nobnak.Gist.Loader {
 			}
 		}
 		protected virtual void ApplyDataToReactive() {
-			reactivePath.Value = file.Path;
-			reactiveFormat.Value = format.textureFormat;
-			reactiveMipmap.Value = format.useMipMap;
-			reactiveLinear.Value = format.linear;
+			reactivePath.Value = file.FullPath;
 		}
 		protected virtual bool LoadTarget() {
 			var result = false;
 			try {
-				var path = file.Path;
+				var path = file.FullPath;
 				result = (!string.IsNullOrEmpty(path)
 					&& (target == null
 					? (target = format.CreateTexture(2, 2))

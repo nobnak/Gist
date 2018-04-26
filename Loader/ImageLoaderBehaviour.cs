@@ -1,0 +1,36 @@
+using nobnak.Gist.Events;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace nobnak.Gist.Loader {
+
+	public class ImageLoaderBehaviour : MonoBehaviour {
+
+		[SerializeField]
+		protected Texture2DEvent Changed;
+
+		[SerializeField]
+		protected ImageLoader loader;
+		[SerializeField]
+		protected Texture2D defaultTexture;
+
+		#region Unity
+		protected void OnEnable() {
+			loader.Changed += ListenOnChanged;
+
+			ListenOnChanged(defaultTexture);
+		}
+		protected void Update() {
+			loader.Validate();
+		}
+		protected void OnDisable() {
+			loader.Changed -= ListenOnChanged;
+		}
+		#endregion
+
+		protected void ListenOnChanged(Texture2D tex) {
+			Changed.Invoke(tex == null ? defaultTexture : tex);
+		}
+	}
+}
