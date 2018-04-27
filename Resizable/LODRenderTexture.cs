@@ -20,6 +20,9 @@ namespace nobnak.Gist.Resizable {
 		
 		public LODRenderTexture(FormatRT format) {
 			tex = new ResizableRenderTexture(format);
+			
+			tex.AfterCreateTexture += t => NotifyAfterCreateTexture();
+			tex.BeforeDestroyTexture += t => NotifyBeforeDestroyTexture();
 
 			validator.Validation += () => {
 				tex.Size = LodSize;

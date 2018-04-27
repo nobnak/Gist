@@ -13,11 +13,18 @@ namespace nobnak.Gist.Resizable {
 		[SerializeField]
 		protected FormatRT format;
 
-		protected bool valid = false;
+		protected Validator validator;
 		protected RenderTexture tex;
 
 		public ResizableRenderTexture(FormatRT format) {
 			this.format = format;
+
+			validator = new Validator();
+
+			validator.Validation += () => CreateTexture(size.x, size.y);
+			validator.Validated += () => NotifyAfterCreateTexture();
+			validator.SetCheckers(() =>
+				tex != null && tex.width == size.x && tex.height == size.y);
 		}
 		public ResizableRenderTexture() : this(new FormatRT()) { }
 
@@ -94,15 +101,13 @@ namespace nobnak.Gist.Resizable {
             RenderTexture.active = active;
 		}
 		public virtual void Invalidate() {
-			valid = false;
+			validator.Invalidate();
 		}
 		public virtual void Validate() {
-			if (!valid) {
-				CreateTexture(size.x, size.y);
-				valid = CheckValidity();
-			}
+			validator.Validate();
 		}
 		public virtual void Release() {
+			tex.Release();
 		}
 		#endregion
 
@@ -119,7 +124,6 @@ namespace nobnak.Gist.Resizable {
 			Debug.LogFormat("Create ResizableRenderTexture : {0}\n{1}",
 				string.Format("size={0}x{1}", tex.width, tex.height),
 				format);
-            NotifyAfterCreateTexture ();
         }
         protected virtual void NotifyAfterCreateTexture() {
             if (AfterCreateTexture != null)
@@ -135,9 +139,6 @@ namespace nobnak.Gist.Resizable {
             tex.Destroy();
             tex = null;
         }
-		protected virtual bool CheckValidity() {
-			return tex != null && tex.width == size.x && tex.height == size.y;
-		}
 		#endregion
 		
 	}
