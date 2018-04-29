@@ -3,38 +3,65 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace nobnak.Gist {
+	[System.Serializable]
+	public abstract class BaseReactive<T> {
 
-    [System.Serializable]
-    public class Reactive<T> where T : System.IComparable {
+		public event System.Action<BaseReactive<T>> Changed;
 
-        public event System.Action<Reactive<T>> Changed;
+		protected T data;
 
-        protected T data;
+		public BaseReactive(T initialData) {
+			this.data = initialData;
+		}
+		public BaseReactive() : this(default(T)) { }
 
-        public Reactive(T initialData) {
-            this.data = initialData;
-        }
-        public Reactive() : this(default(T)) { }
+		#region public
+		public abstract bool AreEqual(T a, T b);
+		public T Value {
+			get { return data; }
+			set {
+				if (!AreEqual(data, value)) {
+					data = value;
+					ForceNotifyChanged();
+				}
+			}
+		}
+		public void ForceNotifyChanged() {
+			if (Changed != null)
+				Changed(this);
+		}
+		#endregion
 
-        public T Value {
-            get { return data; }
-            set {
-                if (data == null || data.CompareTo(value) != 0) {
-                    data = value;
-                    ForceNotifyChanged();
-                }
-            }
-        }
-        public static implicit operator T(Reactive<T> reactive) {
-            return reactive.data;
+		#region static
+		public static implicit operator T(BaseReactive<T> reactive) {
+			return reactive.data;
+		}
+		#endregion
+	}
+	[System.Serializable]
+    public class Reactive<T> : BaseReactive<T> where T : System.IComparable {
+
+		public Reactive(T data) : base(data) { }
+		public Reactive() : base() { }
+
+		public override bool AreEqual(T a, T b) {
+			return a != null && a.CompareTo(b) == 0;
         }
         public static implicit operator Reactive<T>(T data) {
             return new Reactive<T>(data);
         }
+	}
+	[System.Serializable]
+	public class ReactiveObject<T> : BaseReactive<T> where T : class {
 
-        public void ForceNotifyChanged() {
-            if (Changed != null)
-                Changed(this);
-        }
-    }
+		public ReactiveObject(T data) : base(data) { }
+		public ReactiveObject() : base() { }
+
+		public override bool AreEqual(T a, T b) {
+			return a != null && a.Equals(b);
+		}
+		public static implicit operator ReactiveObject<T>(T data) {
+			return new ReactiveObject<T>(data);
+		}
+	}
 }
