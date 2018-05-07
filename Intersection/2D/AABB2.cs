@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using nobnak.Gist.Pooling;
 using UnityEngine;
 
@@ -16,6 +16,7 @@ namespace nobnak.Gist.Intersection {
             Set(min, max);
         }
         public AABB2() : this(DEFAULT_MIN, DEFAULT_MAX) { }
+		public AABB2(Rect r) : this(r.min, r.max) { }
 
         public bool Empty { get { return min.x > max.x || min.y > max.y; } }
         public Vector2 Min {  get { return min; } }
@@ -102,9 +103,11 @@ namespace nobnak.Gist.Intersection {
         #endregion
 
         #region Converter
+		/*
         public static implicit operator AABB2(Rect bb) {
             return new AABB2(bb.min, bb.max);
         }
+		*/
         public static implicit operator Rect(AABB2 aa) {
             var b = new Rect();
             b.min = aa.min;

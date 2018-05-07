@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -7,6 +7,7 @@ namespace nobnak.Gist.Pooling {
     public interface IMemoryPool<T> {
         T New();
         IMemoryPool<T> Free(T used);
+		int Count { get; }
     }
     #endregion
 
@@ -45,6 +46,9 @@ namespace nobnak.Gist.Pooling {
                 return this;
             }
         }
+		public int Count {
+			get { return _pool.Count; }
+		}
         #endregion
 
         #region IDisposable implementation
