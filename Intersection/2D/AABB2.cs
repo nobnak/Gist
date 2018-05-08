@@ -39,26 +39,7 @@ namespace nobnak.Gist.Intersection {
             }
         }
 
-        #region IConvex2Polytope
-        public IEnumerable<Vector2> Normals() {
-            yield return Vector2.right;
-            yield return Vector2.up;
-        }
-        public IEnumerable<Vector2> Vertices() {
-            yield return min;
-            yield return new Vector2(min.x, max.y);
-            yield return max;
-            yield return new Vector2(max.x, min.y);
-        }
-        public Rect WorldBounds {
-            get { return bounds; }
-        }
-        public Matrix4x4 Model {
-            get { return Matrix4x4.identity; }
-        }
-        #endregion
-
-        public void Encapsulate(Vector2 bmin, Vector2 bmax) {
+        public AABB2 Encapsulate(Vector2 bmin, Vector2 bmax) {
             for (var i = 0; i < 2; i++) {
                 var a0 = min[i];
                 var a1 = max[i];
@@ -67,15 +48,16 @@ namespace nobnak.Gist.Intersection {
                 min[i] = (a0 < b0 ? a0 : b0);
                 max[i] = (a1 > b1 ? a1 : b1);
             }
+			return this;
         }
-        public void Encapsulate(AABB2 b) {
-            Encapsulate(b.min, b.max);
+        public AABB2 Encapsulate(AABB2 b) {
+            return Encapsulate(b.min, b.max);
         }
-        public void Encapsulate(Rect r) {
-            Encapsulate(r.min, r.max);
+        public AABB2 Encapsulate(Rect r) {
+            return Encapsulate(r.min, r.max);
         }
-        public void Encapsulate(Vector2 point) {
-            Encapsulate(point, point);
+        public AABB2 Encapsulate(Vector2 point) {
+            return Encapsulate(point, point);
         }
 
         public bool Contains(Vector2 point) {
@@ -83,21 +65,41 @@ namespace nobnak.Gist.Intersection {
                 && min.y <= point.y && point.y <= max.y;
         }
 
-        public void Clear() {
-            Set(DEFAULT_MIN, DEFAULT_MAX);
+        public AABB2 Clear() {
+            return Set(DEFAULT_MIN, DEFAULT_MAX);
         }
 
-        public void Set(Vector2 min, Vector2 max) {
+        public AABB2 Set(Vector2 min, Vector2 max) {
             this.min = min;
             this.max = max;
             this.bounds = new Rect(min, max - min);
-        }
-        public void Set(Bounds bb) {
-            Set(bb.min, bb.max);
-        }
+			return this;
+		}
+		public AABB2 Set(Rect bb) {
+            return Set(bb.min, bb.max);
+		}
 
-        #region Object
-        public override string ToString() {
+		#region IConvex2Polytope
+		public IEnumerable<Vector2> Normals() {
+			yield return Vector2.right;
+			yield return Vector2.up;
+		}
+		public IEnumerable<Vector2> Vertices() {
+			yield return min;
+			yield return new Vector2(min.x, max.y);
+			yield return max;
+			yield return new Vector2(max.x, min.y);
+		}
+		public Rect WorldBounds {
+			get { return bounds; }
+		}
+		public Matrix4x4 Model {
+			get { return Matrix4x4.identity; }
+		}
+		#endregion
+
+		#region Object
+		public override string ToString() {
             return string.Format("AABB2(center={0}, size={1})", Center, Size);
         }
         #endregion

@@ -38,7 +38,7 @@ namespace nobnak.Gist.Intersection {
             }
         }
 
-        public void Encapsulate(Vector3 bmin, Vector3 bmax) {
+        public AABB3 Encapsulate(Vector3 bmin, Vector3 bmax) {
             for (var i = 0; i < 3; i++) {
                 var a0 = min[i];
                 var a1 = max[i];
@@ -47,12 +47,13 @@ namespace nobnak.Gist.Intersection {
                 min[i] = (a0 < b0 ? a0 : b0);
                 max[i] = (a1 > b1 ? a1 : b1);
             }
+			return this;
         }
-        public void Encapsulate(AABB3 b) {
-            Encapsulate(b.min, b.max);
+        public AABB3 Encapsulate(AABB3 b) {
+            return Encapsulate(b.min, b.max);
         }
-        public void Encapsulate(Vector3 point) {
-            Encapsulate(point, point);
+        public AABB3 Encapsulate(Vector3 point) {
+            return Encapsulate(point, point);
         }
 
         public bool Contains(Vector3 point) {
@@ -61,16 +62,17 @@ namespace nobnak.Gist.Intersection {
                 && min.z <= point.z && point.z <= max.z;
         }
 
-        public void Clear() {
-            Set(DEFAULT_MIN, DEFAULT_MAX);
+        public AABB3 Clear() {
+            return Set(DEFAULT_MIN, DEFAULT_MAX);
         }
 
-        public void Set(Vector3 min, Vector3 max) {
+        public AABB3 Set(Vector3 min, Vector3 max) {
             this.min = min;
             this.max = max;
-        }
-        public void Set(Bounds bb) {
-            Set(bb.min, bb.max);
+			return this;
+		}
+		public AABB3 Set(Bounds bb) {
+            return Set(bb.min, bb.max);
         }
 
         #region IConvex3Polytope
