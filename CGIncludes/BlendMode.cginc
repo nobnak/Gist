@@ -30,7 +30,7 @@
 
 
 
-float3 blend_mode3(float3 t, float3 b, int mode) {
+inline float3 blend_mode3(float3 t, float3 b, int mode) {
 	switch (mode) {
 	default:
 		return blend_normal(t, b);
@@ -68,7 +68,7 @@ float3 blend_mode3(float3 t, float3 b, int mode) {
 		return blend_exclusion(t, b);
 	}
 }
-float4 blend_mode4(float4 _target, float4 _blend, int _mode) {
+inline float4 blend_mode4(float4 _target, float4 _blend, int _mode) {
 	return lerp(_target, float4(blend_mode3(_target.rgb, _blend.rgb, _mode), 1), _blend.a);
 }
 
