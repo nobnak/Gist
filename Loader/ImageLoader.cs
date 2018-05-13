@@ -87,11 +87,17 @@ namespace nobnak.Gist.Loader {
 			try {
 				var path = file.FullPath;
 				result = (!string.IsNullOrEmpty(path)
+					&& File.Exists(path)
 					&& (target == null
 					? (target = format.CreateTexture(2, 2))
 					: target).LoadImage(File.ReadAllBytes(path)));
-				if (result)
+
+				if (result) {
 					Debug.LogFormat("Load Image : {0}", path);
+				} else {
+					target.Destroy();
+					target = null;
+				}
 			} catch { }
 			return result;
 		}
