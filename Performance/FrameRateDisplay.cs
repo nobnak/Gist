@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,6 +13,7 @@ namespace Gist.Performance {
         protected bool visible;
         protected GUIStyle style;
         protected Rect windowRect;
+		protected Resolution currResolution;
 
         #region Unity
         private void OnEnable() {
@@ -33,6 +34,7 @@ namespace Gist.Performance {
         protected virtual IEnumerator Job() {
             while (true) {
                 cachedFrameRate = 1.0f / Time.smoothDeltaTime;
+				currResolution = Screen.currentResolution;
                 yield return new WaitForSeconds(updateFreq);
             }
         }
@@ -45,7 +47,9 @@ namespace Gist.Performance {
 
             using (new GUILayout.VerticalScope()) {
                 using (new GUILayout.HorizontalScope()) {
-                    GUILayout.Label(string.Format("Frame-rate : {0:f1} (fps)", cachedFrameRate), style);
+                    GUILayout.Label(string.Format("Frame-rate : {0:f1} (fps) / {1}", 
+						cachedFrameRate, currResolution.refreshRate),
+						style);
                 }
             }
 
