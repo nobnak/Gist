@@ -28,6 +28,13 @@ namespace nobnak.Gist.Loader {
 			data = (result ? JsonUtility.FromJson<Data>(json) : default(Data));
 			return result;
 		}
+		public virtual bool TryLoadOverwrite<Data>(ref Data data) {
+			string json;
+			var result = Path.TryLoad(out json);
+			if (result)
+				JsonUtility.FromJsonOverwrite(json, data);
+			return result;
+		}
 
 		public virtual bool TrySave<Data>(Data data) {
 			var json = JsonUtility.ToJson(data, true);
