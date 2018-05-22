@@ -1,6 +1,7 @@
-﻿//#define VERBOSE
+//#define VERBOSE
 
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 namespace nobnak.Gist.StateMachine {
@@ -93,17 +94,16 @@ namespace nobnak.Gist.StateMachine {
             }
         }
         public FSM<T> GotoQueued(T nextStateName) {
-#if VERBOSE
-            if (nextStateNameQueue.Count > 0)
-                Debug.LogFormat("The next state is already queued {0}", nextStateName);
-#endif
+			if (!EqualsToLastQueued(nextStateName)) {
+				Enqueue(nextStateName);
+			}
 
-            Enqueue(nextStateName);
-            return this;
+			return this;
         }
-        public FSM<T> GotoImmediate(T nextStateName) {
-            Enqueue(nextStateName);
-            _GotoInQueue();
+
+		public FSM<T> GotoImmediate(T nextStateName) {
+			if (!EqualsToCurrent(nextStateName))
+				_Goto(nextStateName);
             return this;
         }
 
@@ -136,6 +136,8 @@ namespace nobnak.Gist.StateMachine {
                 Debug.LogWarningFormat("There is no state {0}", nextStateName);
                 return;
             }
+			if (_current == next)
+				Debug.LogFormat("State already in {0}", next);
             _last = _current;
             _current = next;
             if (_last != null)
@@ -156,11 +158,8 @@ namespace nobnak.Gist.StateMachine {
             _queueInProcess = false;
         }
         protected void Enqueue(T nextStateName) {
-            T last;
-            if (!TryGetLastFromQueue(out last) || last.CompareTo(nextStateName) != 0) {
-                _lastQueuedStateName = nextStateName;
-                nextStateNameQueue.Enqueue(nextStateName);
-            }
+            _lastQueuedStateName = nextStateName;
+            nextStateNameQueue.Enqueue(nextStateName);
         }
         protected bool TryGetLastFromQueue(out T last) {
             last = default(T);
@@ -170,9 +169,28 @@ namespace nobnak.Gist.StateMachine {
                 last = _lastQueuedStateName;
             return result;
         }
+		protected bool EqualsToCurrent(T other) {
+			return _current != null && EqualityComparer<T>.Default.Equals(_current.name, other);
+		}
+		protected bool EqualsToLastQueued(T other) {
+			T last;
+			return TryGetLastFromQueue(out last) ?
+				EqualityComparer<T>.Default.Equals(last, other) : 
+				EqualsToCurrent(other);
+		}
+		protected string QueueToString() {
+			var tmp = new StringBuilder("FSM State Queue : ");
+			tmp.AppendFormat("count={0} ", nextStateNameQueue.Count);
+			if (_current != null)
+				tmp.AppendFormat("{0}", _current.name);
+			foreach (var s in nextStateNameQueue)
+				tmp.AppendFormat("->{0}", s);
+			var log = tmp.ToString();
+			return log;
+		}
 
-#region Classes
-        public class StateData { 
+		#region Classes
+		public class StateData { 
             public readonly T name;
 
             System.Action<FSM<T>> _enter;
