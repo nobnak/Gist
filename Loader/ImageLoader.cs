@@ -1,6 +1,5 @@
 using nobnak.Gist.Extensions.Texture2DExt;
 using nobnak.Gist.Resizable;
-using NonInstancedMaterialProperty;
 using System.IO;
 using UnityEngine;
 
