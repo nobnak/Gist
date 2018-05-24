@@ -6,19 +6,17 @@ namespace Gist.Performance {
 
     public class FrameRateDisplay : MonoBehaviour {
         public KeyCode guiDisplayKey = KeyCode.F;
-        public float updateFreq = 0.5f;
-
-        protected float cachedFrameRate;
+		public FrameRateJob frameRate;
 
         protected bool visible;
         protected GUIStyle style;
         protected Rect windowRect;
-		protected Resolution currResolution;
+		protected Coroutine job;
 
         #region Unity
         private void OnEnable() {
             windowRect = new Rect(10f, 10f, 10f, 10f);
-            StartCoroutine(Job());
+            job = StartCoroutine(frameRate.GetEnumerator());
         }
         private void Update() {
             if (Input.GetKeyDown(guiDisplayKey)) {
@@ -29,16 +27,15 @@ namespace Gist.Performance {
             if (visible)
                 windowRect = GUILayout.Window(GetInstanceID(), windowRect, Window, GetType().Name);
         }
-        #endregion
+		private void OnDisable() {
+			if (job != null) {
+				StopCoroutine(job);
+				job = null;
+			}
+		}
+		#endregion
 
-        protected virtual IEnumerator Job() {
-            while (true) {
-                cachedFrameRate = 1.0f / Time.smoothDeltaTime;
-				currResolution = Screen.currentResolution;
-                yield return new WaitForSeconds(updateFreq);
-            }
-        }
-        protected virtual void Window(int id) {
+		protected virtual void Window(int id) {
             if (style == null) {
                 style = new GUIStyle(GUI.skin.label);
                 style.stretchWidth = true;
@@ -47,9 +44,7 @@ namespace Gist.Performance {
 
             using (new GUILayout.VerticalScope()) {
                 using (new GUILayout.HorizontalScope()) {
-                    GUILayout.Label(string.Format("Frame-rate : {0:f1} (fps) / {1}", 
-						cachedFrameRate, currResolution.refreshRate),
-						style);
+                    GUILayout.Label(frameRate.ToString(), style);
                 }
             }
 
