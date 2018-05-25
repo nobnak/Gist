@@ -1,4 +1,5 @@
-﻿using System.Collections;
+using nobnak.Gist.ObjectExt;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Profiling;
@@ -23,7 +24,7 @@ namespace nobnak.Gist {
 
         #region IDisposable implementation
         public void Dispose () {
-            Release (manualCamGo);
+            manualCamGo.Destroy();
         }
         #endregion
 
@@ -60,12 +61,6 @@ namespace nobnak.Gist {
         }
         void PostpareForRendering() {
             manualCam.targetTexture = null;
-        }
-        void Release(Object obj) {
-            if (Application.isPlaying)
-                Object.Destroy (obj);
-            else
-                Object.DestroyImmediate (obj);
         }
 
         #region Classes
