@@ -38,7 +38,16 @@ namespace nobnak.Gist.Loader {
 			watcher.Changed += (s, e) => {
 				validator.Invalidate();
 			};
-			
+			watcher.Created += (s, e) => {
+				validator.Invalidate();
+			};
+			watcher.Deleted += (s, e) => {
+				validator.Invalidate();
+			};
+			watcher.Renamed += (s, e) => {
+				validator.Invalidate();
+			};
+
 			reactivePath.Changed += v => {
 				validator.Invalidate();
 				file.Path = v;
