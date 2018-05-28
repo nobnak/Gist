@@ -7,10 +7,12 @@ namespace nobnak.Gist.Loader {
 
 	[System.Serializable]
 	public class ImageLoader : System.IDisposable {
+		public const string DEFAULT_FILEPATH = @"%USERPROFILE%\Documents\ChangeThis.png";
+
 		public event System.Action<Texture2D> Changed;
 
 		[SerializeField]
-		FilePath file;
+		protected FilePath file;
 		[SerializeField]
 		protected Format2D format = new Format2D(TextureFormat.ARGB32, true, false);
 
@@ -22,6 +24,8 @@ namespace nobnak.Gist.Loader {
 
 		public ImageLoader() : this(TextureFormat.ARGB32, true, false) { }
 		public ImageLoader(TextureFormat format, bool mipmap, bool linear) {
+			file = new FilePath(DEFAULT_FILEPATH);
+
 			validator.Reset();
 			validator.Validation += () => {
 				LoadTarget();

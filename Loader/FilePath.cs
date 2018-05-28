@@ -7,9 +7,16 @@ namespace nobnak.Gist.Loader {
 
 	[System.Serializable]
 	public class FilePath {
+		public const string DEFAULT_FILEPATH = @"%USERPROFILE%\Documents\ChangeThis.txt";
 
-		public string filepath = @"%USERPROFILE%\Documents\ChangeThis.txt";
+		public string filepath = DEFAULT_FILEPATH;
 
+		public FilePath(string filepath) {
+			this.filepath = filepath;
+		}
+		public FilePath() : this(DEFAULT_FILEPATH) { }
+
+		#region public
 		public virtual string Path {
 			get {
 				return System.Environment.ExpandEnvironmentVariables(filepath);
@@ -47,6 +54,6 @@ namespace nobnak.Gist.Loader {
 				path = System.IO.Path.Combine(Application.dataPath, path);
 			return path;
 		}
-
+		#endregion
 	}
 }
