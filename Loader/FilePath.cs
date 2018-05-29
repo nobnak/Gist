@@ -12,32 +12,38 @@ namespace nobnak.Gist.Loader {
 		public string filepath = DEFAULT_FILEPATH;
 
 		public FilePath(string filepath) {
-			this.filepath = filepath;
+			Path = filepath;
 		}
 		public FilePath() : this(DEFAULT_FILEPATH) { }
 
 		#region public
 		public virtual string Path {
 			get {
-				return System.Environment.ExpandEnvironmentVariables(filepath);
+				return filepath;
 			}
 			set {
+				Debug.LogFormat("Set Path of FilePath : {0}", value);
 				filepath = value;
 			}
 		}
+		public virtual string ExpandedPath {
+			get {
+				return System.Environment.ExpandEnvironmentVariables(filepath);
+			}
+		}
 		public virtual string FullPath {
-			get { return GetFullPath(Path); }
+			get { return GetFullPath(ExpandedPath); }
 		}
 
 		public virtual bool TryLoad<Data>(out Data data) {
 			string json;
-			var result = Path.TryLoad(out json);
+			var result = FullPath.TryLoad(out json);
 			data = (result ? JsonUtility.FromJson<Data>(json) : default(Data));
 			return result;
 		}
 		public virtual bool TryLoadOverwrite<Data>(ref Data data) {
 			string json;
-			var result = Path.TryLoad(out json);
+			var result = FullPath.TryLoad(out json);
 			if (result)
 				JsonUtility.FromJsonOverwrite(json, data);
 			return result;
@@ -45,7 +51,7 @@ namespace nobnak.Gist.Loader {
 
 		public virtual bool TrySave<Data>(Data data) {
 			var json = JsonUtility.ToJson(data, true);
-			var result = Path.TrySave(json);
+			var result = FullPath.TrySave(json);
 			return result;
 		}
 

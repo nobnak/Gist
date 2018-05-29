@@ -49,9 +49,11 @@ namespace nobnak.Gist.Loader {
 			};
 
 			reactivePath.Changed += v => {
-				validator.Invalidate();
-				file.Path = v;
-				watcher.Path = Path.GetDirectoryName(file.FullPath);
+				try {
+					validator.Invalidate();
+					file.Path = v;
+					watcher.Path = Path.GetDirectoryName(file.FullPath);
+				} catch { }
 			};
 			
 			watcher.EnableRaisingEvents = true;
@@ -92,7 +94,7 @@ namespace nobnak.Gist.Loader {
 			}
 		}
 		protected virtual void ApplyDataToReactive() {
-			reactivePath.Value = file.FullPath;
+			reactivePath.Value = file.Path;
 		}
 		protected virtual bool LoadTarget() {
 			var result = false;
