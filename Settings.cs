@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.IO;
 
@@ -40,6 +40,10 @@ namespace nobnak.Gist {
             string path;
             if (!DataPath (pathType, dataPath, out path))
                 return;
+			if (!File.Exists(path)) {
+				Debug.LogFormat("Serialized file not found for load : {0}", path);
+				return;
+			}
 
             try {
                 JsonUtility.FromJsonOverwrite(File.ReadAllText(path), data);
