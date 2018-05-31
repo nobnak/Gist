@@ -108,6 +108,7 @@ namespace nobnak.Gist.Loader {
 
 				if (result) {
 					Debug.LogFormat("Load Image : {0}", path);
+					target.name = path;
 				} else {
 					target.Destroy();
 					target = null;
