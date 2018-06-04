@@ -22,7 +22,6 @@ namespace nobnak.Gist.Loader {
 				return filepath;
 			}
 			set {
-				Debug.LogFormat("Set Path of FilePath : {0}", value);
 				filepath = value;
 			}
 		}

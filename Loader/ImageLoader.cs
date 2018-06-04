@@ -50,6 +50,7 @@ namespace nobnak.Gist.Loader {
 
 			reactivePath.Changed += v => {
 				try {
+					Debug.LogFormat("Change image file path : {0}", v.Value);
 					validator.Invalidate();
 					file.Path = v;
 					watcher.Path = Path.GetDirectoryName(file.FullPath);
