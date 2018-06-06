@@ -40,11 +40,12 @@ namespace nobnak.Gist.MathAlgorithms.Sampler {
 			return AngleOfConialArc(rangeAngle, r);
 		}
 
-		public static Quaternion RotationOfConialArc(float halfangle) {
+		public static Quaternion RotationOfConialArc(float halfangle, Vector3 forward) {
 			float lat, lon;
+			var right = new Vector3(forward.z, forward.x, forward.y);
 			RotationOfConialArc(halfangle, out lat, out lon);
-			return Quaternion.AngleAxis(lon, Vector3.forward)
-				* Quaternion.AngleAxis(lat, Vector3.right);
+			return Quaternion.AngleAxis(lon, forward)
+				* Quaternion.AngleAxis(lat, right);
 		}
 		public static void RotationOfConialArc(float halfangle, out float lat, out float lon) {
 			lat = AngleOfConialArc(halfangle);
