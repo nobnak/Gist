@@ -28,22 +28,26 @@ namespace nobnak.Gist.MathAlgorithms.Sampler {
 			return Mathf.Clamp(t, -1f, 1f);
 		}
 
-		public static float SphericalArea(float halfangle) {
-			return TWO_PI * (1f - Mathf.Cos(halfangle));
+		public static float AreaOfConialArc(float halfangle) {
+			return TWO_PI * (1f - Mathf.Cos(halfangle * Mathf.Deg2Rad));
 		}
-		public static float SurfaceAreaUniformAngleAlongMeridianFromPole(float rangeAngle) {
-			var r = Random.value;
-			var area = SphericalArea(rangeAngle);
+		public static float AngleOfConialArc(float halfAngle, float r) {
+			var area = AreaOfConialArc(halfAngle);
 			return Mathf.Rad2Deg * Mathf.Acos(1f - area * r * TWO_PI_INVERSE);
 		}
-		public static Quaternion ConialArc(float halfangle) {
+		public static float AngleOfConialArc(float rangeAngle) {
+			var r = Random.value;
+			return AngleOfConialArc(rangeAngle, r);
+		}
+
+		public static Quaternion RotationOfConialArc(float halfangle) {
 			float lat, lon;
-			ConialArc(halfangle, out lat, out lon);
+			RotationOfConialArc(halfangle, out lat, out lon);
 			return Quaternion.AngleAxis(lon, Vector3.forward)
 				* Quaternion.AngleAxis(lat, Vector3.right);
 		}
-		public static void ConialArc(float halfangle, out float lat, out float lon) {
-			lat = SurfaceAreaUniformAngleAlongMeridianFromPole(halfangle);
+		public static void RotationOfConialArc(float halfangle, out float lat, out float lon) {
+			lat = AngleOfConialArc(halfangle);
 			lon = CIRCLE_DEG * Random.value;
 		}
 	}
