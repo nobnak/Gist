@@ -1,0 +1,50 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace nobnak.Gist.MathAlgorithms.Sampler {
+
+	public static class Sphere {
+		public const float CIRCLE_DEG = 360f;
+		public const float QUARTER_DEG_OF_CIRCLE = CIRCLE_DEG / 4f;
+
+		public const float TWO_PI = 2f * Mathf.PI;
+		public const float TWO_PI_INVERSE = 1f / TWO_PI;
+
+		public static void Sample(out float lat, out float lon) {
+			lat = QUARTER_DEG_OF_CIRCLE * SymmetricSemicircle(Random.value);
+			lon = CIRCLE_DEG * Random.value;
+		}
+		public static void RangeBetweenLongitudes(float lonFrom, float lonTo, out float lat, out float lon) {
+			lat = QUARTER_DEG_OF_CIRCLE * SymmetricSemicircle(Random.value);
+			lon = (lonTo - lonFrom) * Random.value + lonFrom;
+		}
+	
+		public static float SymmetricSemicircle(float rand) {
+			var s = 1f - 2f * rand;
+			s = Mathf.Clamp(s, -1f, 1f);
+
+			var t = 1f - 2f * TWO_PI_INVERSE * Mathf.Acos(s);
+			return Mathf.Clamp(t, -1f, 1f);
+		}
+
+		public static float SphericalArea(float halfangle) {
+			return TWO_PI * (1f - Mathf.Cos(halfangle));
+		}
+		public static float SurfaceAreaUniformAngleAlongMeridianFromPole(float rangeAngle) {
+			var r = Random.value;
+			var area = SphericalArea(rangeAngle);
+			return Mathf.Rad2Deg * Mathf.Acos(1f - area * r * TWO_PI_INVERSE);
+		}
+		public static Quaternion ConialArc(float halfangle) {
+			float lat, lon;
+			ConialArc(halfangle, out lat, out lon);
+			return Quaternion.AngleAxis(lon, Vector3.forward)
+				* Quaternion.AngleAxis(lat, Vector3.right);
+		}
+		public static void ConialArc(float halfangle, out float lat, out float lon) {
+			lat = SurfaceAreaUniformAngleAlongMeridianFromPole(halfangle);
+			lon = CIRCLE_DEG * Random.value;
+		}
+	}
+}

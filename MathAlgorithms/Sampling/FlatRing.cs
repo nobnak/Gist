@@ -1,9 +1,9 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
-namespace nobnak.Gist {
+namespace nobnak.Gist.MathAlgorithms.Sampler {
 
-	public static class Sampler {
+	public static class FlatRing {
 		public const float TWO_PI = 2f * Mathf.PI;
 
 		public static Vector2 InCircularRing(float innerRadius, float outerRadius) {
