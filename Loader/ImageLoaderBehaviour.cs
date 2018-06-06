@@ -19,7 +19,7 @@ namespace nobnak.Gist.Loader {
 		protected void OnEnable() {
 			loader.Changed += ListenOnChanged;
 
-			ListenOnChanged(defaultTexture);
+			ListenOnChanged(loader.Target);
 		}
 		protected void Update() {
 			loader.Validate();

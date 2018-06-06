@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 
 
@@ -14,5 +14,6 @@ namespace nobnak.Gist.Events {
     public class Vector2Event : UnityEngine.Events.UnityEvent<Vector2> {}
     [System.Serializable]
     public class Vector3Event : UnityEngine.Events.UnityEvent<Vector3> {}
-
+	[System.Serializable]
+	public class Matrix4x4Event : UnityEngine.Events.UnityEvent<Matrix4x4> { }
 }
