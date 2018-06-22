@@ -1,4 +1,4 @@
-﻿using nobnak.Gist.Extensions.ComponentExt;
+using nobnak.Gist.Extensions.ComponentExt;
 using nobnak.Gist.Primitive;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,8 +7,7 @@ namespace nobnak.Gist.Layer2 {
 
     [ExecuteInEditMode]
     public class Layer : MonoBehaviour, ILayer {
-
-        public const string MSG_CROWN_LAYER = "CrownLayer";
+		
         public const float EPSILON = 1e-3f;
         public const float CIRCLE_INV_DEG = 1f / 360;
 

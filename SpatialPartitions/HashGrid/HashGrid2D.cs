@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using nobnak.Gist.HashGridSystem.Storage;
@@ -13,11 +13,11 @@ namespace nobnak.Gist.HashGridSystem {
         public int gridWidth = 20;
         public Color gizmoColor = Color.white;
 
-        public Storage2D<MonoBehaviour> World { get; private set; }
+        public Storage2D<Component> World { get; private set; }
 
         #region Unity
         void OnEnable() {
-            World = new Storage2D<MonoBehaviour> (GetPosition, cellSize, gridWidth, gridWidth);
+            World = new Storage2D<Component> (GetPosition, cellSize, gridWidth, gridWidth);
         }
         void LateUpdate() {
             switch (updateMode) {
@@ -66,30 +66,30 @@ namespace nobnak.Gist.HashGridSystem {
         #endregion
 
         #region implemented abstract members of AbstractHashGrid
-        public override void Add (MonoBehaviour point) {
+        public override void Add (Component point) {
             World.Add (point);
         }
-        public override void Remove (MonoBehaviour point) {
+        public override void Remove (Component point) {
             World.Remove (point);
         }
-        public override MonoBehaviour Find (System.Predicate<MonoBehaviour> Predicate) {
+        public override Component Find (System.Predicate<Component> Predicate) {
             return World.Find (Predicate);
         }
         public override IEnumerable<S> Neighbors<S> (Vector3 center, float distance) {
             return World.Neighbors<S> (GetPosition(center), distance);
         }
-        public override IEnumerable<MonoBehaviour> Points {
+        public override IEnumerable<Component> Points {
             get { return World; }
         }
 
         public override int Count { get { return World.Count; } }
-        public override MonoBehaviour IndexOf (int index) {
+        public override Component IndexOf (int index) {
             return World.IndexOf (index);
         }
         #endregion
 
 
-        Vector2 GetPosition(MonoBehaviour m) {
+        Vector2 GetPosition(Component m) {
             return GetPosition(m.transform.position);
         }
         Vector2 GetPosition(Vector3 worldPos) {
