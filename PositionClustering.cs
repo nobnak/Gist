@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -26,7 +26,11 @@ namespace nobnak.Gist {
         #endregion
 
         public void Receive(Vector2 p) {
-            _points.Add (new Point (p));
+			_points.Add(new Point(p));
+
+			var diff = _points.Count - data.pointReceiveLimit;
+			if (diff > 0)
+				_points.RemoveRange(0, diff);
         }
         public void RemoveBeforeTime (float t) {
             var lastIndexOfOld = -1;
@@ -84,13 +88,13 @@ namespace nobnak.Gist {
                 OnUpdateCluster (clusters);
         }
         protected virtual void MakeClusters () {
-            var qd = data.clusterDistance * data.clusterDistance;
+            var sqClusterDist = data.clusterDistance * data.clusterDistance;
             for (var j = 0; j < _points.Count; j++) {
                 var p = _points [j];
-                float sqr;
+                float sqNearest;
                 int i;
-                if (FindNearestCluster (p.pos, out i, out sqr) 
-                        && (sqr < qd || _clusters.Count >= data.clusterCountLimit)) {
+                if (FindNearestCluster (p.pos, out i, out sqNearest) 
+                        && (sqNearest < sqClusterDist || _clusters.Count >= data.clusterCountLimit)) {
                     _clusters [i] = p.pos;
                 }
                 else
@@ -143,7 +147,8 @@ namespace nobnak.Gist {
             public ClusterModeEnum clusterMode = ClusterModeEnum.Latest;
             public float effectiveDuration = 3f;
             public float clusterDistance = 0.2f;
-            public float clusterCountLimit = 10;
+			public int pointReceiveLimit = 200;
+            public int clusterCountLimit = 100;
             public float averageTail = 0.7f;
         }
 
