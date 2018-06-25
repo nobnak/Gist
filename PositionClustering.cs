@@ -5,49 +5,48 @@ using System.Collections.Generic;
 namespace nobnak.Gist {
 
     public class PositionClustering : System.IDisposable {
-        public System.Action<List<Vector2>> OnUpdateCluster;
+        public System.Action<List<Cluster>> OnUpdateCluster;
+		public System.Action<List<Cluster>> OnAddCluster;
+		public System.Action<List<Cluster>> OnRemoveCluster;
 
         Data data;
-        List<Point> _points;
-        List<int> _clusterIDs;
-        List<Vector2> _clusters;
-        List<Vector3> _tmp;
+        Queue<Point> points;
+        List<Cluster> clusters;
+		List<Cluster> clusterAdded;
+		List<Cluster> clusterRemoved;
+		Pooling.MemoryPool<Cluster> poolCluster;
 
         public PositionClustering(Data data) {
             this.data = data;
-            _points = new List<Point> ();
-            _clusterIDs = new List<int> ();
-            _clusters = new List<Vector2> ();
-            _tmp = new List<Vector3> ();            
+            points = new Queue<Point> ();
+            clusters = new List<Cluster> ();
+			clusterAdded = new List<Cluster>();
+			clusterRemoved = new List<Cluster>();
+			poolCluster = new Pooling.MemoryPool<Cluster>(
+				() => new Cluster(),
+				c => c.Reset(),
+				c => { });
         }
 
         #region IDisposable implementation 
-        public void Dispose () { }
-        #endregion
+        public void Dispose () {
+			if (poolCluster != null) {
+				poolCluster.Dispose();
+				poolCluster = null;
+			}
+		}
+		#endregion
 
-        public void Receive(Vector2 p) {
-			_points.Add(new Point(p));
-
-			var diff = _points.Count - data.pointReceiveLimit;
-			if (diff > 0)
-				_points.RemoveRange(0, diff);
+		#region public
+		public void Receive(Vector2 p) {
+			points.Enqueue(new Point(p));
         }
-        public void RemoveBeforeTime (float t) {
-            var lastIndexOfOld = -1;
-            for (var i = 0; i < _points.Count; i++) {
-                if (_points [i].time >= t)
-                    break;
-                lastIndexOfOld = i;
-            }
-            if (lastIndexOfOld >= 0)
-                _points.RemoveRange (0, lastIndexOfOld + 1);
-        }
-        public bool FindNearestCluster(Vector2 p, out int index, out float sqrd) {
+        public bool FindNearestCluster(Vector2 center, out int index, out float sqrd) {
             sqrd = float.MaxValue;
             index = -1;
-            for (var j = 0; j < _clusters.Count; j++) {
-                var q = _clusters [j];
-                var jsqr = (q - p).sqrMagnitude;
+            for (var j = 0; j < clusters.Count; j++) {
+                var c = clusters [j];
+                var jsqr = (c.latest.pos - center).sqrMagnitude;
                 if (jsqr < sqrd) {
                     sqrd = jsqr;
                     index = j;
@@ -55,82 +54,88 @@ namespace nobnak.Gist {
             }
             return index >= 0;
         }
-        public virtual void ClearPoints() {
-            _points.Clear ();
-        }
-        public virtual void ClearCluster() {
-            _clusterIDs.Clear ();
-            _clusters.Clear ();
-            _tmp.Clear ();
-        }
         public virtual void UpdateCluster () {
-            ClearCluster ();
-            MakeClusters();
-            UpdateClusterPosition();
-            OnUpdateCluster (_clusters);
-        }
+			clusterAdded.Clear();
+			clusterRemoved.ForEach(c => poolCluster.Free(c));
+			clusterRemoved.Clear();
 
-        public virtual IEnumerable<Point> GetPointEnumerator() {
-            foreach (var pp in _points)
-                yield return pp;
+			MakeClusters();
+			RemoveOldClusters();
+
+			Notify();
+
+			Debug.LogFormat("Cluster count={0} added={1} removed={2}",
+				clusters.Count, clusterAdded.Count, clusterRemoved.Count);
+		}
+		public virtual void Clear() {
+			clusterRemoved.AddRange(clusters);
+			clusters.Clear();
+		}
+		public virtual IEnumerable<Point> IteratePoints() {
+            foreach (var c in clusters)
+                yield return c.latest;
         }
-        public virtual IEnumerable<Vector2> GetClusterEnumerator() {
-            foreach (var c in _clusters)
+		public virtual IEnumerable<Vector2> IteratePositions() {
+			foreach (var p in IteratePoints())
+				yield return p.pos;
+		}
+        public virtual IEnumerable<Cluster> IterateClusters() {
+            foreach (var c in clusters)
                 yield return c;
         }
 
         public virtual int ClusterCount {
-            get { return _clusters.Count; }
+            get { return clusters.Count; }
         }
+		#endregion
 
-        protected virtual void NotifyOnUpdateCluster(List<Vector2> clusters) {
-            if (OnUpdateCluster != null)
-                OnUpdateCluster (clusters);
-        }
+		#region private
         protected virtual void MakeClusters () {
             var sqClusterDist = data.clusterDistance * data.clusterDistance;
-            for (var j = 0; j < _points.Count; j++) {
-                var p = _points [j];
-                float sqNearest;
+
+			while (points.Count > 0) {
+				float sqNearest;
                 int i;
-                if (FindNearestCluster (p.pos, out i, out sqNearest) 
-                        && (sqNearest < sqClusterDist || _clusters.Count >= data.clusterCountLimit)) {
-                    _clusters [i] = p.pos;
-                }
-                else
-                    if (_clusters.Count < data.clusterCountLimit) {
-                        i = _clusters.Count;
-                        _clusters.Add (p.pos);
-                    }
-                _clusterIDs.Add (i);
-            }
-        }
-        void UpdateClusterPosition () {
-            for (var i = 0; i < _clusters.Count; i++)
-                _tmp.Add (Vector3.zero);
-            switch (data.clusterMode) {
-            case Data.ClusterModeEnum.Latest:
-                for (var i = 0; i < _points.Count; i++) {
-                    var pos = _points [i].pos;
-                    _tmp [_clusterIDs [i]] = new Vector3 (pos.x, pos.y, 1f);
-                }
-                break;
-            case Data.ClusterModeEnum.Average:
-                for (var i = 0; i < _points.Count; i++) {
-                    var pos = _points [i].pos;
-                    var sum = _tmp [_clusterIDs [i]];
-                    _tmp [_clusterIDs [i]] = data.averageTail * sum + new Vector3 (pos.x, pos.y, 1f);
-                }
-                break;
-            }
-            for (var i = 0; i < _clusters.Count; i++) {
-                var v = _tmp [i];
-                _clusters [i] = new Vector2 (v.x / v.z, v.y / v.z);
-            }
-        }
+				Cluster c;
 
+				var p = points.Dequeue();
+				if (FindNearestCluster(p.pos, out i, out sqNearest)
+						&& (sqNearest < sqClusterDist 
+						|| clusters.Count >= data.clusterCountLimit)) {
+					c = clusters[i];
+				} else {
+					c = poolCluster.New();
+					clusters.Add(c);
+					clusterAdded.Add(c);
+				}
+				c.Add(p);
+			}
+		}
+		protected void RemoveOldClusters() {
+			var t = Time.timeSinceLevelLoad - data.effectiveDuration;
+			for (var i = 0; i < clusters.Count;) {
+				var c = clusters[i];
+				c.RemoveBeforeTime(t);
+				if (c.Count == 0) {
+					clusters.RemoveAt(i);
+					clusterRemoved.Add(c);
+				} else {
+					i++;
+				}
+			}
+		}
+		protected void Notify() {
+			if (OnUpdateCluster != null)
+				OnUpdateCluster(clusters);
+			if (clusterAdded.Count > 0 && OnAddCluster != null)
+				OnAddCluster(clusterAdded);
+			if (clusterRemoved.Count > 0 && OnRemoveCluster != null)
+				OnRemoveCluster(clusterRemoved);
+		}
+		#endregion
 
-        public struct Point {
+		#region classes
+		public struct Point {
             public readonly Vector2 pos;
             public readonly float time;
 
@@ -141,17 +146,52 @@ namespace nobnak.Gist {
             public Point(Vector2 pos) : this(pos, Time.timeSinceLevelLoad) {}
         }
 
+		public class Cluster {
+			public readonly List<Point> points = new List<Point>();
+			public Point latest;
+
+			public Cluster() {
+				Reset();
+			}
+
+			public int Count {
+				get { return points.Count; }
+			}
+			public Point Latest {
+				get { return latest; }
+			}
+			public void Add(Point p) {
+				points.Add(p);
+				if (latest.time < p.time) {
+					latest = p;
+				}
+			}
+			public void Reset() {
+				points.Clear();
+				latest = new Point(default(Vector2), float.MinValue);
+			}
+			public void RemoveBeforeTime(float t) {
+				var lastIndexOfOld = -1;
+				for (var i = 0; i < points.Count; i++) {
+					if (points[i].time >= t)
+						break;
+					lastIndexOfOld = i;
+				}
+				if (lastIndexOfOld >= 0)
+					points.RemoveRange(0, lastIndexOfOld + 1);
+			}
+
+			public static Vector2 operator - (Cluster a, Cluster b) {
+				return b.latest.pos - a.latest.pos;
+			}
+		}
+
         [System.Serializable]
         public class Data {
-            public enum ClusterModeEnum { Latest = 0, Average }
-            public ClusterModeEnum clusterMode = ClusterModeEnum.Latest;
             public float effectiveDuration = 3f;
             public float clusterDistance = 0.2f;
-			public int pointReceiveLimit = 200;
             public int clusterCountLimit = 100;
-            public float averageTail = 0.7f;
         }
-
-
-    }
+		#endregion
+	}
 }
