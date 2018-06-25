@@ -63,9 +63,6 @@ namespace nobnak.Gist {
 			RemoveOldClusters();
 
 			Notify();
-
-			Debug.LogFormat("Cluster count={0} added={1} removed={2}",
-				clusters.Count, clusterAdded.Count, clusterRemoved.Count);
 		}
 		public virtual void Clear() {
 			clusterRemoved.AddRange(clusters);
