@@ -1,4 +1,3 @@
-using Gist.Performance;
 using nobnak.Gist.IMGUI.Scope;
 using nobnak.Gist.InputDevice;
 using nobnak.Gist.Loader;

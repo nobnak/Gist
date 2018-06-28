@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Gist.Performance {
+namespace nobnak.Gist.WindowSystem {
 
 	[System.Serializable]
     public class FrameRateJob : IEnumerable {
