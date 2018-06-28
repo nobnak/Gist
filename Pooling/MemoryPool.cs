@@ -3,13 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace nobnak.Gist.Pooling {
-    #region Interface
-    public interface IMemoryPool<T> {
-        T New();
-        IMemoryPool<T> Free(T used);
-		int Count { get; }
-    }
-    #endregion
 
     public class MemoryPool<T> : IMemoryPool<T>, System.IDisposable {
         public event System.Action<T> OnNew;
