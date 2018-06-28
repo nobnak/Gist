@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using nobnak.Gist.Pooling;
+using nobnak.Gist.Primitive;
 using UnityEngine;
 
 namespace nobnak.Gist.Intersection {
@@ -74,6 +75,9 @@ namespace nobnak.Gist.Intersection {
 		public AABB3 Set(Bounds bb) {
             return Set(bb.min, bb.max);
         }
+		public AABB3 Set(FastBounds fb) {
+			return Set(fb.Min, fb.Max);
+		}
 
         #region IConvex3Polytope
         public IEnumerable<Vector3> Normals() {
@@ -94,10 +98,10 @@ namespace nobnak.Gist.Intersection {
                     (i & 4) == 0 ? min.z : max.z);
         }
 
-        public Bounds LocalBounds() {
+        public FastBounds LocalBounds() {
             return this;
         }
-        public Bounds WorldBounds() {
+        public FastBounds WorldBounds() {
             return this;
         }
 
@@ -112,23 +116,26 @@ namespace nobnak.Gist.Intersection {
         public override string ToString() {
             return string.Format("AABB(center={0}, size={1})", Center, Size);
         }
-        #endregion
+		#endregion
 
-        #region Converter
+		#region Converter
 		/*
         public static implicit operator AABB3(Bounds bb) {
             return new AABB3(bb.min, bb.max);
         }
 		*/
-        public static implicit operator Bounds(AABB3 aa) {
-            var b = new Bounds();
-            b.SetMinMax(aa.min, aa.max);
-            return b;
-        }
-        #endregion
+		public static implicit operator Bounds(AABB3 aa) {
+			var b = new Bounds();
+			b.SetMinMax(aa.min, aa.max);
+			return b;
+		}
+		public static implicit operator FastBounds(AABB3 aa) {
+			return new FastBounds(aa.min, aa.max);
+		}
+		#endregion
 
-        #region MemoryPool
-        public static AABB3 New() {
+		#region MemoryPool
+		public static AABB3 New() {
             return new AABB3();
         }
         public static void Reset(AABB3 aabb) {

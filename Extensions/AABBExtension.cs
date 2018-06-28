@@ -1,26 +1,49 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using nobnak.Gist.Primitive;
 
 namespace nobnak.Gist.Extensions.AABB {
 
     public static class AABBExtension {
 
-        #region Extensions
-        public static Bounds Encapsulate(this IEnumerable<Bounds> bounds) {
-            var resmin = Min ();
-            var resmax = Max ();
-            foreach (var bb in bounds) {
-                var bbmin = bb.min;
-                var bbmax = bb.max;
-                for (var i = 0; i < 3; i++) {
-                    resmin [i] = Mathf.Min (resmin [i], bbmin [i]);
-                    resmax [i] = Mathf.Max (resmax [i], bbmax [i]);
-                }
-            }
-            return MinMaxBounds (resmin, resmax);
-        }
-        public static Bounds Encapsulate(this IEnumerable<Vector3> poss) {
+		#region Extensions
+		public static Bounds Encapsulate(this IEnumerable<Bounds> bounds) {
+			var resmin = Min();
+			var resmax = Max();
+			foreach (var bb in bounds) {
+				var bbmin = bb.min;
+				var bbmax = bb.max;
+				for (var i = 0; i < 3; i++) {
+					resmin[i] = Mathf.Min(resmin[i], bbmin[i]);
+					resmax[i] = Mathf.Max(resmax[i], bbmax[i]);
+				}
+			}
+			return MinMaxBounds(resmin, resmax);
+		}
+		public static FastBounds Encapsulate(this IEnumerable<FastBounds> bounds) {
+			var resmin_x = float.MaxValue;
+			var resmin_y = float.MaxValue;
+			var resmin_z = float.MaxValue;
+
+			var resmax_x = float.MinValue;
+			var resmax_y = float.MinValue;
+			var resmax_z = float.MinValue;
+
+			foreach (var bb in bounds) {
+				resmin_x = Mathf.Min(resmin_x, bb.min_x);
+				resmin_y = Mathf.Min(resmin_y, bb.min_y);
+				resmin_z = Mathf.Min(resmin_z, bb.min_z);
+
+				resmax_x = Mathf.Max(resmax_x, bb.max_x);
+				resmax_y = Mathf.Max(resmax_y, bb.max_y);
+				resmax_z = Mathf.Max(resmax_z, bb.max_z);
+			}
+			return new FastBounds(
+				resmin_x, resmin_y, resmin_z,
+				resmax_x, resmax_y, resmax_z);
+		}
+		public static Bounds Encapsulate(this IEnumerable<Vector3> poss) {
             var resmin = Min ();
             var resmax = Max ();
             foreach (var p in poss) {
