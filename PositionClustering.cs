@@ -58,12 +58,18 @@ namespace nobnak.Gist {
 			clusterAdded.Clear();
 			clusterRemoved.ForEach(c => poolCluster.Free(c));
 			clusterRemoved.Clear();
+			if (clusters.Count > data.clusterCountLimit) {
+				var oldestIndex = FindOldestClusterIndex();
+				if (oldestIndex >= 0)
+					clusters.RemoveAt(oldestIndex);
+			}
 
 			MakeClusters();
 			RemoveOldClusters();
 
 			Notify();
 		}
+
 		public virtual void Clear() {
 			clusterRemoved.AddRange(clusters);
 			clusters.Clear();
@@ -120,6 +126,19 @@ namespace nobnak.Gist {
 					i++;
 				}
 			}
+		}
+		private int FindOldestClusterIndex() {
+			var oldestTime = float.MaxValue;
+			var oldestIndex = -1;
+			for (var i = 0; i < clusters.Count; i++) {
+				var c = clusters[i];
+				if (c.latest.time < oldestTime) {
+					oldestTime = c.latest.time;
+					oldestIndex = i;
+				}
+			}
+
+			return oldestIndex;
 		}
 		protected void Notify() {
 			if (OnUpdateCluster != null)

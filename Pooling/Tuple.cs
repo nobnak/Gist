@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace nobnak.Gist.Pooling {
@@ -22,6 +23,9 @@ namespace nobnak.Gist.Pooling {
 
 			return Values.SequenceEqual(other.Values);
 		}
+		public override bool Equals(object obj) {
+			return (obj is Tuple<T>) && Equals((Tuple<T>)obj);
+		}
 		#endregion
 
 		#region override
@@ -31,14 +35,27 @@ namespace nobnak.Gist.Pooling {
 				hashCode = hashCode * -1521134295 + v.GetHashCode();
 			return hashCode;
 		}
+		public override string ToString() {
+			var buf = new StringBuilder(string.Format("<{0}:", typeof(Tuple<T>).Name));
+			foreach (var v in Values)
+				buf.AppendFormat("{0},", v);
+			buf.Append(">");
+			return buf.ToString();
+		}
 
 		public static bool operator ==(Tuple<T> tuple1, Tuple<T> tuple2) {
 			return tuple1.Equals(tuple2);
 		}
-
 		public static bool operator !=(Tuple<T> tuple1, Tuple<T> tuple2) {
 			return !(tuple1 == tuple2);
 		}
 		#endregion
+
+		public T this[int index] {
+			get { return Values[index]; }
+		}
+		public int Count {
+			get { return Values.Length; }
+		}
 	}
 }
