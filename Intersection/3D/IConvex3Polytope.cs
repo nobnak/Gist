@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using nobnak.Gist.Primitive;
 
 namespace nobnak.Gist.Intersection {
 
@@ -10,8 +11,8 @@ namespace nobnak.Gist.Intersection {
         IEnumerable<Vector3> Edges();
         IEnumerable<Vector3> Vertices();
 
-        Bounds LocalBounds();
-        Bounds WorldBounds();
+		FastBounds LocalBounds();
+		FastBounds WorldBounds();
 
 		IConvex3Polytope DrawGizmos();
     }
