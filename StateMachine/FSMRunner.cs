@@ -73,7 +73,7 @@ namespace nobnak.Gist.StateMachine {
         public FSM(TransitionModeEnum transitionMode) : this(null, transitionMode) { }
         public FSM() : this(null) { }
 
-            public State StateFor(T name) {
+		public State StateFor(T name) {
             State state;
             if (!TryGetState (name, out state))
                 state = _stateMap [name] = new State (name);
