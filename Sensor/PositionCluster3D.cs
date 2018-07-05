@@ -2,9 +2,9 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace nobnak.Gist {
+namespace nobnak.Gist.Sensor {
 
-    public class PositionClustering : System.IDisposable {
+    public class PositionCluster3D : System.IDisposable {
         public System.Action<List<Cluster>> OnUpdateCluster;
 		public System.Action<List<Cluster>> OnAddCluster;
 		public System.Action<List<Cluster>> OnRemoveCluster;
@@ -16,7 +16,7 @@ namespace nobnak.Gist {
 		List<Cluster> clusterRemoved;
 		Pooling.MemoryPool<Cluster> poolCluster;
 
-        public PositionClustering(Data data) {
+        public PositionCluster3D(Data data) {
             this.data = data;
             points = new Queue<Point> ();
             clusters = new List<Cluster> ();
@@ -38,10 +38,10 @@ namespace nobnak.Gist {
 		#endregion
 
 		#region public
-		public void Receive(Vector2 p) {
+		public void Receive(Vector3 p) {
 			points.Enqueue(new Point(p));
         }
-        public bool FindNearestCluster(Vector2 center, out int index, out float sqrd) {
+        public bool FindNearestCluster(Vector3 center, out int index, out float sqrd) {
             sqrd = float.MaxValue;
             index = -1;
             for (var j = 0; j < clusters.Count; j++) {
@@ -78,7 +78,7 @@ namespace nobnak.Gist {
             foreach (var c in clusters)
                 yield return c.latest;
         }
-		public virtual IEnumerable<Vector2> IteratePositions() {
+		public virtual IEnumerable<Vector3> IteratePositions() {
 			foreach (var p in IteratePoints())
 				yield return p.pos;
 		}
@@ -152,14 +152,16 @@ namespace nobnak.Gist {
 
 		#region classes
 		public struct Point {
-            public readonly Vector2 pos;
+            public readonly Vector3 pos;
             public readonly float time;
+			public readonly object[] args;
 
-            public Point(Vector2 pos, float time) {
+            public Point(Vector3 pos, float time, params object[] args) {
                 this.pos = pos;
                 this.time = time;
+				this.args = args;
             }
-            public Point(Vector2 pos) : this(pos, Time.timeSinceLevelLoad) {}
+            public Point(Vector3 pos) : this(pos, Time.timeSinceLevelLoad) {}
         }
 
 		public class Cluster {
@@ -184,7 +186,7 @@ namespace nobnak.Gist {
 			}
 			public void Reset() {
 				points.Clear();
-				latest = new Point(default(Vector2), float.MinValue);
+				latest = new Point(default(Vector3), float.MinValue);
 			}
 			public void RemoveBeforeTime(float t) {
 				var lastIndexOfOld = -1;
@@ -197,7 +199,7 @@ namespace nobnak.Gist {
 					points.RemoveRange(0, lastIndexOfOld + 1);
 			}
 
-			public static Vector2 operator - (Cluster a, Cluster b) {
+			public static Vector3 operator - (Cluster a, Cluster b) {
 				return b.latest.pos - a.latest.pos;
 			}
 		}
