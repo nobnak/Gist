@@ -13,16 +13,17 @@ namespace nobnak.Gist.Intersection {
         public Matrix4x4 modelMatrix;
         public Matrix4x4 modelITMatrix;
 
-        public OBB3(Bounds localBounds, Matrix4x4 modelMatrix) {
+        public OBB3(FastBounds localBounds, Matrix4x4 modelMatrix) {
             this.localBounds = localBounds;
 
             this.modelMatrix = modelMatrix;
             this.modelITMatrix = modelMatrix.inverse.transpose;
 
             this.worldBounds = localBounds.EncapsulateInTargetSpace (modelMatrix);
-        }
+		}
+		public OBB3(Bounds localBounds, Matrix4x4 modelMatrix) : this((FastBounds)localBounds, modelMatrix) { }
 
-        public Matrix4x4 ModelMatrix() {
+			public Matrix4x4 ModelMatrix() {
             return modelMatrix;
         }
         #region IConvexPolyhedron implementation
@@ -80,9 +81,9 @@ namespace nobnak.Gist.Intersection {
         #endregion
 
         #region Static
-        public static OBB3 Create(Transform tr, Bounds localBounds) {
-            return new OBB3 (localBounds, tr.localToWorldMatrix);
-        }
-        #endregion
-    }
+		public static OBB3 Create(Transform tr, FastBounds localBounds) {
+			return new OBB3(localBounds, tr.localToWorldMatrix);
+		}
+		#endregion
+	}
 }
