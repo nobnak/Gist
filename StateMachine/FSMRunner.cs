@@ -43,16 +43,20 @@ namespace nobnak.Gist.StateMachine {
         public abstract void Update();
     }
     public class FSM<T> : FSM where T : struct, System.IComparable {
-        Dictionary<T, StateData> _stateMap = new Dictionary<T, StateData>();
+        Dictionary<T, State> _stateMap = new Dictionary<T, State>();
 
         bool _enabled;
         FSMRunner _runner;
-        StateData _current;
-        StateData _last;
 
-        bool _queueInProcess;
+        State _current;
+        State _last;
+
+		StateData _currentData;
+		StateData _lastData;
+
+		bool _queueInProcess;
         T _lastQueuedStateName;
-        Queue<T> nextStateNameQueue;
+        Queue<StateData> stateQueue;
 
         public FSM(MonoBehaviour target, TransitionModeEnum transitionMode) : base(transitionMode) {
             if (target != null) {
@@ -63,20 +67,25 @@ namespace nobnak.Gist.StateMachine {
                 _runner.Add(this);
             }
             _enabled = true;
-            this.nextStateNameQueue = new Queue<T>();
+            this.stateQueue = new Queue<StateData>();
         }
         public FSM(MonoBehaviour target) : this(target, TransitionModeEnum.Queued) { }
         public FSM(TransitionModeEnum transitionMode) : this(null, transitionMode) { }
         public FSM() : this(null) { }
 
-            public StateData State(T name) {
-            StateData state;
+		public State StateFor(T name) {
+            State state;
             if (!TryGetState (name, out state))
-                state = _stateMap [name] = new StateData (name);
+                state = _stateMap [name] = new State (name);
             return state;
         }
-        public T Current { get { return (_current == null ? default(T) : _current.name); } }
+
+		public T Current { get { return (_current == null ? default(T) : _current.name); } }
         public T Last { get { return (_last == null ? default(T) : _last.name); } }
+
+		public object[] CurrentData { get { return _currentData.reason; } }
+		public object[] LastData { get { return _lastData.reason; } }
+
         public bool Enabled {
             get { return _enabled; }
             set { _enabled = value; }
@@ -85,25 +94,25 @@ namespace nobnak.Gist.StateMachine {
         public FSM<T> Init(T initialStateName = default(T)) {
             return GotoImmediate(initialStateName);
         }
-        public FSM<T> Goto(T nextStateName) {
+        public FSM<T> Goto(T nextStateName, params object[] reason) {
             switch (transitionMode) {
                 default:
-                    return GotoQueued(nextStateName);
+                    return GotoQueued(nextStateName, reason);
                 case TransitionModeEnum.Immediate:
-                    return GotoImmediate(nextStateName);
+                    return GotoImmediate(nextStateName, reason);
             }
         }
-        public FSM<T> GotoQueued(T nextStateName) {
+        public FSM<T> GotoQueued(T nextStateName, params object[] reason) {
 			if (!EqualsToLastQueued(nextStateName)) {
-				Enqueue(nextStateName);
+				Enqueue(new StateData(nextStateName, reason));
 			}
 
 			return this;
         }
 
-		public FSM<T> GotoImmediate(T nextStateName) {
+		public FSM<T> GotoImmediate(T nextStateName, params object[] reason) {
 			if (!EqualsToCurrent(nextStateName))
-				_Goto(nextStateName);
+				_Goto(new StateData(nextStateName, reason));
             return this;
         }
 
@@ -117,7 +126,7 @@ namespace nobnak.Gist.StateMachine {
                 _current.UpdateState(this);
         }
 
-        public bool TryGetState(T name, out StateData state) {
+        public bool TryGetState(T name, out State state) {
             return _stateMap.TryGetValue (name, out state);
         }
 
@@ -130,41 +139,48 @@ namespace nobnak.Gist.StateMachine {
         }
 #endregion
 
-        protected void _Goto(T nextStateName) {
-            StateData next;
-            if (!TryGetState(nextStateName, out next) || next == null) {
-                Debug.LogWarningFormat("There is no state {0}", nextStateName);
+        protected void _Goto(StateData nextData) {
+            State next;
+            if (!TryGetState(nextData, out next) || next == null) {
+                Debug.LogWarningFormat("There is no state {0}", nextData.state);
                 return;
             }
+
 			if (_current == next)
 				Debug.LogFormat("State already in {0}", next);
+
             _last = _current;
             _current = next;
-            if (_last != null)
+
+			_lastData = _currentData;
+			_currentData = nextData;
+
+			if (_last != null)
                 _last.ExitState(this);
             _current.EnterState(this);
             return;
         }
-        protected void _GotoInQueue() {
+
+		protected void _GotoInQueue() {
             if (_queueInProcess)
                 return;
             _queueInProcess = true;
 
-            while (nextStateNameQueue.Count > 0) {
-                var next = nextStateNameQueue.Dequeue();
+            while (stateQueue.Count > 0) {
+                var next = stateQueue.Dequeue();
                 _Goto(next);
             }
 
             _queueInProcess = false;
         }
-        protected void Enqueue(T nextStateName) {
-            _lastQueuedStateName = nextStateName;
-            nextStateNameQueue.Enqueue(nextStateName);
+        protected void Enqueue(StateData next) {
+            _lastQueuedStateName = next;
+            stateQueue.Enqueue(next);
         }
         protected bool TryGetLastFromQueue(out T last) {
             last = default(T);
 
-            var result = nextStateNameQueue.Count > 0;
+            var result = stateQueue.Count > 0;
             if (result)
                 last = _lastQueuedStateName;
             return result;
@@ -180,56 +196,78 @@ namespace nobnak.Gist.StateMachine {
 		}
 		protected string QueueToString() {
 			var tmp = new StringBuilder("FSM State Queue : ");
-			tmp.AppendFormat("count={0} ", nextStateNameQueue.Count);
+			tmp.AppendFormat("count={0} ", stateQueue.Count);
 			if (_current != null)
 				tmp.AppendFormat("{0}", _current.name);
-			foreach (var s in nextStateNameQueue)
+			foreach (var s in stateQueue)
 				tmp.AppendFormat("->{0}", s);
 			var log = tmp.ToString();
 			return log;
 		}
 
 		#region Classes
-		public class StateData { 
+		public class State { 
             public readonly T name;
 
             System.Action<FSM<T>> _enter;
             System.Action<FSM<T>> _update;
             System.Action<FSM<T>> _exit;
 
-            public StateData(T name) {
+            public State(T name) {
                 this.name = name;
             }
 
-            public StateData Enter(System.Action<FSM<T>> enter) {
+            public State Enter(System.Action<FSM<T>> enter) {
                 this._enter = enter;
                 return this;
             }
-            public StateData Update(System.Action<FSM<T>> update) {
+            public State Update(System.Action<FSM<T>> update) {
                 this._update = update;
                 return this;
             }
-            public StateData Exit(System.Action<FSM<T>> exit) {
+            public State Exit(System.Action<FSM<T>> exit) {
                 this._exit = exit;
                 return this;
             }
 
-            public StateData EnterState(FSM<T> fsm) {
+            public State EnterState(FSM<T> fsm) {
                 if (_enter != null)
                     _enter (fsm);
                 return this;
             }
-            public StateData UpdateState(FSM<T> fsm) {
+            public State UpdateState(FSM<T> fsm) {
                 if (_update != null)
                     _update (fsm);
                 return this;
             }
-            public StateData ExitState(FSM<T> fsm) {
+            public State ExitState(FSM<T> fsm) {
                 if (_exit != null)
                     _exit (fsm);
                 return this;
             }
         }
+
+		public struct StateData {
+			public readonly T state;
+			public readonly object[] reason;
+
+			public StateData(T state, params object[] reason) {
+				this.state = state;
+				this.reason = reason;
+			}
+
+			public override string ToString() {
+				var tmp = new StringBuilder("<StateData:");
+				foreach (var r in reason)
+					tmp.AppendFormat("{0},", r);
+				tmp.Append(">");
+				return tmp.ToString();
+			}
+
+			public static implicit operator T(StateData data) {
+				return data.state;
+			}
+		}
 #endregion
     }
 }

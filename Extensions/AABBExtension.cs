@@ -54,14 +54,14 @@ namespace nobnak.Gist.Extensions.AABB {
             }
             return MinMaxBounds (resmin, resmax);
         }
-        public static Bounds EncapsulateInWorldSpace(this Transform tr, Bounds local) {
+        public static FastBounds EncapsulateInWorldSpace(this Transform tr, FastBounds local) {
             var local2world = tr.localToWorldMatrix;
             return local.EncapsulateInTargetSpace (local2world);
         }
-        public static Bounds EncapsulateInTargetSpace(this Bounds local, Matrix4x4 localToTargetMat) {
+        public static FastBounds EncapsulateInTargetSpace(this FastBounds local, Matrix4x4 localToTargetMat) {
             var absMat = localToTargetMat.Absolute ();
-            var center = localToTargetMat.MultiplyPoint3x4 (local.center);
-            var extent = absMat.MultiplyVector (local.extents);
+            var center = localToTargetMat.MultiplyPoint3x4 (local.Center);
+            var extent = absMat.MultiplyVector (local.Extents);
             return new Bounds (center, 2f * extent);
         }
         public static Rect EncapsulateInTargetSpace(this Rect local, Matrix4x4 localToTargetMat) {
@@ -71,7 +71,7 @@ namespace nobnak.Gist.Extensions.AABB {
             var min = center - 0.5f * size;
             return new Rect(min, size);
         }
-        public static Bounds EncapsulateVertices(this IEnumerable<Vector3> vertices) { 
+        public static FastBounds EncapsulateVertices(this IEnumerable<Vector3> vertices) { 
             var minx = float.MaxValue;
             var miny = float.MaxValue;
             var minz = float.MaxValue;
@@ -96,9 +96,7 @@ namespace nobnak.Gist.Extensions.AABB {
                     maxz = v.z;
             }
 
-            var size = new Vector3 (maxx - minx, maxy - miny, maxz - minz);
-            var center = new Vector3 (minx + 0.5f * size.x, miny + 0.5f * size.y, minz + 0.5f * size.z);
-            return new Bounds (center, size);
+			return new FastBounds(minx, miny, minz, maxx, maxy, maxz);
         }
 
         public static Matrix4x4 Absolute(this Matrix4x4 mat) {
