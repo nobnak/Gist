@@ -4,8 +4,12 @@ using System.Collections.Generic;
 
 namespace nobnak.Gist.Sensor {
 
-    public class PositionCluster2D : System.IDisposable {
-        public System.Action<List<Cluster>> OnUpdateCluster;
+	public class PositionCluster2D : PositionCluster2D<object> {
+		public PositionCluster2D(Data data) : base(data) { }
+	}
+
+	public class PositionCluster2D<T> : System.IDisposable {
+			public System.Action<List<Cluster>> OnUpdateCluster;
 		public System.Action<List<Cluster>> OnAddCluster;
 		public System.Action<List<Cluster>> OnRemoveCluster;
 
@@ -38,8 +42,8 @@ namespace nobnak.Gist.Sensor {
 		#endregion
 
 		#region public
-		public void Receive(Vector2 p) {
-			points.Enqueue(new Point(p));
+		public void Receive(Vector2 p, params T[] args) {
+			points.Enqueue(new Point(p, args));
         }
         public bool FindNearestCluster(Vector2 center, out int index, out float sqrd) {
             sqrd = float.MaxValue;
@@ -154,14 +158,14 @@ namespace nobnak.Gist.Sensor {
 		public struct Point {
             public readonly Vector2 pos;
             public readonly float time;
-			public readonly object[] args;
+			public readonly T[] args;
 
-            public Point(Vector2 pos, float time, params object[] args) {
+            public Point(Vector2 pos, float time, params T[] args) {
                 this.pos = pos;
                 this.time = time;
 				this.args = args;
             }
-            public Point(Vector2 pos) : this(pos, Time.timeSinceLevelLoad) {}
+            public Point(Vector2 pos, params T[] args) : this(pos, Time.timeSinceLevelLoad, args) {}
         }
 
 		public class Cluster {
