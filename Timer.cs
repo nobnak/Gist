@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,7 +9,6 @@ namespace nobnak.Gist {
         public enum StateEnum { Init = 0, Active, Completed }
 
         public event System.Action<Timer> Elapsed;
-        public event System.Action<Timer, float> TimeChanged;
 
         protected bool active;
         protected bool completed;
@@ -47,23 +46,18 @@ namespace nobnak.Gist {
         public virtual bool Update() {
             var currActivity = active;
             if (active) {
-                float dtime;
-                elapsedTime = CalculateElapsedTime (out dtime);
-                Update (dtime);
-            }
+                elapsedTime = CalculateElapsedTime ();
+				if (interval <= elapsedTime) {
+					Goto(StateEnum.Completed);
+					NotifyElapsed();
+				}
+			}
             return currActivity;
         }
         public virtual void Stop() {
             Goto (StateEnum.Init);
         }
-
-        protected virtual void Update(float dtime) {
-            NotifyTimeChanged (dtime);
-            if (interval <= elapsedTime) {
-                Goto (StateEnum.Completed);
-                NotifyElapsed ();
-            }
-        }
+		
         protected virtual void Goto(StateEnum state) {
             switch (state) {
             case StateEnum.Init:
@@ -94,15 +88,9 @@ namespace nobnak.Gist {
             if (Elapsed != null)
                 Elapsed (this);
         }
-        protected virtual void NotifyTimeChanged(float dtime) {
-            if (TimeChanged != null)
-                TimeChanged (this, dtime);
-        }
 
-        protected virtual float CalculateElapsedTime (out float dtime) {
-            var nextElapsedTime = Time.timeSinceLevelLoad - timeOfStart;
-            dtime = nextElapsedTime - elapsedTime;
-            return nextElapsedTime;
+        protected virtual float CalculateElapsedTime () {
+            return Time.timeSinceLevelLoad - timeOfStart;
         }
 
     }
@@ -126,11 +114,13 @@ namespace nobnak.Gist {
             progress = 0f;
         }
 
-        protected override void Update(float dtime) {
-            float dprogress;
-            progress = CalculateProgress (dtime, out dprogress);
+        public override bool Update() {
+			var prevProgress = progress;
+			var result = base.Update();
+			progress = dProgressDTime * elapsedTime;
+			var dprogress = progress - prevProgress;
             NotifyProgressChanged (dprogress);
-            base.Update (elapsedTime);
+			return result;
         }
 
         void NotifyProgressChanged(float delta) {
