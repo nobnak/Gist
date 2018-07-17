@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace nobnak.Gist {
 	public class GLFigure : System.IDisposable {
@@ -30,9 +31,10 @@ namespace nobnak.Gist {
                 return (_instance == null ? (_instance = new GLFigure()) : _instance);
             }
         }
-        #endregion
-        #region IDisposable implementation
-        public void Dispose() {
+		
+		#endregion
+		#region IDisposable implementation
+		public void Dispose() {
             if (glmat != null) {
                 glmat.Dispose();
                 glmat = null;

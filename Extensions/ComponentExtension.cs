@@ -1,53 +1,85 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace nobnak.Gist.Extensions.ComponentExt {
 
     public static class ComponentExtension {
-        public static IEnumerable<T> AggregateComponentsInChildren<T>(this Transform parent, bool blockTransmission) {
+        public static IEnumerable<T> Children<T>(this Transform root, bool ignoreGrandchildren = true) {
 
-            if (parent == null)
+            if (root == null)
                 yield break;
 
             var found = false;
-            foreach (var comp in parent.GetComponents<T>()) {
+            foreach (var comp in root.GetComponents<T>()) {
                 found = true;
                 yield return comp;
             }
-            if (found && blockTransmission)
+            if (found && ignoreGrandchildren)
                 yield break;
 
-            for (var i = 0; i < parent.childCount; i++) {
-                var child = parent.GetChild(i);
-                foreach (var c in child.AggregateComponentsInChildren<T>(blockTransmission))
+            for (var i = 0; i < root.childCount; i++) {
+                var child = root.GetChild(i);
+                foreach (var c in child.Children<T>(ignoreGrandchildren))
                     yield return c;
             }
         }
-        public static IEnumerable<T> AggregateComponentsInChildren<T>(this Transform parent) {
-            return parent.AggregateComponentsInChildren<T>(true);
-        }
-        public static bool IsVisibleLayer(this Component c) {
-            return Camera.current != null && c != null 
-                && (Camera.current.cullingMask & (1 << c.gameObject.layer)) != 0;
-        }
+		public static IEnumerable<T> Children<T>(this Component root, bool ignoreGrandchildren = true) {
+			if (root == null)
+				yield break;
 
-        public static void NotifySelf<Input>(this Component me, System.Action<Input> method) {
+			foreach (var c in Children<T>(root.transform, ignoreGrandchildren))
+				yield return c;
+		}
+		public static IEnumerable<T> Parent<T>(this Transform root, bool ignoreGrandparent = true) {
+			if (root == null)
+				yield break;
+
+			var parent = root.parent;
+			if (parent == null)
+				yield break;
+
+			var found = false;
+			foreach (var c in parent.GetComponents<T>()) {
+				found = true;
+				yield return c;
+			}
+
+			if (!found || !ignoreGrandparent)
+				foreach (var c in parent.Parent<T>())
+					yield return c;
+		}
+		public static IEnumerable<T> Parent<T>(this Component root, bool ignoreGrandparent = true) {
+			if (root == null)
+				yield break;
+			foreach (var c in root.transform.Parent<T>())
+				yield return c;
+		}
+
+
+        public static void CallbackSelf<Input>(this Component me, System.Action<Input> method) {
             foreach (var i in me.GetComponents<Input>())
                 method(i);
         }
-        public static IEnumerable<Output> NotifySelf<Input, Output>(this Component me, System.Func<Input, Output> method) {
+        public static IEnumerable<Output> CallbackSelf<Input, Output>(this Component me, System.Func<Input, Output> method) {
             foreach (var i in me.GetComponents<Input>())
                 yield return method(i);
         }
 
-        public static void NotifySelfAndChildren<Input>(this Component me, System.Action<Input> method) {
-            foreach (var i in me.GetComponentsInChildren<Input>())
+        public static void CallbackChildren<Input>(this Component me, 
+			System.Action<Input> method, bool ignoreGrandchildren = true) {
+
+            foreach (var i in me.Children<Input>(ignoreGrandchildren))
                 method(i);
         }
-        public static IEnumerable<Output> NotifySelfAndChildren<Input, Output>(this Component me, System.Func<Input, Output> method) {
+        public static IEnumerable<Output> CallbackChildren<Input, Output>(this Component me, System.Func<Input, Output> method) {
             foreach (var i in me.GetComponentsInChildren<Input>())
                 yield return method(i);
-        }
-    }
+		}
+
+		public static bool IsVisibleLayer(this Component c) {
+			return Camera.current != null && c != null
+				&& (Camera.current.cullingMask & (1 << c.gameObject.layer)) != 0;
+		}
+	}
 }
