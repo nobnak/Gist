@@ -8,32 +8,31 @@ namespace nobnak.Gist.Sensor {
 		public PositionCluster2D(Data data) : base(data) { }
 	}
 
-	public class PositionCluster2D<T> : System.IDisposable {
-			public System.Action<List<Cluster>> OnUpdateCluster;
+	public class PositionCluster2D<T> : BasePositionCluter2D {
+		public System.Action<List<Cluster>> OnUpdateCluster;
 		public System.Action<List<Cluster>> OnAddCluster;
 		public System.Action<List<Cluster>> OnRemoveCluster;
 
-        Data data;
-        Queue<Point> points;
-        List<Cluster> clusters;
+		Queue<Point> points;
+		List<Cluster> clusters;
 		List<Cluster> clusterAdded;
 		List<Cluster> clusterRemoved;
 		Pooling.MemoryPool<Cluster> poolCluster;
 
-        public PositionCluster2D(Data data) {
-            this.data = data;
-            points = new Queue<Point> ();
-            clusters = new List<Cluster> ();
+		public PositionCluster2D(Data data) {
+			this.data = data;
+			points = new Queue<Point>();
+			clusters = new List<Cluster>();
 			clusterAdded = new List<Cluster>();
 			clusterRemoved = new List<Cluster>();
 			poolCluster = new Pooling.MemoryPool<Cluster>(
 				() => new Cluster(),
 				c => c.Reset(),
 				c => { });
-        }
+		}
 
-        #region IDisposable implementation 
-        public void Dispose () {
+		#region IDisposable implementation 
+		public override void Dispose() {
 			if (poolCluster != null) {
 				poolCluster.Dispose();
 				poolCluster = null;
@@ -44,21 +43,21 @@ namespace nobnak.Gist.Sensor {
 		#region public
 		public void Receive(Vector2 p, params T[] args) {
 			points.Enqueue(new Point(p, args));
-        }
-        public bool FindNearestCluster(Vector2 center, out int index, out float sqrd) {
-            sqrd = float.MaxValue;
-            index = -1;
-            for (var j = 0; j < clusters.Count; j++) {
-                var c = clusters [j];
-                var jsqr = (c.latest.pos - center).sqrMagnitude;
-                if (jsqr < sqrd) {
-                    sqrd = jsqr;
-                    index = j;
-                }
-            }
-            return index >= 0;
-        }
-        public virtual void UpdateCluster () {
+		}
+		public bool FindNearestCluster(Vector2 center, out int index, out float sqrd) {
+			sqrd = float.MaxValue;
+			index = -1;
+			for (var j = 0; j < clusters.Count; j++) {
+				var c = clusters[j];
+				var jsqr = (c.latest.pos - center).sqrMagnitude;
+				if (jsqr < sqrd) {
+					sqrd = jsqr;
+					index = j;
+				}
+			}
+			return index >= 0;
+		}
+		public virtual void UpdateCluster() {
 			clusterAdded.Clear();
 			clusterRemoved.ForEach(c => poolCluster.Free(c));
 			clusterRemoved.Clear();
@@ -79,35 +78,35 @@ namespace nobnak.Gist.Sensor {
 			clusters.Clear();
 		}
 		public virtual IEnumerable<Point> IteratePoints() {
-            foreach (var c in clusters)
-                yield return c.latest;
-        }
+			foreach (var c in clusters)
+				yield return c.latest;
+		}
 		public virtual IEnumerable<Vector2> IteratePositions() {
 			foreach (var p in IteratePoints())
 				yield return p.pos;
 		}
-        public virtual IEnumerable<Cluster> IterateClusters() {
-            foreach (var c in clusters)
-                yield return c;
-        }
+		public virtual IEnumerable<Cluster> IterateClusters() {
+			foreach (var c in clusters)
+				yield return c;
+		}
 
-        public virtual int ClusterCount {
-            get { return clusters.Count; }
-        }
+		public virtual int ClusterCount {
+			get { return clusters.Count; }
+		}
 		#endregion
 
 		#region private
-        protected virtual void MakeClusters () {
-            var sqClusterDist = data.clusterDistance * data.clusterDistance;
+		protected virtual void MakeClusters() {
+			var sqClusterDist = data.clusterDistance * data.clusterDistance;
 
 			while (points.Count > 0) {
 				float sqNearest;
-                int i;
+				int i;
 				Cluster c;
 
 				var p = points.Dequeue();
 				if (FindNearestCluster(p.pos, out i, out sqNearest)
-						&& (sqNearest < sqClusterDist 
+						&& (sqNearest < sqClusterDist
 						|| clusters.Count >= data.clusterCountLimit)) {
 					c = clusters[i];
 				} else {
@@ -156,17 +155,17 @@ namespace nobnak.Gist.Sensor {
 
 		#region classes
 		public struct Point {
-            public readonly Vector2 pos;
-            public readonly float time;
+			public readonly Vector2 pos;
+			public readonly float time;
 			public readonly T[] args;
 
-            public Point(Vector2 pos, float time, params T[] args) {
-                this.pos = pos;
-                this.time = time;
+			public Point(Vector2 pos, float time, params T[] args) {
+				this.pos = pos;
+				this.time = time;
 				this.args = args;
-            }
-            public Point(Vector2 pos, params T[] args) : this(pos, Time.timeSinceLevelLoad, args) {}
-        }
+			}
+			public Point(Vector2 pos, params T[] args) : this(pos, Time.timeSinceLevelLoad, args) { }
+		}
 
 		public class Cluster {
 			public readonly List<Point> points = new List<Point>();
@@ -203,12 +202,20 @@ namespace nobnak.Gist.Sensor {
 					points.RemoveRange(0, lastIndexOfOld + 1);
 			}
 
-			public static Vector2 operator - (Cluster a, Cluster b) {
+			public static Vector2 operator -(Cluster a, Cluster b) {
 				return b.latest.pos - a.latest.pos;
 			}
 		}
+	}
 
-        [System.Serializable]
+	public abstract class BasePositionCluter2D : System.IDisposable {
+		protected Data data;
+
+		public abstract void Dispose();
+
+		public Data CurrentData { get { return data; } }
+
+		[System.Serializable]
         public class Data {
             public float effectiveDuration = 3f;
             public float clusterDistance = 0.2f;
