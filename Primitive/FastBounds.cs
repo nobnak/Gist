@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Text;
 using UnityEngine;
 
 namespace nobnak.Gist.Primitive {
@@ -88,6 +89,15 @@ namespace nobnak.Gist.Primitive {
 		public void Encapsulate(FastBounds fb) {
 			Encapsulate(fb.min_x, fb.min_y, fb.min_z);
 			Encapsulate(fb.max_x, fb.max_y, fb.max_z);
+		}
+
+		public override string ToString() {
+			var buf = new StringBuilder("<FastBounds : ");
+			var c = Center;
+			var s = Size;
+			buf.AppendFormat("center=({0:e2},{1:e2},{2:e2})", c.x, c.y, c.z);
+			buf.AppendFormat(", size=({0:e2},{1:e2},{2:e2})>", s.x, s.y, s.z);
+			return buf.ToString();
 		}
 
 		public static implicit operator FastBounds(Bounds b) {
