@@ -11,9 +11,9 @@ namespace nobnak.Gist.Layer2 {
         public const float EPSILON = 1e-3f;
         public const float CIRCLE_INV_DEG = 1f / 360;
 
-        public Layer() {
-            LayerValidator = new Validator();
+		protected Validator validator = new Validator();
 
+        public Layer() {
             LayerToWorld = new DefferedMatrix();
             LocalToLayer = new DefferedMatrix();
             LocalToWorld = new DefferedMatrix();
@@ -21,27 +21,33 @@ namespace nobnak.Gist.Layer2 {
 
         #region Unity
         protected virtual void OnEnable() {
-            LayerValidator.Reset();
-            LayerValidator.Validation += () => {
+			validator.Reset();
+			validator.Validation += () => {
                 transform.hasChanged = false;
                 GenerateLayerData();
                 BroadcastUpdateLayer();
             };
-            LayerValidator.SetCheckers(() => !transform.hasChanged);
+			validator.SetCheckers(() => !transform.hasChanged);
+			validator.Validate();
             BroadcastCrownLayer();
         }
-        protected virtual void Update() {
-        }
         protected virtual void OnValidate() {
-            LayerValidator.Invalidate();
+			validator.Invalidate();
         }
+		protected virtual void Update() {
+			validator.Validate();
+		}
         protected virtual void OnDisable() {
 
         }
         #endregion
 
         #region ILayer
-        public virtual Validator LayerValidator { get; protected set; }
+        public virtual Validator LayerValidator {
+			get {
+				return validator;
+			}
+		}
 
         public DefferedMatrix LayerToWorld { get; protected set; }
         public DefferedMatrix LocalToLayer { get; protected set; }
