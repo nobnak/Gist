@@ -45,7 +45,7 @@ namespace nobnak.Gist.Exhibitor {
             n.gameObject.hideFlags = HideFlags.DontSave;
             n.transform.SetParent(parent, false);
             nodes.Add(n);
-            n.NotifySelf<IExhibitorListener>(l => l.ExhibitorOnParent(parent));
+            n.CallbackSelf<IExhibitorListener>(l => l.ExhibitorOnParent(parent));
         }
         protected virtual void AddRange(IEnumerable<ArtWorkType> niter) {
             foreach (var n in niter)
@@ -53,7 +53,7 @@ namespace nobnak.Gist.Exhibitor {
         }
         protected virtual void Remove(ArtWorkType n) {
             nodes.Remove(n);
-            n.NotifySelf<IExhibitorListener>(l => l.ExhibitorOnUnparent(parent));
+            n.CallbackSelf<IExhibitorListener>(l => l.ExhibitorOnUnparent(parent));
         }
         protected virtual void Removerange(IEnumerable<ArtWorkType> niter) {
             foreach (var n in niter)

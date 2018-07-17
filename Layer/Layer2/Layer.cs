@@ -76,7 +76,7 @@ namespace nobnak.Gist.Layer2 {
                 c.TargetOnChange(this);
         }
         protected virtual IEnumerable<ILayerListener> IterateListeners() {
-            return transform.AggregateComponentsInChildren<ILayerListener>(false);
+            return transform.Children<ILayerListener>(false);
         }
         protected virtual void GenerateLayerData() {
             var localScale = transform.localScale;
