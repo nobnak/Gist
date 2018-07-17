@@ -2,10 +2,14 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace nobnak.Gist {
+namespace nobnak.Gist.Sensor {
 
-    public class PositionClustering : System.IDisposable {
-        public System.Action<List<Cluster>> OnUpdateCluster;
+	public class PositionCluster2D : PositionCluster2D<object> {
+		public PositionCluster2D(Data data) : base(data) { }
+	}
+
+	public class PositionCluster2D<T> : System.IDisposable {
+			public System.Action<List<Cluster>> OnUpdateCluster;
 		public System.Action<List<Cluster>> OnAddCluster;
 		public System.Action<List<Cluster>> OnRemoveCluster;
 
@@ -16,7 +20,7 @@ namespace nobnak.Gist {
 		List<Cluster> clusterRemoved;
 		Pooling.MemoryPool<Cluster> poolCluster;
 
-        public PositionClustering(Data data) {
+        public PositionCluster2D(Data data) {
             this.data = data;
             points = new Queue<Point> ();
             clusters = new List<Cluster> ();
@@ -38,8 +42,8 @@ namespace nobnak.Gist {
 		#endregion
 
 		#region public
-		public void Receive(Vector2 p) {
-			points.Enqueue(new Point(p));
+		public void Receive(Vector2 p, params T[] args) {
+			points.Enqueue(new Point(p, args));
         }
         public bool FindNearestCluster(Vector2 center, out int index, out float sqrd) {
             sqrd = float.MaxValue;
@@ -154,12 +158,14 @@ namespace nobnak.Gist {
 		public struct Point {
             public readonly Vector2 pos;
             public readonly float time;
+			public readonly T[] args;
 
-            public Point(Vector2 pos, float time) {
+            public Point(Vector2 pos, float time, params T[] args) {
                 this.pos = pos;
                 this.time = time;
+				this.args = args;
             }
-            public Point(Vector2 pos) : this(pos, Time.timeSinceLevelLoad) {}
+            public Point(Vector2 pos, params T[] args) : this(pos, Time.timeSinceLevelLoad, args) {}
         }
 
 		public class Cluster {
