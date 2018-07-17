@@ -6,18 +6,32 @@ using UnityEngine;
 
 namespace nobnak.Gist.Primitive {
 
+	[StructLayout(LayoutKind.Explicit, Pack = 4)]
 	public struct FastBounds {
+		[FieldOffset(0)]
+		public Vector3 Min;
+		[FieldOffset(0)]
 		public float min_x;
+		[FieldOffset(4)]
 		public float min_y;
+		[FieldOffset(8)]
 		public float min_z;
 
+		[FieldOffset(12)]
+		public Vector3 Max;
+		[FieldOffset(12)]
 		public float max_x;
+		[FieldOffset(16)]
 		public float max_y;
+		[FieldOffset(20)]
 		public float max_z;
 
 		public FastBounds(
 			float min_x, float min_y, float min_z, 
 			float max_x, float max_y, float max_z) {
+			Min = default(Vector3);
+			Max = default(Vector3);
+
 			this.min_x = min_x;
 			this.min_y = min_y;
 			this.min_z = min_z;
@@ -52,12 +66,6 @@ namespace nobnak.Gist.Primitive {
 					0.5f * (max_y - min_y),
 					0.5f * (max_z - min_z));
 			}
-		}
-		public Vector3 Min {
-			get { return new Vector3(min_x, min_y, min_z); }
-		}
-		public Vector3 Max {
-			get { return new Vector3(max_x, max_y, max_z); }
 		}
 
 		public bool Intersects(FastBounds b) {

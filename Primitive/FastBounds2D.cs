@@ -5,16 +5,29 @@ using UnityEngine;
 
 namespace nobnak.Gist.Primitive {
 
+	[StructLayout(LayoutKind.Explicit, Pack = 4)]
 	public struct FastBounds2D {
+		[FieldOffset(0)]
+		public Vector2 Min;
+		[FieldOffset(0)]
 		public float min_x;
+		[FieldOffset(4)]
 		public float min_y;
 
+
+		[FieldOffset(8)]
+		public Vector2 Max;
+		[FieldOffset(8)]
 		public float max_x;
+		[FieldOffset(12)]
 		public float max_y;
 
 		public FastBounds2D(
 			float min_x, float min_y, 
 			float max_x, float max_y) {
+			Min = default(Vector2);
+			Max = default(Vector2);
+
 			this.min_x = min_x;
 			this.min_y = min_y;
 
@@ -44,12 +57,6 @@ namespace nobnak.Gist.Primitive {
 					0.5f * (max_x - min_x),
 					0.5f * (max_y - min_y));
 			}
-		}
-		public Vector2 Min {
-			get { return new Vector2(min_x, min_y); }
-		}
-		public Vector2 Max {
-			get { return new Vector2(max_x, max_y); }
 		}
 
 		public bool Intersects(FastBounds b) {
