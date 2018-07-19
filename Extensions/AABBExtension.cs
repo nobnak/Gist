@@ -107,15 +107,78 @@ namespace nobnak.Gist.Extensions.AABB {
             }
             return absM;
         }
-        public static Vector3 SampleIn(this Bounds bounds) {
-            var min = bounds.min;
-            var size = bounds.size;
-            return new Vector3(min.x + size.x * Random.value, min.y + size.y * Random.value, min.z + size.z * Random.value);
-        }
-        #endregion
+		#endregion
 
-        #region Utils
-        public static Bounds MinMaxBounds(Vector3 min, Vector3 max) {
+		#region sample insidde
+		public static Vector3 SampleIn(this FastBounds fb, float uv_x, float uv_y, float uv_z) {
+            var min = fb.Min;
+			var max = fb.Max;
+            var size = fb.Size;
+			return new Vector3(
+				Mathf.Lerp(min.x, max.x, uv_x),
+				Mathf.Lerp(min.y, max.y, uv_y),
+				Mathf.Lerp(min.z, max.z, uv_z));
+        }
+		public static Vector2 SampleIn(this FastBounds2D fb, float uv_x, float uv_y) {
+			var min = fb.Min;
+			var max = fb.Max;
+			var size = fb.Size;
+			return new Vector2(
+				Mathf.Lerp(min.x, max.x, uv_x),
+				Mathf.Lerp(min.y, max.y, uv_y));
+		}
+		public static Vector3 SampleIn(this FastBounds fb) {
+			return fb.SampleIn(Random.value, Random.value, Random.value);
+		}
+		public static Vector2 SampleIn(this FastBounds2D fb) {
+			return fb.SampleIn(Random.value, Random.value);
+		}
+		#endregion
+
+		#region closest point search
+		public static Vector2 ClosestPoint(this FastBounds2D fb, Vector2 point) {
+
+			var min = fb.Min;
+			var max = fb.Max;
+			var x0 = min.x;
+			var y0 = min.y;
+			var x1 = max.x;
+			var y1 = max.y;
+
+			var xp = point.x;
+			var yp = point.y;
+
+			if (yp < y0) {
+				return new Vector2((xp < x0 ? x0 : (xp < x1 ? xp : x1)), y0);
+			} else if (yp < y1) {
+				if (xp < x0)
+					return new Vector2(x0, yp);
+				if (x1 < xp)
+					return new Vector2(x1, yp);
+
+				var minDist = xp - x0;
+				var result = new Vector2(x0, yp);
+				if (x1 - xp < minDist) {
+					minDist = x1 - xp;
+					result = new Vector2(x1, yp);
+				}
+				if (yp - y0 < minDist) {
+					minDist = yp - y0;
+					result = new Vector2(xp, y0);
+				}
+				if (y1 - yp < minDist) {
+					minDist = y1 - yp;
+					result = new Vector2(xp, y1);
+				}
+				return result;
+			} else {
+				return new Vector2((xp < x0 ? x0 : (xp < x1 ? xp : x1)), y1);
+			}
+		}
+		#endregion
+
+		#region Utils
+		public static Bounds MinMaxBounds(Vector3 min, Vector3 max) {
             var bb = new Bounds();
             bb.SetMinMax(min, max);
             return bb;
