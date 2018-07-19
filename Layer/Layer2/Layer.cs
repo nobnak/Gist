@@ -65,9 +65,14 @@ namespace nobnak.Gist.Layer2 {
             distance = Vector3.Dot(n, c - ray.origin) / det;
             return true;
         }
-        #endregion
-        
-        protected virtual void BroadcastCrownLayer() {
+		public virtual Vector3 ProjectOn(Vector3 worldPos, float distance = 0f) {
+			var layerPos = LayerToWorld.InverseTransformPoint(worldPos);
+			layerPos.z = distance;
+			return LayerToWorld.TransformPoint(layerPos);
+		}
+		#endregion
+
+		protected virtual void BroadcastCrownLayer() {
             foreach (var c in IterateListeners())
                 c.TargetOnChange(this);
         }
