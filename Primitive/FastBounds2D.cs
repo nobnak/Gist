@@ -92,5 +92,12 @@ namespace nobnak.Gist.Primitive {
 		public static explicit operator Rect(FastBounds2D fb) {
 			return new Rect(fb.Center, fb.Size);
 		}
+
+		public static explicit operator FastBounds2D(FastBounds fb3) {
+			return new FastBounds2D(fb3.min_x, fb3.min_y, fb3.max_x, fb3.max_y);
+		}
+		public static explicit operator FastBounds(FastBounds2D fb2) {
+			return new FastBounds(fb2.min_x, fb2.min_y, 0f, fb2.max_x, fb2.max_y, 0f);
+		}
 	}
 }
