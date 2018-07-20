@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using nobnak.Gist.Primitive;
+using System.Text;
 
 namespace nobnak.Gist.Sensor {
 
@@ -59,19 +60,19 @@ namespace nobnak.Gist.Sensor {
 			return index >= 0;
 		}
 		public virtual void UpdateCluster() {
-			clusterAdded.Clear();
-			clusterRemoved.ForEach(c => poolCluster.Free(c));
-			clusterRemoved.Clear();
 			if (clusters.Count > data.clusterCountLimit) {
 				var oldestIndex = FindOldestClusterIndex();
 				if (oldestIndex >= 0)
-					clusters.RemoveAt(oldestIndex);
+					clusterRemoved.Add(clusters[oldestIndex]);
 			}
 
 			MakeClusters();
 			RemoveOldClusters();
-
 			Notify();
+
+			clusterAdded.Clear();
+			clusterRemoved.ForEach(c => poolCluster.Free(c));
+			clusterRemoved.Clear();
 		}
 
 		public virtual void Clear() {
@@ -101,32 +102,28 @@ namespace nobnak.Gist.Sensor {
 
 				var p = points.Dequeue();
 				var pc = p.center;
-				if (FindNearestCluster(pc, out i, out sqNearest)) { 
+				if (FindNearestCluster(pc, out i, out sqNearest)
+					&& clusters[i].latest.bb.Contains(pc)
+						|| (clusters.Count >= data.clusterCountLimit)) {
 					c = clusters[i];
-					if (p.bb.Contains(c.latest.center) || (clusters.Count >= data.clusterCountLimit)) {
-						c.Add(p);
-						return;
-					}
+				} else {
+					c = poolCluster.New();
+					clusters.Add(c);
+					clusterAdded.Add(c);
 				}
-
-				c = poolCluster.New();
-				clusters.Add(c);
-				clusterAdded.Add(c);
 				c.Add(p);
 			}
 		}
 		protected void RemoveOldClusters() {
 			var t = Time.timeSinceLevelLoad - data.effectiveDuration;
-			for (var i = 0; i < clusters.Count;) {
-				var c = clusters[i];
+			foreach (var c in clusters) {
 				c.RemoveBeforeTime(t);
-				if (c.Count == 0) {
-					clusters.RemoveAt(i);
+				if (c.Count == 0)
 					clusterRemoved.Add(c);
-				} else {
-					i++;
-				}
 			}
+
+			foreach (var c in clusterRemoved)
+				clusters.Remove(c);
 		}
 		private int FindOldestClusterIndex() {
 			var oldestTime = float.MaxValue;
@@ -183,23 +180,15 @@ namespace nobnak.Gist.Sensor {
 			}
 			public void Add(Bounds p) {
 				points.Add(p);
-				if (latest.time < p.time) {
-					latest = p;
-				}
+				latest = p;
 			}
 			public void Reset() {
 				points.Clear();
 				latest = new Bounds(default(FastBounds2D), float.MinValue);
 			}
 			public void RemoveBeforeTime(float t) {
-				var lastIndexOfOld = -1;
-				for (var i = 0; i < points.Count; i++) {
-					if (points[i].time >= t)
-						break;
-					lastIndexOfOld = i;
-				}
-				if (lastIndexOfOld >= 0)
-					points.RemoveRange(0, lastIndexOfOld + 1);
+				while (points.Count > 0 && points[0].time < t)
+					points.RemoveAt(0);
 			}
 		}
 	}
@@ -215,6 +204,7 @@ namespace nobnak.Gist.Sensor {
         public class Data {
             public float effectiveDuration = 0.5f;
             public int clusterCountLimit = 100;
+			public float clusterDistance = 0.01f;
         }
 		#endregion
 	}
