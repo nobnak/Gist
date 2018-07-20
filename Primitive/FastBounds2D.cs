@@ -59,7 +59,7 @@ namespace nobnak.Gist.Primitive {
 			}
 		}
 
-		public bool Intersects(FastBounds b) {
+		public bool Intersects(FastBounds2D b) {
 			var gap =
 				(max_x < b.min_x || b.max_x < min_x) ||
 				(max_y < b.min_y || b.max_y < min_y);
