@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using nobnak.Gist.Primitive;
 
 namespace nobnak.Gist.Layer2 {
@@ -10,6 +10,7 @@ namespace nobnak.Gist.Layer2 {
         DefferedMatrix LocalToWorld { get; }
 
         bool Raycast(Ray ray, out float t);
+		Vector3 ProjectOn(Vector3 worldPos, float distance = 0f);
 
         Validator LayerValidator { get; }
     }

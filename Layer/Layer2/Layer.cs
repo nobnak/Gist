@@ -11,6 +11,9 @@ namespace nobnak.Gist.Layer2 {
         public const float EPSILON = 1e-3f;
         public const float CIRCLE_INV_DEG = 1f / 360;
 
+		[SerializeField]
+		protected Events events;
+
 		protected Validator validator = new Validator();
 
         public Layer() {
@@ -25,11 +28,11 @@ namespace nobnak.Gist.Layer2 {
 			validator.Validation += () => {
                 transform.hasChanged = false;
                 GenerateLayerData();
-                BroadcastUpdateLayer();
+                NotifyLayerOnChange();
             };
 			validator.SetCheckers(() => !transform.hasChanged);
 			validator.Validate();
-            BroadcastCrownLayer();
+            NotifyLayerOnChange();
         }
         protected virtual void OnValidate() {
 			validator.Invalidate();
@@ -65,19 +68,19 @@ namespace nobnak.Gist.Layer2 {
             distance = Vector3.Dot(n, c - ray.origin) / det;
             return true;
         }
-        #endregion
-        
-        protected virtual void BroadcastCrownLayer() {
-            foreach (var c in IterateListeners())
+		public virtual Vector3 ProjectOn(Vector3 worldPos, float distance = 0f) {
+			var layerPos = LayerToWorld.InverseTransformPoint(worldPos);
+			layerPos.z = distance;
+			return LayerToWorld.TransformPoint(layerPos);
+		}
+		#endregion
+
+		protected virtual void NotifyLayerOnChange() {
+            foreach (var c in transform.Children<ILayerListener>(false))
                 c.TargetOnChange(this);
-        }
-        protected virtual void BroadcastUpdateLayer() {
-            foreach (var c in IterateListeners())
-                c.TargetOnChange(this);
-        }
-        protected virtual IEnumerable<ILayerListener> IterateListeners() {
-            return transform.Children<ILayerListener>(false);
-        }
+			if (events != null)
+				events.LayerOnChange.Invoke(this);
+		}
         protected virtual void GenerateLayerData() {
             var localScale = transform.localScale;
             localScale.z = 1f;
@@ -89,6 +92,14 @@ namespace nobnak.Gist.Layer2 {
             LocalToWorld.Reset(layer, local);
         }
 
-        public interface ILayerListener : IChangeListener<Layer> {}
-    }
+		#region classes
+		public interface ILayerListener : IChangeListener<Layer> {}
+		[System.Serializable]
+		public class LayerEvent : UnityEngine.Events.UnityEvent<Layer> { }
+		[System.Serializable]
+		public class Events {
+			public LayerEvent LayerOnChange;
+		}
+		#endregion
+	}
 }

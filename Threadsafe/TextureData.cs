@@ -32,6 +32,15 @@ namespace nobnak.Gist.ThreadSafe {
 					+ (1f - t) * (s * GetPixelDirect(x1, y0) + (1f - s) * GetPixelDirect(x1, y1));
 			}
 		}
+		public Color this[float nx, float ny] {
+			get {
+				return GetPixelBilinear(nx, ny);
+			}
+		}
+		public Color this[Vector2 uv] {
+			get { return GetPixelBilinear(uv.x, uv.y); }
+		}
+
 		public void SetPixels(Color[] pixels, int width, int height) {
 			lock (this) {
 				this.pixels = pixels;
