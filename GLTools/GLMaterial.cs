@@ -21,13 +21,13 @@ namespace nobnak.Gist {
         public const string PROP_ZBIAS = "_ZBias";
 		public const string LINE_SHADER = "Hidden/Internal-Colored";
 
-        protected Material _lineMat;
+        public Material LineMat { get; protected set; }
 
 		public GLMaterial() {
 			var lineShader = Shader.Find (LINE_SHADER);
 			if (lineShader == null)
 				Debug.LogErrorFormat ("Line Shader not found : {0}", LINE_SHADER);
-			_lineMat = new Material (lineShader);
+			LineMat = new Material (lineShader);
             Reset();
 		}
 
@@ -37,32 +37,33 @@ namespace nobnak.Gist {
             ZOffset = 0f;
         }
         public bool ZWriteMode {
-            get { return _lineMat.GetInt (PROP_ZWRITE) == 1; }
-            set { _lineMat.SetInt (PROP_ZWRITE, value ? 1 : 0); }
+            get { return LineMat.GetInt (PROP_ZWRITE) == 1; }
+            set { LineMat.SetInt (PROP_ZWRITE, value ? 1 : 0); }
         }
         public ZTestEnum ZTestMode {
-            get { return (ZTestEnum)_lineMat.GetInt (PROP_ZTEST); }
-            set { _lineMat.SetInt (PROP_ZTEST, (int)value); }
+            get { return (ZTestEnum)LineMat.GetInt (PROP_ZTEST); }
+            set { LineMat.SetInt (PROP_ZTEST, (int)value); }
         }
         public float ZOffset {
-            get { return _lineMat.GetFloat(PROP_ZBIAS); }
-            set { _lineMat.SetFloat(PROP_ZBIAS, value); }
+            get { return LineMat.GetFloat(PROP_ZBIAS); }
+            set { LineMat.SetFloat(PROP_ZBIAS, value); }
         }
 
         public void SetPass(int pass = 0) {
-            _lineMat.SetPass(pass);
+            LineMat.SetPass(pass);
         }
         public bool Color (UnityEngine.Color color) {
-            if (_lineMat == null)
+            if (LineMat == null)
                 return false;
-            GL.Color (color);
-            return true;
+			//GL.Color (color);
+			LineMat.color = color;
+			return true;
         }
 
 		#region IDisposable implementation
-        public bool IsDisposed { get { return _lineMat == null; } }
+        public bool IsDisposed { get { return LineMat == null; } }
 		public void Dispose () {
-			_lineMat.Destroy();
+			LineMat.Destroy();
 		}
 		#endregion
 	}
