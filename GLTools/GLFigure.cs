@@ -13,14 +13,15 @@ namespace nobnak.Gist {
 
         public static readonly Vector3[] QUAD = new Vector3[]{
             new Vector3(-0.5f, -0.5f, 0f), new Vector3(-0.5f,  0.5f, 0f),
-            new Vector3( 0.5f,  0.5f, 0f), new Vector3( 0.5f, -0.5f, 0f)            
+            new Vector3( 0.5f,  0.5f, 0f), new Vector3( 0.5f, -0.5f, 0f)
         };
 
-        public GLMaterial glmat { get; protected set; }
+		public Material LineMat { get; set; }
+        public GLMaterial DefaultLineMat { get; protected set; }
         public Color CurrentColor { get; set; }
 
 		public GLFigure() {
-            glmat = new GLMaterial();
+            DefaultLineMat = new GLMaterial();
         }
 
         #region Static
@@ -31,13 +32,13 @@ namespace nobnak.Gist {
                 return (_instance == null ? (_instance = new GLFigure()) : _instance);
             }
         }
-		
+
 		#endregion
 		#region IDisposable implementation
 		public void Dispose() {
-            if (glmat != null) {
-                glmat.Dispose();
-                glmat = null;
+            if (DefaultLineMat != null) {
+                DefaultLineMat.Dispose();
+                DefaultLineMat = null;
             }
         }
         #endregion
@@ -84,7 +85,7 @@ namespace nobnak.Gist {
             CurrentColor = color;
             FillQuad (cameraMat * modelMat);
         }
-        
+
         [System.Obsolete]
         public void DrawCircle(Matrix4x4 modelViewMat, Color color) {
             CurrentColor = color;
@@ -193,7 +194,7 @@ namespace nobnak.Gist {
                     v = PositionFromAngle ((i + 1) * dr + radFrom, 2f);
                     GL.Vertex (v);
                 }
-            } finally { 
+            } finally {
                 EndDraw ();
             }
         }
@@ -270,23 +271,29 @@ namespace nobnak.Gist {
         }
 
 
-        Vector3 PositionFromAngle(float rad, float size) {
-            return new Vector3(0.5f * size * Mathf.Cos (rad), 0.5f * size * Mathf.Sin (rad), 0f);            
+        protected Vector3 PositionFromAngle(float rad, float size) {
+            return new Vector3(0.5f * size * Mathf.Cos (rad), 0.5f * size * Mathf.Sin (rad), 0f);
         }
 
-        bool StartDraw(Matrix4x4 modelViewMat, int mode) {
-            if (glmat == null || glmat.IsDisposed)
+        protected bool StartDraw(Matrix4x4 modelViewMat, int mode, Material mat, int pass = 0) {
+            if (mat == null)
                 return false;
 
             GL.PushMatrix ();
             GL.LoadIdentity ();
             GL.MultMatrix (modelViewMat);
-            glmat.SetPass();
+            mat.SetPass(pass);
 
             GL.Begin (mode);
-            glmat.Color(CurrentColor);
+            mat.color = CurrentColor;
             return true;
         }
+		protected bool StartDraw(Matrix4x4 modelViewMat, int mode, int pass = 0) {
+			if (LineMat == null && DefaultLineMat.IsDisposed)
+				return false;
+			var lineMat = (LineMat != null ? LineMat : DefaultLineMat.LineMat);
+			return StartDraw(modelViewMat, mode, lineMat, pass);
+		}
 		protected IEnumerable<Vector3> IterateQuadLines() {
 			var vfrom = QUAD[0];
 			for (var i = 0; i < QUAD.Length; i++) {
