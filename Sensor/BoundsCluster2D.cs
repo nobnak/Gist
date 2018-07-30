@@ -33,7 +33,7 @@ namespace nobnak.Gist.Sensor {
 				c => { });
 		}
 
-		#region IDisposable implementation 
+		#region IDisposable implementation
 		public override void Dispose() {
 			if (poolCluster != null) {
 				poolCluster.Dispose();
