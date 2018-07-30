@@ -1,21 +1,19 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace nobnak.Gist.Scoped {
 
-    public class ScopedRenderTextureActivator : System.IDisposable {
-        protected RenderTexture prev;
+    public class RenderTextureActivator : Scoped<RenderTexture> {
+		protected RenderTexture prev;
 
-        public ScopedRenderTextureActivator(RenderTexture next) {
+        public RenderTextureActivator(RenderTexture next) :base(next) {
             prev = RenderTexture.active;
             RenderTexture.active = next;
         }
 
-        #region IDisposable implementation
-        public void Dispose () {
-            RenderTexture.active = prev;
-        }
-        #endregion
-    }
+		protected override void Disposer(RenderTexture data) {
+			RenderTexture.active = prev;
+		}
+	}
 }
