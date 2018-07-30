@@ -38,7 +38,9 @@ namespace nobnak.Gist.Scoped {
             Create(data);
         }
 
-        public virtual T Data {
+
+		#region public
+		public virtual T Data {
             get { return data; }
             set {
                 Dispose();
@@ -53,11 +55,14 @@ namespace nobnak.Gist.Scoped {
                 Disposer(Data);
             }
         }
+		#endregion
 
-        protected virtual void Create(T data) {
+		#region private
+		protected abstract void Disposer(T data);
+		protected virtual void Create(T data) {
             this.data = data;
             this.Disposed = false;
-        }
-        protected abstract void Disposer(T data);
-    }
+		}
+		#endregion
+	}
 }
