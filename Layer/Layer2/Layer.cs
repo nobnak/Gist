@@ -7,7 +7,7 @@ namespace nobnak.Gist.Layer2 {
 
     [ExecuteInEditMode]
     public class Layer : MonoBehaviour, ILayer {
-		
+
         public const float EPSILON = 1e-3f;
         public const float CIRCLE_INV_DEG = 1f / 360;
 
@@ -75,6 +75,11 @@ namespace nobnak.Gist.Layer2 {
 		}
 		#endregion
 
+		#region public
+		public Events GetEvents() { return events; }
+		#endregion
+
+		#region private
 		protected virtual void NotifyLayerOnChange() {
             foreach (var c in transform.Children<ILayerListener>(false))
                 c.TargetOnChange(this);
@@ -91,6 +96,7 @@ namespace nobnak.Gist.Layer2 {
             LocalToLayer.Reset(local);
             LocalToWorld.Reset(layer, local);
         }
+		#endregion
 
 		#region classes
 		public interface ILayerListener : IChangeListener<Layer> {}

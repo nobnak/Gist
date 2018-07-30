@@ -21,11 +21,13 @@ namespace nobnak.Gist.Layer2 {
 
 				transform.rotation = layer.transform.rotation;
 
+				var scale = Vector3.one;
 				switch (scaleMode) {
 					case ScaleMode.LocalScale:
-						transform.localScale = layer.transform.localScale;
+						scale = layer.transform.localScale;
 						break;
 				}
+				transform.localScale = scale;
 			};
 		}
 		protected virtual void OnValidate() {
