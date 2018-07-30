@@ -282,10 +282,11 @@ namespace nobnak.Gist {
             GL.PushMatrix ();
             GL.LoadIdentity ();
             GL.MultMatrix (modelViewMat);
-            mat.SetPass(pass);
+			mat.color = CurrentColor;
+			mat.SetPass(pass);
 
-            GL.Begin (mode);
-            mat.color = CurrentColor;
+			GL.Begin (mode);
+			GL.Color(CurrentColor);
             return true;
         }
 		protected bool StartDraw(Matrix4x4 modelViewMat, int mode, int pass = 0) {
