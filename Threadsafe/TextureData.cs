@@ -147,6 +147,14 @@ namespace nobnak.Gist.ThreadSafe {
 				+ (1f - t) * (s * v10 + (1f - s) * v11);
 		}
 		#endregion
+
+		#region static
+		public static FloatTextureData CreateConstant(float v) {
+			return new FloatTextureData(
+				new float[] { v },
+				new Vector2Int(1, 1));
+		}
+		#endregion
 	}
 
 	public class FloatFilter : ITextureData<float> {
