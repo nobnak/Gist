@@ -204,7 +204,6 @@ namespace nobnak.Gist.Sensor {
         public class Data {
             public float effectiveDuration = 0.5f;
             public int clusterCountLimit = 100;
-			public float clusterDistance = 0.01f;
         }
 		#endregion
 	}
