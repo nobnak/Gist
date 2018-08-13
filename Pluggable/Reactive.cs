@@ -64,4 +64,16 @@ namespace nobnak.Gist {
 			return new ReactiveObject<T>(data);
 		}
 	}
+	[System.Serializable]
+	public class ReactiveValue<T> : BaseReactive<T> where T : struct {
+		public ReactiveValue(T data) : base(data) { }
+		public ReactiveValue() : base() { }
+
+		public override bool AreEqual(T a, T b) {
+			return a.Equals(b);
+		}
+		public static implicit operator ReactiveValue<T>(T data) {
+			return new ReactiveValue<T>(data);
+		}
+	}
 }
