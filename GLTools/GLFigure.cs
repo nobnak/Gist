@@ -20,20 +20,23 @@ namespace nobnak.Gist {
         public GLMaterial DefaultLineMat { get; protected set; }
         public Color CurrentColor { get; set; }
 
+		public Matrix4x4 ProjectionMatrix {
+			get { return projectionMatrix; }
+			set {
+				EnabledCustomProjectionMatrix = true;
+				projectionMatrix = value;
+			}
+		}
+
+		public bool EnabledCustomProjectionMatrix { get; set; }
+
+		protected Matrix4x4 projectionMatrix;
+
 		public GLFigure() {
             DefaultLineMat = new GLMaterial();
         }
 
-        #region Static
-        static GLFigure _instance;
 
-        public static GLFigure Instance {
-            get {
-                return (_instance == null ? (_instance = new GLFigure()) : _instance);
-            }
-        }
-
-		#endregion
 		#region IDisposable implementation
 		public void Dispose() {
             if (DefaultLineMat != null) {
@@ -41,9 +44,10 @@ namespace nobnak.Gist {
                 DefaultLineMat = null;
             }
         }
-        #endregion
+		#endregion
 
-        public void DrawCircle(Vector3 center, Quaternion look, Vector2 size, Color color) {
+		#region public
+		public void DrawCircle(Vector3 center, Quaternion look, Vector2 size, Color color) {
 			var scale = new Vector3 (size.x, size.y, 1f);
 			var modelMat = Matrix4x4.TRS (center, look, scale);
 			var cameraMat = Camera.current.worldToCameraMatrix;
@@ -269,25 +273,19 @@ namespace nobnak.Gist {
         public void DrawLines(IEnumerable<Vector3> vertices, Transform trs) {
             DrawLines(vertices, Camera.current.worldToCameraMatrix * trs.localToWorldMatrix);
         }
+		public void ResetProjectionMatrix() {
+			EnabledCustomProjectionMatrix = false;
+		}
+		#endregion
 
-
-        protected Vector3 PositionFromAngle(float rad, float size) {
+		#region private
+		protected Vector3 PositionFromAngle(float rad, float size) {
             return new Vector3(0.5f * size * Mathf.Cos (rad), 0.5f * size * Mathf.Sin (rad), 0f);
         }
 
         protected bool StartDraw(Matrix4x4 modelViewMat, int mode, Material mat, int pass = 0) {
-            if (mat == null)
-                return false;
-
-            GL.PushMatrix ();
-            GL.LoadIdentity ();
-            GL.MultMatrix (modelViewMat);
-			mat.color = CurrentColor;
-			mat.SetPass(pass);
-
-			GL.Begin (mode);
-			GL.Color(CurrentColor);
-            return true;
+			return StartDraw(modelViewMat, mode, mat, CurrentColor, pass,
+				EnabledCustomProjectionMatrix, ProjectionMatrix);
         }
 		protected bool StartDraw(Matrix4x4 modelViewMat, int mode, int pass = 0) {
 			if (LineMat == null && DefaultLineMat.IsDisposed)
@@ -304,11 +302,41 @@ namespace nobnak.Gist {
 				vfrom = vto;
 			}
 		}
+		#endregion
 
-        static void EndDraw () {
+		#region Static
+		static GLFigure _instance;
+
+		public static GLFigure Instance {
+			get {
+				return (_instance == null ? (_instance = new GLFigure()) : _instance);
+			}
+		}
+		static bool StartDraw(Matrix4x4 modelViewMat, int mode, Material mat, Color color,
+			int pass = 0,
+			bool enabledProjection = false,
+			Matrix4x4 projection = default(Matrix4x4)) {
+
+			if (mat == null)
+				return false;
+
+			GL.PushMatrix();
+			GL.LoadIdentity();
+			GL.MultMatrix(modelViewMat);
+			if (enabledProjection)
+				GL.LoadProjectionMatrix(projection);
+			mat.SetPass(pass);
+
+			GL.Begin(mode);
+			mat.color = color;
+			GL.Color(color);
+			return true;
+		}
+		static void EndDraw () {
             GL.End ();
             GL.PopMatrix ();
         }
+		#endregion
 
 	}
 }
