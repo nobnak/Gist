@@ -27,36 +27,23 @@ namespace nobnak.Gist.Loader {
 			file = new FilePath(DEFAULT_FILEPATH);
 
 			validator.Reset();
-			validator.Validation += () => {
-				LoadTarget();
-			};
-			validator.Validated += () => {
-				NotifyChanged();
-			};
+			validator.Validation += () => LoadTarget();
+			validator.Validated += () => NotifyChanged();
 
 			watcher = new FileSystemWatcher();
-			watcher.Changed += (s, e) => {
-				validator.Invalidate();
-			};
-			watcher.Created += (s, e) => {
-				validator.Invalidate();
-			};
-			watcher.Deleted += (s, e) => {
-				validator.Invalidate();
-			};
-			watcher.Renamed += (s, e) => {
-				validator.Invalidate();
-			};
+			watcher.Changed += (s, e) => validator.Invalidate();
+			watcher.Created += (s, e) => validator.Invalidate();
+			watcher.Deleted += (s, e) => validator.Invalidate();
+			watcher.Renamed += (s, e) => validator.Invalidate();
 
 			reactivePath.Changed += v => {
 				try {
-					Debug.LogFormat("Change image file path : {0}", v.Value);
-					validator.Invalidate();
 					file.Path = v;
 					watcher.Path = Path.GetDirectoryName(file.FullPath);
+					validator.Invalidate();
 				} catch { }
 			};
-			
+
 			watcher.EnableRaisingEvents = true;
 		}
 
