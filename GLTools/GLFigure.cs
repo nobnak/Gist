@@ -328,7 +328,7 @@ namespace nobnak.Gist {
 			mat.SetPass(pass);
 
 			GL.Begin(mode);
-			mat.color = color;
+			//mat.color = color;
 			GL.Color(color);
 			return true;
 		}
