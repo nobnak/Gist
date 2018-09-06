@@ -46,7 +46,12 @@ namespace nobnak.Gist.Resizable {
 		}
 
 		public static int ParseAntiAliasing(int antiAliasing) {
-			return (antiAliasing > 0 ? antiAliasing : QualitySettings.antiAliasing);
+			if (antiAliasing > 0)
+				return antiAliasing;
+			else if (antiAliasing == 0)
+				return 1;
+			else
+				return QualitySettings.antiAliasing;
 		}
 	}
 }
