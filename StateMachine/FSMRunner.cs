@@ -48,6 +48,7 @@ namespace nobnak.Gist.StateMachine {
 
         bool _enabled;
         FSMRunner _runner;
+		int _lock = 0;
 
         State _current;
         State _last;
@@ -123,9 +124,17 @@ namespace nobnak.Gist.StateMachine {
 
             _GotoInQueue();
 
-            if (_current != null)
-				lock(this)
-					_current.UpdateState(this);
+			if (_current != null) {
+				try {
+					if (Interlocked.Increment(ref _lock) == 1) {
+						Debug.Log("Locked by Update");
+						_current.UpdateState(this);
+					}
+				} finally {
+					if (Interlocked.Decrement(ref _lock) == 0)
+						Debug.Log("Unlocked b Update");
+				}
+			}
 
 			_GotoInQueue();
 		}
@@ -157,28 +166,31 @@ namespace nobnak.Gist.StateMachine {
 			if (_current == next)
 				Debug.LogFormat("State already in {0}", next);
 
-            _last = _current;
+			if (_current != null)
+				_current.ExitState(this);
+
+			_last = _current;
             _current = next;
 
 			_lastData = _currentData;
 			_currentData = nextData;
 
-			if (_last != null)
-                _last.ExitState(this);
             _current.EnterState(this);
             return;
         }
 
 		protected void _GotoInQueue() {
-			if (Monitor.TryEnter(this)) {
-				try {
+			try {
+				if (Interlocked.Increment(ref _lock) == 1) {
+					Debug.Log("Locked by _GotoInQueue");
 					while (stateQueue.Count > 0) {
 						var next = stateQueue.Dequeue();
 						_Goto(next);
 					}
-				} finally {
-					Monitor.Exit(this);
 				}
+			} finally {
+				if (Interlocked.Decrement(ref _lock) == 0)
+					Debug.Log("Unlocked by _GotoInQueue");
 			}
         }
         protected void Enqueue(StateData next) {
