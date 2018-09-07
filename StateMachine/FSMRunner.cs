@@ -126,13 +126,10 @@ namespace nobnak.Gist.StateMachine {
 
 			if (_current != null) {
 				try {
-					if (Interlocked.Increment(ref _lock) == 1) {
-						Debug.Log("Locked by Update");
+					if (Interlocked.Increment(ref _lock) == 1)
 						_current.UpdateState(this);
-					}
 				} finally {
-					if (Interlocked.Decrement(ref _lock) == 0)
-						Debug.Log("Unlocked b Update");
+					Interlocked.Decrement(ref _lock);
 				}
 			}
 
@@ -182,15 +179,13 @@ namespace nobnak.Gist.StateMachine {
 		protected void _GotoInQueue() {
 			try {
 				if (Interlocked.Increment(ref _lock) == 1) {
-					Debug.Log("Locked by _GotoInQueue");
 					while (stateQueue.Count > 0) {
 						var next = stateQueue.Dequeue();
 						_Goto(next);
 					}
 				}
 			} finally {
-				if (Interlocked.Decrement(ref _lock) == 0)
-					Debug.Log("Unlocked by _GotoInQueue");
+				Interlocked.Decrement(ref _lock);
 			}
         }
         protected void Enqueue(StateData next) {
