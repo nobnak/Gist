@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using UnityEngine;
 
 namespace nobnak.Gist.StateMachine {
@@ -54,7 +55,6 @@ namespace nobnak.Gist.StateMachine {
 		StateData _currentData;
 		StateData _lastData;
 
-		bool _queueInProcess;
         T _lastQueuedStateName;
         Queue<StateData> stateQueue;
 
@@ -124,8 +124,11 @@ namespace nobnak.Gist.StateMachine {
             _GotoInQueue();
 
             if (_current != null)
-                _current.UpdateState(this);
-        }
+				lock(this)
+					_current.UpdateState(this);
+
+			_GotoInQueue();
+		}
 
         public bool TryGetState(T name, out State state) {
             return _stateMap.TryGetValue (name, out state);
@@ -167,18 +170,15 @@ namespace nobnak.Gist.StateMachine {
         }
 
 		protected void _GotoInQueue() {
-            if (_queueInProcess)
-                return;
-
-			try {
-				_queueInProcess = true;
-
-				while (stateQueue.Count > 0) {
-					var next = stateQueue.Dequeue();
-					_Goto(next);
+			if (Monitor.TryEnter(this)) {
+				try {
+					while (stateQueue.Count > 0) {
+						var next = stateQueue.Dequeue();
+						_Goto(next);
+					}
+				} finally {
+					Monitor.Exit(this);
 				}
-			} finally {
-				_queueInProcess = false;
 			}
         }
         protected void Enqueue(StateData next) {
