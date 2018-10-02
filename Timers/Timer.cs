@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace nobnak.Gist { 
+namespace nobnak.Gist {
 
     #region Timer class
     public class Timer {
@@ -17,12 +17,14 @@ namespace nobnak.Gist {
         protected float timeOfStart;
         protected float elapsedTime;
 
-        public Timer(float interval) {
-            Goto (StateEnum.Init);
-            Interval = interval;
-        }
+		#region interface
+		public Timer(float interval, StateEnum initState) {
+			Goto(initState);
+			Interval = interval;
+		}
+		public Timer(float interval) : this(interval, StateEnum.Init) {}
 
-        public virtual float Interval {
+		public virtual float Interval {
             get { return interval; }
             set {
                 interval = value;
@@ -57,8 +59,10 @@ namespace nobnak.Gist {
         public virtual void Stop() {
             Goto (StateEnum.Init);
         }
-		
-        protected virtual void Goto(StateEnum state) {
+		#endregion
+
+		#region private
+		protected virtual void Goto(StateEnum state) {
             switch (state) {
             case StateEnum.Init:
                 Goto_Init ();
@@ -92,18 +96,20 @@ namespace nobnak.Gist {
         protected virtual float CalculateElapsedTime () {
             return Time.timeSinceLevelLoad - timeOfStart;
         }
+		#endregion
 
-    }
-    #endregion
+	}
+	#endregion
 
-    #region Progress Timer class
-    public class ProgressTimer : Timer {
+	#region Progress Timer class
+	public class ProgressTimer : Timer {
         public event System.Action<ProgressTimer, float> ProgressChanged;
 
         protected float progress;
         protected float dProgressDTime;
 
-        public ProgressTimer(float interval) : base(interval) {
+		#region interface
+		public ProgressTimer(float interval) : base(interval) {
         }
 
         public float Progress { get { return progress; } }
@@ -122,8 +128,10 @@ namespace nobnak.Gist {
             NotifyProgressChanged (dprogress);
 			return result;
         }
+		#endregion
 
-        void NotifyProgressChanged(float delta) {
+		#region private
+		void NotifyProgressChanged(float delta) {
             if (ProgressChanged != null)
                 ProgressChanged (this, delta);
         }
@@ -132,6 +140,7 @@ namespace nobnak.Gist {
             dprogress = dtime * dProgressDTime;
             return Mathf.Clamp01 (elapsedTime * dProgressDTime);
         }
-    }
-    #endregion
+		#endregion
+	}
+	#endregion
 }
