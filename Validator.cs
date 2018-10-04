@@ -48,11 +48,11 @@ namespace nobnak.Gist {
                 return true;
 
             Invalidate();
-            _Validate();
+			validity = true;
+			_Validate();
 
             var result = Check(false);
-            if (result) {
-                validity = true;
+            if (result && validity) {
                 NotifyValidated();
             }
 
@@ -72,7 +72,7 @@ namespace nobnak.Gist {
                 validatedFrameCount = Time.frameCount;
             return result;
         }
-        protected bool _Check() { 
+        protected bool _Check() {
             if (checker == null)
                 return true;
 
