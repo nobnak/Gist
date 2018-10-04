@@ -5,7 +5,7 @@ using nobnak.Gist.HashGridSystem.Storage;
 
 namespace nobnak.Gist.HashGridSystem {
 
-    public class HashGrid2D : AbstractHashGrid {
+    public class HashGrid2DBehaviour : AbstractHashGrid {
         public enum UpdateModeEnum { Update = 0, Rebuild }
 
         public UpdateModeEnum updateMode;
@@ -13,11 +13,11 @@ namespace nobnak.Gist.HashGridSystem {
         public int gridWidth = 20;
         public Color gizmoColor = Color.white;
 
-        public Storage2D<Component> World { get; private set; }
+        public HashGrid2D<Component> World { get; private set; }
 
         #region Unity
         void OnEnable() {
-            World = new Storage2D<Component> (GetPosition, cellSize, gridWidth, gridWidth);
+            World = new HashGrid2D<Component> (GetPosition, cellSize, gridWidth, gridWidth);
         }
         void LateUpdate() {
             switch (updateMode) {
@@ -32,7 +32,7 @@ namespace nobnak.Gist.HashGridSystem {
         void OnDrawGizmos() {
             if (!(World != null && isActiveAndEnabled))
                 return;
-            
+
             var size = gridWidth * cellSize * new Vector3 (1f, 1f, 0f);
             var offset = cellSize * new Vector3 (0.5f, 0.5f, 0f);
             Gizmos.color = gizmoColor;

@@ -1,55 +1,53 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace nobnak.Gist.SpatialPartition {
-	public class Linear3D : ISpatialPartition3D {
+	public class Linear3D<T> : ISpatialPartition<T, Vector3> {
 
-		protected List<int> listId = new List<int>();
-		protected List<Vector3> listPosition = new List<Vector3>();
+		protected List<T> entities = new List<T>();
+		protected List<Vector3> positions = new List<Vector3>();
 
 		#region ISpatialPartition3d
-		public void Build(IEnumerable<int> ids, IEnumerable<Vector3> positions) {
-			listId.Clear();
-			listPosition.Clear();
-
-			listId.AddRange(ids);
-			listPosition.AddRange(positions);
+		public void Add(T entity) {
+			entities.Add(entity);
+			positions.Add(default(Vector3));
 		}
+		public void Remove(T entity) {
+			var index = entities.IndexOf(entity);
+			if (index >= 0) {
+				entities.RemoveAt(index);
+				positions.RemoveAt(index);
+			}
 
-		public void Add(int id, Vector3 pos) {
-			listId.Add(id);
-			listPosition.Add(pos);
 		}
-		public int Neareset(Vector3 center) {
+		public T Neareset(Vector3 center) {
 			var sqdist = float.MaxValue;
-			var id = -1;
-			for (var i = 0; i < listPosition.Count; i++) {
-				var pos = listPosition[i];
+			var j = -1;
+			for (var i = 0; i < positions.Count; i++) {
+				var pos = positions[i];
 				var tmpsq = (pos - center).sqrMagnitude;
 				if (tmpsq < sqdist)
-					id = listId[i];
+					j = i;
 			}
-			return id;
+			return entities[j];
 		}
 
-		public IEnumerable<int> RadialSearch(Vector3 center, float radius) {
+		public IEnumerable<T> RadialSearch(Vector3 center, float radius) {
 			var sqrad = radius * radius;
-			for (var i = 0; i < listPosition.Count; i++) {
-				var pos = listPosition[i];
+			for (var i = 0; i < positions.Count; i++) {
+				var pos = positions[i];
 				if ((pos - center).sqrMagnitude < sqrad)
-					yield return listId[i];
+					yield return entities[i];
 			}
 		}
 
-		public void Remove(int id) {
-			var index = listId.IndexOf(id);
-			if (index >= 0) {
-				listId.RemoveAt(index);
-				listPosition.RemoveAt(index);
-			}
-
+		public void UpdatePosition(Func<T, Vector3> getPosition) {
+			for (var i = 0; i < entities.Count; i++)
+				positions[i] = getPosition(entities[i]);
 		}
+
 		#endregion
 	}
 }

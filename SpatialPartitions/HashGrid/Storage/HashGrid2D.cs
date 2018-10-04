@@ -1,37 +1,54 @@
-﻿#define PARALLEL
+#define PARALLEL
 
+using nobnak.Gist.SpatialPartition;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace nobnak.Gist.HashGridSystem.Storage {
 
-    public class Storage2D<T> : System.IDisposable, IEnumerable<T> where T : class {
-        
+    public class HashGrid2D<T> : System.IDisposable, IEnumerable<T>, ISpatialPartition<T, Vector2>
+		where T : class {
+
         System.Func<T, Vector2> _GetPosition;
         List<T>[] _grid;
         List<T> _points;
         List<Vector2> _positions;
         Hash _hash;
 
-        public Storage2D(System.Func<T, Vector2> GetPosition, float cellSize, int nx, int ny) {
+        public HashGrid2D(System.Func<T, Vector2> GetPosition, float cellSize, int nx, int ny) {
             this._GetPosition = GetPosition;
             this._points = new List<T> ();
             this._positions = new List<Vector2> ();
             Rebuild (cellSize, nx, ny);
         }
 
-        public Hash GridInfo { get { return _hash; } }
+		#region ISpatialPartition
+		public void Add(T point) {
+			_points.Add(point);
+			AddOnGrid(point, _GetPosition(point));
+		}
+		public void Remove(T point) {
+			RemoveOnGrid(point, _GetPosition(point));
+			_points.Remove(point);
+		}
+		public void UpdatePosition(Func<T, Vector2> getPosition) {
+			throw new NotImplementedException();
+		}
+
+		public IEnumerable<T> RadialSearch(Vector2 center, float radius) {
+			throw new NotImplementedException();
+		}
+
+		public T Neareset(Vector2 center) {
+			throw new NotImplementedException();
+		}
+		#endregion
+
+		public Hash GridInfo { get { return _hash; } }
         public int Count { get { return _points.Count; } }
 
-        public void Add(T point) {
-            _points.Add (point);
-            AddOnGrid(point, _GetPosition(point));
-        }
-        public void Remove(T point) {
-            RemoveOnGrid(point, _GetPosition(point));
-            _points.Remove (point);
-        }
         public T IndexOf(int index) {
             return _points [index];
         }
@@ -128,9 +145,9 @@ namespace nobnak.Gist.HashGridSystem.Storage {
         IEnumerator IEnumerable.GetEnumerator () {
             return this.GetEnumerator ();
         }
-        #endregion
+		#endregion
 
-        public class Hash {
+		public class Hash {
             public readonly Vector2 gridSize;
             public readonly float cellSize;
             public readonly int nx, ny;

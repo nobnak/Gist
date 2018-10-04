@@ -5,7 +5,7 @@ using nobnak.Gist.HashGridSystem.Storage;
 
 namespace nobnak.Gist.HashGridSystem {
 
-    public class HashGrid3D : AbstractHashGrid {
+    public class HashGrid3DBehaviour : AbstractHashGrid {
         public enum UpdateModeEnum { Update = 0, Rebuild }
 
         public UpdateModeEnum updateMode;
@@ -13,11 +13,11 @@ namespace nobnak.Gist.HashGridSystem {
         public int gridWidth = 20;
         public Color gizmoColor = Color.white;
 
-        public Storage3D<Component> World { get; private set; }
+        public HashGrid3D<Component> World { get; private set; }
 
         #region Unity
         void Awake() {
-            World = new Storage3D<Component> (GetPosition, cellSize, gridWidth, gridWidth, gridWidth);
+            World = new HashGrid3D<Component> (GetPosition, cellSize, gridWidth, gridWidth, gridWidth);
         }
         void LateUpdate() {
             switch (updateMode) {
@@ -32,7 +32,7 @@ namespace nobnak.Gist.HashGridSystem {
         void OnDrawGizmosSelected() {
             if (World == null)
                 return;
-            
+
 			var size = gridWidth * cellSize * Vector3.one;
 			var offset = transform.position;
             Gizmos.color = gizmoColor;
@@ -44,7 +44,7 @@ namespace nobnak.Gist.HashGridSystem {
 				for (var y = 0; y < hash.ny; y++) {
 					for (var x = 0; x < hash.nx; x++) {
 						var pos = cellSize * new Vector3 (
-							x + Mathf.FloorToInt(offset.x / cellSize) + 0.5f, 
+							x + Mathf.FloorToInt(offset.x / cellSize) + 0.5f,
 							y + Mathf.FloorToInt(offset.y / cellSize) + 0.5f,
 							z + Mathf.FloorToInt(offset.z / cellSize) + 0.5f);
 						var count = World.Stat (pos);
@@ -56,7 +56,7 @@ namespace nobnak.Gist.HashGridSystem {
 
                     }
                 }
-            }                        
+            }
         }
         #endregion
 

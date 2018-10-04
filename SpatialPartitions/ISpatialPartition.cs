@@ -2,16 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace nobnak.Gist.SpatialPartition { 
+namespace nobnak.Gist.SpatialPartition {
 
-	public interface ISpatialPartition<ID, Position> {
+	public interface ISpatialPartition<Entity, Position> {
 
-		void Build(IEnumerable<ID> ids, IEnumerable<Position> positions);
-		void Add(ID id, Position pos);
-		void Remove(ID id);
-		IEnumerable<ID> RadialSearch(Position center, float radius);
-		ID Neareset(Position center);
+		void Add(Entity entity);
+		void Remove(Entity entity);
+		void UpdatePosition(System.Func<Entity, Position> getPosition);
+		IEnumerable<Entity> RadialSearch(Position center, float radius);
+		Entity Neareset(Position center);
 	}
-
-	public interface ISpatialPartition3D : ISpatialPartition<int, Vector3> { }
 }
