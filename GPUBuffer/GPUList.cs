@@ -1,4 +1,4 @@
-﻿using nobnak.Gist.Extensions.Int;
+using nobnak.Gist.Extensions.Int;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -21,7 +21,7 @@ namespace nobnak.Gist.GPUBuffer {
         protected ComputeBuffer buffer;
 
         public GPUList(
-                int capacity = DEFAULT_CAPACITY, 
+                int capacity = DEFAULT_CAPACITY,
                 ComputeBufferType cbtype = ComputeBufferType.Default) {
             this.count = 0;
             this.capacity = 0;
@@ -29,8 +29,17 @@ namespace nobnak.Gist.GPUBuffer {
             this.cbtype = cbtype;
             Resize(capacity);
         }
+		public GPUList(
+			IEnumerable<T> iter,
+			int capacity = DEFAULT_CAPACITY,
+			ComputeBufferType cbtype = ComputeBufferType.Default)
+			: this(capacity, cbtype) {
+			foreach (var v in iter)
+				Add(v);
+		}
 
-        public ComputeBuffer Buffer {
+		#region interface
+		public ComputeBuffer Buffer {
             get {
                 Upload();
                 dirty = DirtyFlag.Buffer;
@@ -75,8 +84,13 @@ namespace nobnak.Gist.GPUBuffer {
                 buffer.GetData(data);
             }
         }
+		public static implicit operator ComputeBuffer (GPUList<T> gl) {
+			return gl.Buffer;
+		}
+		#endregion
 
-        protected void ResizeComputeBuffer(int nextSize) {
+		#region private
+		protected void ResizeComputeBuffer(int nextSize) {
             dirty = DirtyFlag.Data;
             DisposeComputeBuffer();
             buffer = new ComputeBuffer(nextSize, Marshal.SizeOf(typeof(T)), cbtype);
@@ -85,15 +99,16 @@ namespace nobnak.Gist.GPUBuffer {
             if (minCapacity > capacity)
                 Resize(minCapacity.SmallestPowerOfTwoGreaterThan());
         }
-        private void DisposeComputeBuffer() {
+        protected void DisposeComputeBuffer() {
             if (buffer != null) {
                 buffer.Dispose();
                 buffer = null;
             }
         }
+		#endregion
 
-        #region IDisposable
-        public void Dispose() {
+		#region IDisposable
+		public void Dispose() {
             DisposeComputeBuffer();
         }
         #endregion
