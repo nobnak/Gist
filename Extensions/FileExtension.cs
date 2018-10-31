@@ -33,5 +33,11 @@ namespace nobnak.Gist.Extensions.FileExt {
 			path.TryLoad(out text);
 			return text;
 		}
+
+        public static string SanitizeFilename(this string filename, char rep = '_') {
+            foreach (var c in System.IO.Path.GetInvalidFileNameChars())
+                filename = filename.Replace(c, rep);
+            return filename;
+        }
 	}
 }
