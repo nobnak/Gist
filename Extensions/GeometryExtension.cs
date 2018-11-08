@@ -53,5 +53,29 @@ namespace nobnak.Gist.Extensions.GeometryExt {
 			}
 			return counter;
 		}
+
+		public static bool Raycast(this Ray ray,
+			Vector3 center, Vector3 forward,
+			out float distance, float eps = DEF_EPS) {
+
+			distance = default(float);
+
+			var det = Vector3.Dot((Vector3)forward, ray.direction);
+			if (-eps < det && det < eps)
+				return false;
+
+			distance = Vector3.Dot((Vector3)forward, (Vector3)(center - ray.origin)) / det;
+			return true;
+		}
+		public static bool Raycast(this Transform tr,
+			Ray ray, out float distance, float eps = DEF_EPS) {
+
+			distance = default(float);
+			return ray.Raycast(tr.position, tr.forward, out distance, eps);
+		}
+		public static bool Raycast(this Component c,
+			Ray ray, out float distance, float eps = DEF_EPS) {
+			return c.transform.Raycast(ray, out distance, eps);
+		}
 	}
 }
