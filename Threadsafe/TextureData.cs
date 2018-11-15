@@ -63,8 +63,8 @@ namespace nobnak.Gist.ThreadSafe {
 				int x0, y0, x1, y1;
 				float t, s;
 				Bridge(nx, ny, out x0, out y0, out x1, out y1, out t, out s);
-				Round(ref x0, ref y0);
-				Round(ref x1, ref y1);
+				ClampPixelPos(ref x0, ref y0);
+				ClampPixelPos(ref x1, ref y1);
 				return bilinear(
 					GetPixelDirect(x0, y0),
 					GetPixelDirect(x0, y1),
@@ -82,13 +82,13 @@ namespace nobnak.Gist.ThreadSafe {
 		public virtual T this[int x, int y] {
 			get {
 				lock (this) {
-					Round(ref x, ref y);
+					ClampPixelPos(ref x, ref y);
 					return GetPixelDirect(x, y);
 				}
 			}
 			set {
 				lock (this) {
-					Round(ref x, ref y);
+					ClampPixelPos(ref x, ref y);
 					SetPixelDirect(x, y, value);
 				}
 			}
@@ -124,7 +124,7 @@ namespace nobnak.Gist.ThreadSafe {
 			t = x1 - x;
 			s = y1 - y;
 		}
-		protected void Round(ref int x, ref int y) {
+		protected void ClampPixelPos(ref int x, ref int y) {
 			x = (x < 0 ? 0 : (x < size.x ? x : size.x - 1));
 			y = (y < 0 ? 0 : (y < size.y ? y : size.y - 1));
 		}
@@ -157,34 +157,6 @@ namespace nobnak.Gist.ThreadSafe {
 			if (pixels != null) {
 				pixels = null;
 			}
-		}
-		#endregion
-		#region private
-		protected override T GetPixelDirect(int x, int y) {
-			return pixels[GetLinearIndex(x, y)];
-		}
-		protected override void SetPixelDirect(int x, int y, T c) {
-			pixels[GetLinearIndex(x, y)] = c;
-		}
-		#endregion
-	}
-	public class NativeArrayTextureData<T> : BaseTextureData<T> where T:struct {
-		protected NativeArray<T> pixels;
-
-		public NativeArrayTextureData(NativeArray<T> pixels, Vector2Int size) : base(size) {
-			Load(pixels);
-		}
-
-		#region public
-		public virtual void Load(NativeArray<T> pixels) {
-			lock (this) {
-				this.pixels = pixels;
-			}
-			NotifyOnLoad();
-		}
-		#endregion
-		#region IDisposable
-		public override void Dispose() {
 		}
 		#endregion
 		#region private

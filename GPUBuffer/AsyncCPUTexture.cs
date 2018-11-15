@@ -9,16 +9,16 @@ using UnityEngine.Rendering;
 namespace nobnak.Gist.GPUBuffer {
 
 	public class AsyncCPUTexture<T> : System.IDisposable, ITextureData<T> where T:struct {
-		public event System.Action<NativeArray<T>, NativeArrayTextureData<T>> OnComplete;
+		public event System.Action<IList<T>, ListTextureData<T>> OnComplete;
+		public event Action<ITextureData<T>> OnLoad;
 
 		protected bool active = false;
 
-		protected NativeArrayTextureData<T> output;
+		protected T[] data;
+		protected ListTextureData<T> output;
 		protected AsyncGPUReadbackRequest req;
 		protected Vector2Int size;
 		protected T defaultValue;
-
-		public event Action<ITextureData<T>> OnLoad;
 
 		public AsyncCPUTexture(T defaultValue = default(T)) {
 			this.defaultValue = defaultValue;
@@ -27,19 +27,24 @@ namespace nobnak.Gist.GPUBuffer {
 		#region interface
 		public Texture Source { get; set; }
 		public virtual void Update() {
-			if (req.hasError) {
-				active = false;
-			} else if (req.done) {
-				Release();
-				var data = req.GetData<T>();
-				output = GenerateCPUTexture(data, size);
-				OnComplete?.Invoke(data, output);
-			}
-
-			if (!active && Source != null) {
-				active = true;
-				req = AsyncGPUReadback.Request(Source);
-				size = new Vector2Int(Source.width, Source.height);
+			if (active) {
+				if (req.hasError) {
+					Debug.Log($"Failed to read back from GPU async");
+					active = false;
+				} else if (req.done) {
+					Release();
+					var nativeData = req.GetData<T>();
+					System.Array.Resize(ref data, nativeData.Length);
+					nativeData.CopyTo(data);
+					output = GenerateCPUTexture(data, size);
+					OnComplete?.Invoke(data, output);
+				}
+			} else {
+				if (Source != null) {
+					active = true;
+					req = AsyncGPUReadback.Request(Source);
+					size = new Vector2Int(Source.width, Source.height);
+				}
 			}
 		}
 		#endregion
@@ -56,8 +61,8 @@ namespace nobnak.Gist.GPUBuffer {
 		}
 		#endregion
 		#region private
-		protected virtual NativeArrayTextureData<T> GenerateCPUTexture(NativeArray<T> data, Vector2Int size) {
-			var tex = new NativeArrayTextureData<T>(data, size);
+		protected virtual ListTextureData<T> GenerateCPUTexture(IList<T> data, Vector2Int size) {
+			var tex = new ListTextureData<T>(data, size);
 			tex.Interpolation = Interpolation;
 			return tex;
 		}
