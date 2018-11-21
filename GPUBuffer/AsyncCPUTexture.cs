@@ -1,3 +1,5 @@
+#pragma warning disable CS0067
+
 using nobnak.Gist.ThreadSafe;
 using System;
 using System.Collections;
@@ -7,7 +9,6 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace nobnak.Gist.GPUBuffer {
-
 	public class AsyncCPUTexture<T> : System.IDisposable, ITextureData<T> where T:struct {
 		public event System.Action<IList<T>, ListTextureData<T>> OnComplete;
 		public event Action<ITextureData<T>> OnLoad;
