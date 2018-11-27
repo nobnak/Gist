@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,7 +20,7 @@ namespace nobnak.Gist {
             var cropLeft = right * (-normCropX + normOffsetX);
             var cropTop = top * (normCropY + normOffsetY);
             var cropBottom = top * (-normCropY + normOffsetY);
-            worldView.Perspective (cropLeft, cropRight, cropBottom, cropTop, 
+            worldView.Perspective (cropLeft, cropRight, cropBottom, cropTop,
                 worldView.nearClipPlane, worldView.farClipPlane);
 
             Apply (worldView, localViews, totalAspect);
