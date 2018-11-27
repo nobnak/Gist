@@ -26,6 +26,7 @@ namespace nobnak.Gist.ThreadSafe {
 		public event System.Action<ITextureData<T>> OnLoad;
 
 		protected Vector2Int size;
+		protected Vector2 uvToIndex;
 		protected System.Func<float, float, T> interpolation;
 
 		public System.Func<float, float, T> Interpolation {
@@ -36,7 +37,7 @@ namespace nobnak.Gist.ThreadSafe {
 		}
 
 		public BaseTextureData(Vector2Int size, System.Func<float, float, T> interpolation) {
-			this.size = size;
+			this.Size = size;
 			this.Interpolation = interpolation;
 		}
 		public BaseTextureData(Vector2Int size) : this(size, null) { }
@@ -56,9 +57,10 @@ namespace nobnak.Gist.ThreadSafe {
 				+ (1f - t) * (s * v10 + (1f - s) * v11);
 		}
 		public T PointInterpolation(float nx, float ny) {
-			return GetPixelDirect(
-				Mathf.RoundToInt(nx * size.x),
-				Mathf.RoundToInt(ny * size.y));
+			var x = Mathf.RoundToInt(nx * uvToIndex.x);
+			var y = Mathf.RoundToInt(ny * uvToIndex.y);
+			ClampPixelPos(ref x, ref y);
+			return GetPixelDirect(x, y);
 		}
 		public System.Func<float, float, T> GenerateInterpolation(BilinearFunc bilinear) {
 			return (float nx, float ny) => {
@@ -108,7 +110,13 @@ namespace nobnak.Gist.ThreadSafe {
 			get { return this[uv.x, uv.y]; }
 		}
 
-		public virtual Vector2Int Size { get { return size; } }
+		public virtual Vector2Int Size {
+			get { return size; }
+			set {
+				size = value;
+				uvToIndex = new Vector2(value.x - 1, value.y - 1);
+			}
+		}
 		#endregion
 
 		#region private
@@ -117,8 +125,8 @@ namespace nobnak.Gist.ThreadSafe {
 		}
 
 		protected void Bridge(float nx, float ny, out int x0, out int y0, out int x1, out int y1, out float t, out float s) {
-			var x = size.x * nx;
-			var y = size.y * ny;
+			var x = uvToIndex.x * nx;
+			var y = uvToIndex.y * ny;
 			x0 = Mathf.FloorToInt(x);
 			y0 = Mathf.FloorToInt(y);
 			x1 = x0 + 1;
