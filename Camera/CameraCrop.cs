@@ -45,9 +45,9 @@ namespace nobnak.Gist {
                 totalCam.farClipPlane = worldView.farClipPlane;
                 totalCam.aspect = totalAspect;
 
-                var fixWidthFlexHeight = (float)worldView.pixelWidth / (worldView.pixelHeight * totalAspect);
-                var flexWidthFixHeight = (float)totalAspect * worldView.pixelHeight / worldView.pixelWidth;
-                totalCam.rect = (fixWidthFlexHeight < 1f) ? 
+                var fixWidthFlexHeight = (float)worldView.scaledPixelWidth / (worldView.scaledPixelHeight * totalAspect);
+                var flexWidthFixHeight = (float)totalAspect * worldView.scaledPixelHeight / worldView.scaledPixelWidth;
+                totalCam.rect = (fixWidthFlexHeight < 1f) ?
                     new Rect(0f, 0f, 1f, fixWidthFlexHeight) :
                     new Rect(0f, 0f, flexWidthFixHeight, 1f);
             }

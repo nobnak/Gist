@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 namespace nobnak.Gist {
@@ -40,7 +40,7 @@ namespace nobnak.Gist {
                 _attachedCam.rect = new Rect (0f, offset, 1f, 1f - 2f * offset);
             }
 
-            Debug.LogFormat ("Size {0}x{1}", _attachedCam.pixelWidth, _attachedCam.pixelHeight);
+            Debug.LogFormat ("Size {0}x{1}", _attachedCam.scaledPixelWidth, _attachedCam.scaledPixelHeight);
     	}
     }
 }
