@@ -1,5 +1,7 @@
 #pragma warning disable CS0067
+#define USE_SYSCALL
 
+using nobnak.Gist.Syscall;
 using nobnak.Gist.ThreadSafe;
 using System;
 using System.Collections;
@@ -38,7 +40,20 @@ namespace nobnak.Gist.GPUBuffer {
 					Release();
 					var nativeData = req.GetData<T>();
 					System.Array.Resize(ref data, nativeData.Length);
+#if USE_SYSCALL
+					unsafe {
+						var ipNative = (IntPtr)nativeData.GetUnsafePtr();
+						var hData = GCHandle.Alloc(data, GCHandleType.Pinned);
+						try {
+							var ipData = Marshal.UnsafeAddrOfPinnedArrayElement(data, 0);
+							Kern32.CopyMemory(ipData, ipNative, (uint)(data.Length * Marshal.SizeOf<T>()));
+						}finally {
+							hData.Free();
+						}
+					}
+#else
 					nativeData.CopyTo(data);
+#endif
 					output = GenerateCPUTexture(data, size);
 					OnComplete?.Invoke(data, output);
 				}
@@ -50,20 +65,20 @@ namespace nobnak.Gist.GPUBuffer {
 				}
 			}
 		}
-		#endregion
-		#region ITextureData
+#endregion
+#region ITextureData
 		public virtual Vector2Int Size => size;
 		public Func<float, float, T> Interpolation { get; set; }
 		public virtual T this[Vector2 uv] => (output != null ? output[uv] : defaultValue);
 		public virtual T this[float nx, float ny] => (output != null ? output[nx, ny] : defaultValue);
 		public virtual T this[int x, int y] => (output != null ? output[x, y] : defaultValue);
-		#endregion
-		#region IDisposable
+#endregion
+#region IDisposable
 		public virtual void Dispose() {
 			Release();
 		}
-		#endregion
-		#region private
+#endregion
+#region private
 		protected virtual ListTextureData<T> GenerateCPUTexture(IList<T> data, Vector2Int size) {
 			var tex = new ListTextureData<T>(data, size);
 			tex.Interpolation = Interpolation;
@@ -76,6 +91,6 @@ namespace nobnak.Gist.GPUBuffer {
 			}
 			active = false;
 		}
-		#endregion
+#endregion
 	}
 }
