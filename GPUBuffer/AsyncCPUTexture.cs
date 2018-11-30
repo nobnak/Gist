@@ -1,14 +1,9 @@
 #pragma warning disable CS0067
-#define USE_SYSCALL
 
-using nobnak.Gist.Syscall;
+using nobnak.Gist.Extensions.NativeArrayExt;
 using nobnak.Gist.ThreadSafe;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -40,20 +35,7 @@ namespace nobnak.Gist.GPUBuffer {
 					Release();
 					var nativeData = req.GetData<T>();
 					System.Array.Resize(ref data, nativeData.Length);
-#if USE_SYSCALL
-					unsafe {
-						var ipNative = (IntPtr)nativeData.GetUnsafePtr();
-						var hData = GCHandle.Alloc(data, GCHandleType.Pinned);
-						try {
-							var ipData = Marshal.UnsafeAddrOfPinnedArrayElement(data, 0);
-							Kern32.CopyMemory(ipData, ipNative, (uint)(data.Length * Marshal.SizeOf<T>()));
-						}finally {
-							hData.Free();
-						}
-					}
-#else
-					nativeData.CopyTo(data);
-#endif
+					nativeData.UnsafeCopyTo(data);
 					output = GenerateCPUTexture(data, size);
 					OnComplete?.Invoke(data, output);
 				}
