@@ -35,8 +35,8 @@ namespace nobnak.Gist {
             _seeds = SEED_SIZE * new Vector3 (Random.value, Random.value, Random.value);
         }
     	void Update () {
-            _width = targetCam.scaledPixelWidth >> lod;
-            _height = targetCam.scaledPixelHeight >> lod;
+            _width = targetCam.pixelWidth >> lod;
+            _height = targetCam.pixelHeight >> lod;
             _texelSize.Set(1f / _width, 1f / _height);
 
             if (_noiseTex == null || _noiseTex.width != _width || _noiseTex.height != _height) {
