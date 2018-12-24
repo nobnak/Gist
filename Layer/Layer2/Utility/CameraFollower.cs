@@ -15,7 +15,8 @@ namespace nobnak.Gist.Layer2 {
 		[SerializeField]
 		protected ScaleMode scaleMode;
 
-        void Update() {
+		#region unity
+		void Update() {
             if (source == null || target == null)
                 return;
 
@@ -23,8 +24,17 @@ namespace nobnak.Gist.Layer2 {
                 target.LayerValidator.Invalidate();
             }
         }
+		#endregion
 
-        private bool FollowRotation() {
+		#region interface
+		public Camera Source {
+			get { return source; }
+			set { source = value; }
+		}
+		#endregion
+
+		#region private
+		private bool FollowRotation() {
             var curr = target.transform.localRotation;
             var next = source.transform.localRotation;
             if (curr == next)
@@ -54,5 +64,6 @@ namespace nobnak.Gist.Layer2 {
 			}
 			return false;
         }
-    }
+		#endregion
+	}
 }

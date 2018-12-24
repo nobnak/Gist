@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using nobnak.Gist.Extensions.ComponentExt;
 
@@ -104,7 +104,7 @@ namespace nobnak.Gist {
                 jx = _width - 1;
             if (jy >= _height)
                 jy = _height - 1;
-            
+
             return (1f - dx) * ((1f - dy) * GetNormal (ix, iy) + dy * GetNormal (ix, jy))
                 + dx * ((1f - dy) * GetNormal (jx, iy) + dy * GetNormal (jx, jy));
         }
@@ -130,7 +130,7 @@ namespace nobnak.Gist {
         void UpdateHeightMap () {
             var px = (float)noiseFreq / _height;
             var t = Time.timeSinceLevelLoad * timeScale + _seeds.z;
-            var H = (HeightFunc == null ? DefaultHeightFunc : HeightFunc);                
+            var H = (HeightFunc == null ? DefaultHeightFunc : HeightFunc);
             Parallel.For (0, _height + 1, y =>  {
                 for (var x = 0; x <= _width; x++)
                     SetHeight(x, y, H(px * (x - 0.5f + _seeds.x), px * (y - 0.5f + _seeds.y), t));
