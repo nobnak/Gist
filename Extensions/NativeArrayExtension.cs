@@ -1,3 +1,4 @@
+//#define UNSAFE
 using nobnak.Gist.Syscall;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,7 +12,8 @@ namespace nobnak.Gist.Extensions.NativeArrayExt {
 	public static class NativeArrayExtension {
 
 		public static void UnsafeCopyTo<T>(this NativeArray<T> src, T[] dst) where T:struct {
-			unsafe {
+#if UNSAFE
+            unsafe {
 				var pSrc = (System.IntPtr)src.GetUnsafePtr();
 				var hDst = GCHandle.Alloc(dst, GCHandleType.Pinned);
 				try {
@@ -23,6 +25,7 @@ namespace nobnak.Gist.Extensions.NativeArrayExt {
 					hDst.Free();
 				}
 			}
-		}
+#endif
+        }
 	}
 }
