@@ -4,8 +4,29 @@ using System.Collections.Generic;
 
 namespace nobnak.Gist.MathAlgorithms {
 
-	public static class RouletteWheelSelection  {
-        public static bool Sample(
+	public class RouletteWheelSelection  {
+		public const int DEFAULT_ITERATION_LIMIT = 100;
+
+		protected float[] weights;
+		protected float weightMax;
+		protected int iterationLimit;
+
+		public RouletteWheelSelection(
+			float[] weights,
+			int iterationLimit = DEFAULT_ITERATION_LIMIT) {
+
+			System.Array.Resize(ref this.weights, weights.Length);
+			System.Array.Copy(weights, this.weights, weights.Length);
+			this.weightMax = MaxWeight(weights);
+			this.iterationLimit = iterationLimit;
+		}
+
+		public bool TrySample(out int sampledIndex) {
+			return Sample(out sampledIndex, iterationLimit, weightMax, weights);
+		}
+
+		#region static
+		public static bool Sample(
 			out int sampledIndex, int iterationLimit, float weightMax, params float[] weights) {
 
             var invWeightMax = 1f / weightMax;
@@ -53,5 +74,6 @@ namespace nobnak.Gist.MathAlgorithms {
             }
             return max;
         }
-    }
+		#endregion
+	}
 }
