@@ -1,11 +1,13 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace nobnak.Gist.MathAlgorithms {
 
 	public class RouletteWheelSelection  {
 		public const int DEFAULT_ITERATION_LIMIT = 100;
+		public const float EPSILON = 1e-6f;
 
 		protected float[] weights;
 		protected float weightMax;
@@ -20,6 +22,8 @@ namespace nobnak.Gist.MathAlgorithms {
 			this.weightMax = MaxWeight(weights);
 			this.iterationLimit = iterationLimit;
 		}
+		public RouletteWheelSelection(IEnumerable<float> weights)
+			:this(weights.ToArray()){ }
 
 		public bool TrySample(out int sampledIndex) {
 			return Sample(out sampledIndex, iterationLimit, weightMax, weights);
@@ -27,7 +31,13 @@ namespace nobnak.Gist.MathAlgorithms {
 
 		#region static
 		public static bool Sample(
-			out int sampledIndex, int iterationLimit, float weightMax, params float[] weights) {
+			out int sampledIndex,
+			int iterationLimit, float weightMax, params float[] weights) {
+
+			if (weightMax <= EPSILON) {
+				sampledIndex = -1;
+				return false;
+			}
 
             var invWeightMax = 1f / weightMax;
             for (var i = 0; i < iterationLimit; i++) {
