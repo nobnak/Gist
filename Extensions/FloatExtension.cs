@@ -1,5 +1,6 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace nobnak.Gist.Extension.FloatArray {
     public static class FloatArrayExtension {
@@ -38,5 +39,11 @@ namespace nobnak.Gist.Extension.FloatArray {
                 accum += val;
             }
         }
+
+		public static IEnumerable<float> Normalize(this IEnumerable<float> values) {
+			var sum = values.Sum(v => Mathf.Abs(v));
+			foreach (var v in values)
+				yield return v / sum;
+		}
     }
 }
