@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -16,5 +16,10 @@ namespace nobnak.Gist.Extensions.Array {
             buf.Append("}");
             return buf.ToString();
         }
+
+		public static void AddRange<T>(this IList<T> dst, IEnumerable<T> src) {
+			foreach (var s in src)
+				dst.Add(s);
+		}
     }
 }
