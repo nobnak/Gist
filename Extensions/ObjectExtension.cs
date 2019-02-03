@@ -20,7 +20,7 @@ namespace nobnak.Gist.ObjectExt {
 			}
         }
 		public static void Destroy(this Component comp, float t = 0f) {
-			if (comp != null)
+			if (comp != null && comp.gameObject != null)
 				comp.gameObject.Destroy(t);
 		}
 		public static T DeepCopy<T>(this T src) {

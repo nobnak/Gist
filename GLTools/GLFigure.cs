@@ -244,6 +244,7 @@ namespace nobnak.Gist {
 				EndDraw ();
 			}
 		}
+
 		public void DrawLines(IEnumerable<Vector3> vertices, Matrix4x4 modelViewMat, float width) {
 			if (!StartDraw(Matrix4x4.identity, GL.TRIANGLE_STRIP))
 				return;
@@ -273,7 +274,20 @@ namespace nobnak.Gist {
         public void DrawLines(IEnumerable<Vector3> vertices, Transform trs) {
             DrawLines(vertices, Camera.current.worldToCameraMatrix * trs.localToWorldMatrix);
         }
-		public void ResetProjectionMatrix() {
+        public void DrawLineStrip(IEnumerable<Vector3> vertices, Matrix4x4 modelView) {
+            if (!StartDraw(modelView, GL.LINE_STRIP))
+                return;
+            try {
+                foreach (var v in vertices)
+                    GL.Vertex(v);
+            } finally {
+                EndDraw();
+            }
+        }
+        public void DrawLineStrip(IEnumerable<Vector3> vertices, Transform trs) {
+            DrawLineStrip(vertices, Camera.current.worldToCameraMatrix * trs.localToWorldMatrix);
+        }
+        public void ResetProjectionMatrix() {
 			EnabledCustomProjectionMatrix = false;
 		}
 		#endregion
