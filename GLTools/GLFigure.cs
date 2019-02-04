@@ -128,7 +128,7 @@ namespace nobnak.Gist {
         [System.Obsolete]
         public void DrawLines(IEnumerable<Vector3> vertices, Transform trs, Color color) {
             CurrentColor = color;
-            DrawLines(vertices, Camera.current.worldToCameraMatrix * trs.localToWorldMatrix);
+            DrawLines(vertices, MakeModelViewMatrix(trs));
         }
 
         public void DrawCircle (Matrix4x4 modelViewMat) {
@@ -272,8 +272,10 @@ namespace nobnak.Gist {
 			}
 		}
         public void DrawLines(IEnumerable<Vector3> vertices, Transform trs) {
-            DrawLines(vertices, Camera.current.worldToCameraMatrix * trs.localToWorldMatrix);
+            Matrix4x4 mv = MakeModelViewMatrix(trs);
+            DrawLines(vertices, mv);
         }
+
         public void DrawLineStrip(IEnumerable<Vector3> vertices, Matrix4x4 modelView) {
             if (!StartDraw(modelView, GL.LINE_STRIP))
                 return;
@@ -285,15 +287,21 @@ namespace nobnak.Gist {
             }
         }
         public void DrawLineStrip(IEnumerable<Vector3> vertices, Transform trs) {
-            DrawLineStrip(vertices, Camera.current.worldToCameraMatrix * trs.localToWorldMatrix);
+            DrawLineStrip(vertices, MakeModelViewMatrix(trs));
         }
         public void ResetProjectionMatrix() {
 			EnabledCustomProjectionMatrix = false;
 		}
-		#endregion
+        #endregion
 
-		#region private
-		protected Vector3 PositionFromAngle(float rad, float size) {
+        #region private
+        protected static Matrix4x4 MakeModelViewMatrix(Transform trs) {
+            var mv = Camera.current.worldToCameraMatrix;
+            if (trs != null)
+                mv *= trs.localToWorldMatrix;
+            return mv;
+        }
+        protected Vector3 PositionFromAngle(float rad, float size) {
             return new Vector3(0.5f * size * Mathf.Cos (rad), 0.5f * size * Mathf.Sin (rad), 0f);
         }
 
