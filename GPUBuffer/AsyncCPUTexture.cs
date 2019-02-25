@@ -29,7 +29,7 @@ namespace nobnak.Gist.GPUBuffer {
 		public virtual void Update() {
 			if (active) {
 				if (req.hasError) {
-					Debug.Log($"Failed to read back from GPU async");
+					Debug.LogFormat("Failed to read back from GPU async");
 					active = false;
 				} else if (req.done) {
 					Release();
@@ -37,7 +37,8 @@ namespace nobnak.Gist.GPUBuffer {
 					System.Array.Resize(ref data, nativeData.Length);
 					nativeData.UnsafeCopyTo(data);
 					output = GenerateCPUTexture(data, size);
-					OnComplete?.Invoke(data, output);
+					if (OnComplete != null)
+						OnComplete.Invoke(data, output);
 				}
 			} else {
 				if (Source != null) {
@@ -49,11 +50,17 @@ namespace nobnak.Gist.GPUBuffer {
 		}
 #endregion
 #region ITextureData
-		public virtual Vector2Int Size => size;
+		public virtual Vector2Int Size { get { return size; } }
 		public Func<float, float, T> Interpolation { get; set; }
-		public virtual T this[Vector2 uv] => (output != null ? output[uv] : defaultValue);
-		public virtual T this[float nx, float ny] => (output != null ? output[nx, ny] : defaultValue);
-		public virtual T this[int x, int y] => (output != null ? output[x, y] : defaultValue);
+		public virtual T this[Vector2 uv] {
+			get { return (output != null ? output[uv] : defaultValue); }
+		}
+		public virtual T this[float nx, float ny] {
+			get { return (output != null ? output[nx, ny] : defaultValue); }
+		}
+		public virtual T this[int x, int y] {
+			get { return (output != null ? output[x, y] : defaultValue); }
+		}
 #endregion
 #region IDisposable
 		public virtual void Dispose() {

@@ -23,15 +23,18 @@ namespace nobnak.Gist.Timers {
 		public CoroutineBasedTimer Start(float duration) {
 			Abort();
 			current = target.StartCoroutine(GetTimer(duration));
-			Started?.Invoke();
+			if (Started != null)
+				Started.Invoke();
 			return this;
 		}
 		public CoroutineBasedTimer Abort() {
 			if (current != null) {
 				target.StopCoroutine(current);
 				current = null;
-				Aborted?.Invoke();
-				Ended?.Invoke();
+				if (Aborted != null)
+					Aborted.Invoke();
+				if (Ended != null)
+					Ended.Invoke();
 			}
 			return this;
 		}
@@ -44,8 +47,10 @@ namespace nobnak.Gist.Timers {
 		}
 		protected void Complete() {
 			current = null;
-			Completed?.Invoke();
-			Ended?.Invoke();
+			if (Completed != null)
+				Completed.Invoke();
+			if (Ended != null)
+				Ended.Invoke();
 		}
 		#endregion
 

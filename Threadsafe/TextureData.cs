@@ -1,4 +1,4 @@
-#pragma warning disable CS0067
+//#pragma warning disable CS0067
 
 using System;
 using System.Collections;
@@ -121,7 +121,8 @@ namespace nobnak.Gist.ThreadSafe {
 
 		#region private
 		protected void NotifyOnLoad() {
-			OnLoad?.Invoke(this);
+			if (OnLoad != null)
+				OnLoad.Invoke(this);
 		}
 
 		protected void Bridge(float nx, float ny, out int x0, out int y0, out int x1, out int y1, out float t, out float s) {

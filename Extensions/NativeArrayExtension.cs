@@ -16,7 +16,9 @@ namespace nobnak.Gist.Extensions.NativeArrayExt {
 				var hDst = GCHandle.Alloc(dst, GCHandleType.Pinned);
 				try {
 					var pDst = Marshal.UnsafeAddrOfPinnedArrayElement(dst, 0);
-					Kern32.CopyMemory(pDst, pSrc, (uint)(dst.Length * Marshal.SizeOf<T>()));
+					Kern32.CopyMemory(pDst, pSrc,
+						(uint)(dst.Length * Marshal.SizeOf(typeof(T)))
+						);
 				} finally {
 					hDst.Free();
 				}
