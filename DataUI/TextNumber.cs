@@ -1,16 +1,14 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 namespace nobnak.Gist.DataUI {
-	public class TextFloat {
-		float _value = 0;
+	public class TextFloat : Reactive<float> {
 		string _strValue = "0";
-		bool _changed = true;
 		
-		public TextFloat(float exisitingValue) {
-			Value = exisitingValue;
+		public TextFloat(float data) : base(data) {
+			SetStrData(data);
 		}
-		
+		#region Reactive
 		public string StrValue {
 			get {
 				return _strValue;
@@ -18,61 +16,63 @@ namespace nobnak.Gist.DataUI {
 			set {
 				if (value != null && value != _strValue) {
 					_strValue = value;
-					_changed = true;
+
+					float numValue;
+					if (float.TryParse(_strValue, out numValue))
+						base.SetData(numValue);
 				}
 			}
 		}
-		public float Value {
-			get {
-				if (_changed && float.TryParse(_strValue, out _value))
-					_changed = false;
-				return _value;
-			}
-			set {
-				if (_value != value) {
-					_value = value;
-					_strValue = _value.ToString();
-					_changed = false;
-				}
-			}
+		protected override void SetData(float value) {
+			SetStrData(value);
+			base.SetData(value);
 		}
+		#endregion
+
+		#region member
+		protected virtual void SetStrData(float data) {
+			_strValue = data.ToString();
+		}
+		#endregion
 	}
-	
-	public class TextInt {
-		int _value = 0;
+
+	public class TextInt : Reactive<int> {
 		string _strValue = "0";
-		bool _changed = true;
 		
-		public TextInt(int existing) {
-			Value = existing;
+		public TextInt(int init) :base(init) {
+			SetStrDataInternal(init);
 		}
-		
+
 		public string StrValue {
 			get {
 				return _strValue;
 			}
 			set {
-				_strValue = value;
-				_changed = true;
+				if (value != null && value != _strValue) {
+					_strValue = value;
+
+					int numValue;
+					if (int.TryParse(_strValue, out numValue)) {
+						base.SetData(numValue);
+					}
+				}				
 			}
 		}
-		
-		public int Value {
-			get {
-				if (_changed && int.TryParse(_strValue, out _value))
-					_changed = false;
-				return _value;
-			}
-			set {
-				if (_value != value) {
-					_value = value;
-					_strValue = _value.ToString();
-					_changed = false;
-				}
-			}
+
+		#region Reactive
+		protected override void SetData(int value) {
+			SetStrDataInternal(value);
+			base.SetData(value);
 		}
+		#endregion
+
+		#region member
+		protected virtual void SetStrDataInternal(int init) {
+			_strValue = init.ToString();
+		}
+		#endregion
 	}
-	
+
 	public class TextVector {
 		TextFloat[] _texts = new TextFloat[]{ new TextFloat(0), new TextFloat(0), new TextFloat(0), new TextFloat(0) };
 		Vector4 _value = Vector4.zero;
