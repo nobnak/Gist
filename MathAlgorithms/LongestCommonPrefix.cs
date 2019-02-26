@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
-namespace nobnak.Gist {
+namespace nobnak.Gist.MathAlgorithms {
 
-	public static class LengthOfCommonPrefix {
+	public static class LongestCommonPrefix {
 
 		public static readonly int[] BYTE_TO_COUNT = ByteToLength(new int[256]);
 
