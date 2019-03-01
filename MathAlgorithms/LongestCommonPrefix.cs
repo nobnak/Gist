@@ -39,9 +39,6 @@ namespace nobnak.Gist.MathAlgorithms {
 			len += l;
 			return len;
 		}
-		public static int LCP(uint a, uint b) {
-			return Length(~(a ^ b));
-		}
 
 		public static int ByteToLength(byte b) {
 			byte i = 0;
@@ -56,6 +53,20 @@ namespace nobnak.Gist.MathAlgorithms {
 			return output;
 		}
 
+		public static int LengthOfLCP(this uint a, uint b) {
+			return Length(~(a ^ b));
+		}
+
+		public static uint PrefixByLength(this uint a, int length) {
+			var mask = (~0u >> length) << length;
+			return a & mask;
+		}
+		public static uint Prefix(this uint a, uint b) {
+			var len = a.LengthOfLCP(b);
+			return a.PrefixByLength(len);
+		}
+
+		#region class
 		[StructLayout(LayoutKind.Explicit)]
 		public struct BytesOfUint {
 			[FieldOffset(0)]
@@ -73,5 +84,6 @@ namespace nobnak.Gist.MathAlgorithms {
 				return new BytesOfUint() { v = v };
 			}
 		}
+		#endregion
 	}
 }
