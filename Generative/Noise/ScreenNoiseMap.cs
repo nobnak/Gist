@@ -131,31 +131,38 @@ namespace nobnak.Gist {
             var px = (float)noiseFreq / _height;
             var t = Time.timeSinceLevelLoad * timeScale + _seeds.z;
             var H = (HeightFunc == null ? DefaultHeightFunc : HeightFunc);
-            Parallel.For (0, _height + 1, y =>  {
-                for (var x = 0; x <= _width; x++)
-                    SetHeight(x, y, H(px * (x - 0.5f + _seeds.x), px * (y - 0.5f + _seeds.y), t));
-            });
+			var arg = new DataForUpdateHeightMap(px, t, H);
+			Parallel.For (0, _height + 1, UpdateHeightMapEach, arg);
         }
-        void UpdateNormalMap () {
+		protected void UpdateHeightMapEach(int y, DataForUpdateHeightMap arg) {
+			for (var x = 0; x <= _width; x++)
+				SetHeight(x, y, arg.H(arg.px * (x - 0.5f + _seeds.x), arg.px * (y - 0.5f + _seeds.y), arg.t));
+		}
+
+
+		void UpdateNormalMap () {
             var idx = (float)_height / fieldSize;
-            Parallel.For (0, _height, y =>  {
-                for (var x = 0; x < _width; x++) {
-                    var h = GetHeight(x, y);
-                    var dhdx = (GetHeight(x + 1, y) - h) * idx;
-                    var dhdy = (GetHeight(x, y + 1) - h) * idx;
-                    SetNormal(x, y, new Vector3 (-dhdx, -dhdy, 1f).normalized);
-                }
-            });
+            Parallel.For (0, _height, UpdateNormalMapEach, idx);
         }
+		protected void UpdateNormalMapEach(int y, float idx) {
+			for (var x = 0; x < _width; x++) {
+				var h = GetHeight(x, y);
+				var dhdx = (GetHeight(x + 1, y) - h) * idx;
+				var dhdy = (GetHeight(x, y + 1) - h) * idx;
+				SetNormal(x, y, new Vector3(-dhdx, -dhdy, 1f).normalized);
+			}
+		}
+
         void UpdateTexture() {
-            Parallel.For (0, _height, y =>  {
-                for (var x = 0; x < _width; x++) {
-                    var h = GetHeight(x, y);
-                    var n = GetNormal(x, y);
-                    SetNoisePixel(x, y, new Color(0.5f * (n.x + 1f), 0.5f * (n.y + 1f), 0.5f * (n.z + 1f), h));
-                }
-            });
+            Parallel.For (0, _height, UpdateTextureEach, -1);
         }
+		protected void UpdateTextureEach(int y, int arg) {
+			for (var x = 0; x < _width; x++) {
+				var h = GetHeight(x, y);
+				var n = GetNormal(x, y);
+				SetNoisePixel(x, y, new Color(0.5f * (n.x + 1f), 0.5f * (n.y + 1f), 0.5f * (n.z + 1f), h));
+			}
+		}
 
         float DefaultHeightFunc(float x, float y, float z) {
             return (float)SimplexNoise.Noise (x, y, z);
@@ -164,7 +171,20 @@ namespace nobnak.Gist {
             DestroyImmediate(_noiseTex);
         }
 
-        [System.Serializable]
-        public class TextureEvent : UnityEngine.Events.UnityEvent<Texture> {}
-    }
+		#region classes
+		[System.Serializable]
+		public class TextureEvent : UnityEngine.Events.UnityEvent<Texture> { }
+		public struct DataForUpdateHeightMap {
+			public readonly float px;
+			public readonly float t;
+			public readonly System.Func<float, float, float, float> H;
+
+			public DataForUpdateHeightMap(float px, float t, System.Func<float, float, float, float> H) {
+				this.px = px;
+				this.t = t;
+				this.H = H;
+			}
+		}
+		#endregion
+	}
 }
