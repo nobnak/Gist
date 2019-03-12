@@ -128,38 +128,59 @@ namespace nobnak.Gist {
         protected virtual IEnumerator UpdateHeightMap () {
             var px = new Vector2 (noiseFreq * aspect / width, noiseFreq / width);
             var t = Time.timeSinceLevelLoad * timeScale + _seeds.z;
-            var H = (HeightFunc == null ? DefaultHeightFunc : HeightFunc);                
-            return Parallel.ForAsync (0, width + 1, y =>  {
-                for (var x = 0; x <= width; x++)
-                    SetHeight(x, y, H(px.x * (x - 0.5f + _seeds.x), px.y * (y - 0.5f + _seeds.y), t));
-            });
+            var H = (HeightFunc == null ? DefaultHeightFunc : HeightFunc);
+			var arg = new DataForUpdateHeightMap(px, t, H);
+			return Parallel.ForAsync (0, width + 1, UpdateHeightMapEach, arg);
         }
+		protected virtual void UpdateHeightMapEach(int y, DataForUpdateHeightMap arg) {
+			for (var x = 0; x <= width; x++)
+				SetHeight(x, y, arg.H(arg.px.x * (x - 0.5f + _seeds.x), arg.px.y * (y - 0.5f + _seeds.y), arg.t));
+		}
+
         protected virtual IEnumerator UpdateNormalMap () {
             var invDx = new Vector2(width / (fieldSize * aspect), width / fieldSize);
-            return Parallel.ForAsync (0, width, y =>  {
-                for (var x = 0; x < width; x++) {
-                    var h = GetHeight(x, y);
-                    var dhdx = (GetHeight(x + 1, y) - h) * invDx.x;
-                    var dhdy = (GetHeight(x, y + 1) - h) * invDx.y;
-                    SetNormal(x, y, new Vector3 (-dhdx, -dhdy, 1f).normalized);
-                }
-            });
+            return Parallel.ForAsync (0, width, UpdateNormalMapEach, invDx);
         }
-        IEnumerator UpdatePixels() {
-            return Parallel.ForAsync (0, width, y =>  {
-                for (var x = 0; x < width; x++) {
-                    var h = GetHeight(x, y);
-                    var n = GetLocalNormal(x, y);
-                    SetNoisePixel(x, y, new Color(0.5f * (n.x + 1f), 0.5f * (n.y + 1f), 0.5f * (n.z + 1f), h));
-                }
-            });
-        }
+		protected virtual void UpdateNormalMapEach(int y, Vector2 invDx) {
+			for (var x = 0; x < width; x++) {
+				var h = GetHeight(x, y);
+				var dhdx = (GetHeight(x + 1, y) - h) * invDx.x;
+				var dhdy = (GetHeight(x, y + 1) - h) * invDx.y;
+				SetNormal(x, y, new Vector3(-dhdx, -dhdy, 1f).normalized);
+			}
+		}
 
-        protected virtual float DefaultHeightFunc(float x, float y, float z) {
+        IEnumerator UpdatePixels() {
+            return Parallel.ForAsync(0, width, UpdatePixelsEach, -1);
+        }
+		protected virtual void UpdatePixelsEach(int y, int arg) {
+			for (var x = 0; x < width; x++) {
+				var h = GetHeight(x, y);
+				var n = GetLocalNormal(x, y);
+				SetNoisePixel(x, y, new Color(0.5f * (n.x + 1f), 0.5f * (n.y + 1f), 0.5f * (n.z + 1f), h));
+			}
+		}
+
+
+		protected virtual float DefaultHeightFunc(float x, float y, float z) {
             return (float)SimplexNoise.Noise (x, y, z);
         }
         protected virtual void ReleaseTex () {
 			_noiseTex.Destroy();
         }
-    }
+
+		#region classes
+		public struct DataForUpdateHeightMap {
+			public readonly Vector2 px;
+			public readonly float t;
+			public readonly System.Func<float, float, float, float> H;
+
+			public DataForUpdateHeightMap(Vector2 px, float t, System.Func<float, float, float, float> H) {
+				this.px = px;
+				this.t = t;
+				this.H = H;
+			}
+		}
+		#endregion
+	}
 }
