@@ -6,7 +6,7 @@ namespace nobnak.Gist.Extensions.Int {
     
     public static class IntExtension {
 
-		public static int SmallestPowerOfTwoGreaterThan(this int n) {
+		public static int Po2(this int n) {
 			if (n <= 0)
 				return 0;
 
@@ -18,7 +18,7 @@ namespace nobnak.Gist.Extensions.Int {
 			n |= n >> 16;
 			return ++n;
 		}
-		public static uint SmallestPowerOfTwoGreaterThan(this uint n) {
+		public static uint Po2(this uint n) {
 			if (n <= 0)
 				return 0;
 
@@ -31,7 +31,7 @@ namespace nobnak.Gist.Extensions.Int {
 			return ++n;
 		}
 
-		public static long SmallestPowerOfTwoGreaterThan(this long n) {
+		public static long Po2(this long n) {
 			if (n <= 0)
 				return 0;
 
@@ -44,7 +44,7 @@ namespace nobnak.Gist.Extensions.Int {
 			n |= n >> 32;
 			return ++n;
 		}
-		public static ulong SmallestPowerOfTwoGreaterThan(this ulong n) {
+		public static ulong Po2(this ulong n) {
 			if (n <= 0)
 				return 0;
 
