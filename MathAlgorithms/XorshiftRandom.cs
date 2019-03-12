@@ -33,7 +33,7 @@ namespace nobnak.Gist.MathAlgorithms {
 				throw new System.Exception(string.Format("{0} <= 0", width));
 
 			var uwidth = (ulong)width;
-			var lowerBitsMask = (uwidth.SmallestPowerOfTwoGreaterThan() - 1);
+			var lowerBitsMask = (uwidth.Po2() - 1);
 			ulong v = 0;
 			while ((v = (Next() & lowerBitsMask)) >= uwidth) ;
 			return v;
