@@ -77,7 +77,7 @@ namespace nobnak.Gist.HashGridSystem {
             get { return World; }
         }
 
-        public override int Count { get { return World.Count; } }
+        public override int Count { get { return (World != null ? World.Count : 0); } }
         public override Component IndexOf (int index) {
             return World.IndexOf (index);
         }
