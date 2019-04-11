@@ -97,7 +97,7 @@ namespace nobnak.Gist.GPUBuffer {
         }
         protected void EnsureCapacity(int minCapacity) {
             if (minCapacity > capacity)
-                Resize(minCapacity.SmallestPowerOfTwoGreaterThan());
+                Resize(minCapacity.Po2());
         }
         protected void DisposeComputeBuffer() {
             if (buffer != null) {

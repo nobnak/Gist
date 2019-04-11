@@ -9,16 +9,14 @@ namespace nobnak.Gist.MathAlgorithms {
 		public const int DEFAULT_ITERATION_LIMIT = 100;
 		public const float EPSILON = 1e-6f;
 
-		protected float[] weights;
+		protected IList<float> weights;
 		protected float weightMax;
 		protected int iterationLimit;
 
 		public RouletteWheelSelection(
-			float[] weights,
+			IList<float> weights,
 			int iterationLimit = DEFAULT_ITERATION_LIMIT) {
-
-			System.Array.Resize(ref this.weights, weights.Length);
-			System.Array.Copy(weights, this.weights, weights.Length);
+            this.weights = weights;
 			this.weightMax = MaxWeight(weights);
 			this.iterationLimit = iterationLimit;
 		}
@@ -32,7 +30,7 @@ namespace nobnak.Gist.MathAlgorithms {
 		#region static
 		public static bool Sample(
 			out int sampledIndex,
-			int iterationLimit, float weightMax, params float[] weights) {
+			int iterationLimit, float weightMax, IList<float> weights) {
 
 			if (weightMax <= EPSILON) {
 				sampledIndex = -1;
@@ -41,7 +39,7 @@ namespace nobnak.Gist.MathAlgorithms {
 
             var invWeightMax = 1f / weightMax;
             for (var i = 0; i < iterationLimit; i++) {
-                sampledIndex = Random.Range (0, weights.Length);
+                sampledIndex = Random.Range (0, weights.Count);
                 if (Random.value < (weights [sampledIndex] * invWeightMax))
                     return true;
             }
@@ -49,7 +47,7 @@ namespace nobnak.Gist.MathAlgorithms {
             sampledIndex = -1;
             return false;
         }
-        public static int Sample(float weightMax, params float[] weights) {
+        public static int Sample(float weightMax, IList<float> weights) {
             int sampledIndex = -1;
             Sample (out sampledIndex, int.MaxValue, weightMax, weights);
             return sampledIndex;

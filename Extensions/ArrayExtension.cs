@@ -21,5 +21,23 @@ namespace nobnak.Gist.Extensions.Array {
 			foreach (var s in src)
 				dst.Add(s);
 		}
-    }
+		public static T[] Swap<T>(this T[] array, int i, int j) {
+			var tmp = array[i];
+			array[i] = array[j];
+			array[j] = tmp;
+			return array;
+		}
+		public static T[] Shuffle<T>(this T[] array, int seed = -1) {
+			var oldState = Random.state;
+			if (seed >= 0)
+				Random.InitState(seed);
+			for (var i = array.Length - 1; i >= 0; --i) {
+				var j = Random.Range(0, i + 1);
+				if (i != j)
+					array.Swap(i, j);
+			}
+			Random.state = oldState;
+			return array;
+		}
+	}
 }

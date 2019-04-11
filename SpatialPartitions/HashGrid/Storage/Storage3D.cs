@@ -83,14 +83,14 @@ namespace nobnak.Gist.HashGridSystem.Storage {
         }
         public IEnumerator UpdateAsync(MonoBehaviour m) {
             var limit = _grid.Length;
-            yield return m.StartCoroutine (Parallel.ForAsync (0, limit, (i) => _grid [i].Clear ()));
+            yield return m.StartCoroutine (Parallel.ForAsync (0, limit, (i, arg) => _grid [i].Clear (), -1));
 
             limit = _points.Count;
             _positions.Clear ();
             for (var i = 0; i < limit; i++)
                 _positions.Add(_GetPosition (_points [i]));
 
-            yield return m.StartCoroutine (Parallel.ForAsync (0, limit, Parallel_AddOnGrid));
+            yield return m.StartCoroutine (Parallel.ForAsync (0, limit, Parallel_AddOnGrid, -1));
         }
         public int Stat(int id) {
             return _grid [id].Count;
@@ -102,7 +102,7 @@ namespace nobnak.Gist.HashGridSystem.Storage {
             return Stat (_hash.CellId (pos));
         }
 
-        void Parallel_AddOnGrid(int i) {
+        void Parallel_AddOnGrid(int i, int arg) {
             var pos = _positions [i];
             var id = _hash.CellId (pos);
             var cell = _grid [id];

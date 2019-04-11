@@ -83,7 +83,7 @@ namespace nobnak.Gist.HashGridSystem.Storage {
         public void Update() {
             var limit = _grid.Length;
             #if PARALLEL
-            Parallel.For(0, limit, (i) => _grid[i].Clear());
+            Parallel.For(0, limit, (i, arg) => _grid[i].Clear(), -1);
             #else
             for (var i = 0; i < limit; i++)
                 _grid [i].Clear ();
@@ -95,7 +95,7 @@ namespace nobnak.Gist.HashGridSystem.Storage {
                 _positions.Add(_GetPosition (_points [i]));
 
             #if PARALLEL
-            Parallel.For (0, limit, Parallel_AddOnGrid);
+            Parallel.For (0, limit, Parallel_AddOnGrid, -1);
             #else
             for (var i = 0; i < limit; i++)
                 AddOnGrid (_points [i], _positions [i]);
@@ -111,7 +111,7 @@ namespace nobnak.Gist.HashGridSystem.Storage {
             return Stat (_hash.CellId (pos));
         }
 
-        void Parallel_AddOnGrid(int i) {
+        void Parallel_AddOnGrid(int i, int arg) {
             var point = _points [i];
             var pos = _positions [i];
             var id = _hash.CellId (pos);
