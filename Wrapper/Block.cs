@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-namespace nobnak.Gist {
+namespace nobnak.Gist.Wrapper {
     public interface IBlock<T> {
         T Apply ();
 
@@ -47,66 +47,66 @@ namespace nobnak.Gist {
         #endregion
     }
 
-    public class MaterialPropertyBlockMethodChain : IBlock<MaterialPropertyBlockMethodChain> {
+    public class Block : IBlock<Block> {
         public readonly Pair[] pairs;
 
-        public MaterialPropertyBlockMethodChain(params Renderer[] rends) 
+        public Block(params Renderer[] rends) 
             : this(GeneratePairs(rends)) {}
-        public MaterialPropertyBlockMethodChain(params Pair[] pairs) {
+        public Block(params Pair[] pairs) {
             this.pairs = pairs;
         }
 
         #region IBlock implementation
-        public MaterialPropertyBlockMethodChain Apply () {
+        public Block Apply () {
             foreach (var p in pairs)
                 p.Apply ();
             return this;
         }
 
-        public MaterialPropertyBlockMethodChain SetColor (string name, Color value) {
+        public Block SetColor (string name, Color value) {
             return SetColor (Shader.PropertyToID (name), value);
         }
-        public MaterialPropertyBlockMethodChain SetColor(int name, Color value) {
+        public Block SetColor(int name, Color value) {
             foreach (var p in pairs)
                 p.SetColor (name, value);
             return this;
         }
-        public MaterialPropertyBlockMethodChain SetFloat (string name, float value) {
+        public Block SetFloat (string name, float value) {
             return SetFloat (Shader.PropertyToID (name), value);
         }
-        public MaterialPropertyBlockMethodChain SetFloat(int name, float value) {
+        public Block SetFloat(int name, float value) {
             foreach (var p in pairs)
                 p.SetFloat (name, value);
             return this;
         }
-        public MaterialPropertyBlockMethodChain SetMatrix (string name, Matrix4x4 value) {
+        public Block SetMatrix (string name, Matrix4x4 value) {
             return SetMatrix (Shader.PropertyToID (name), value);
         }
-        public MaterialPropertyBlockMethodChain SetMatrix(int name, Matrix4x4 value) {
+        public Block SetMatrix(int name, Matrix4x4 value) {
             foreach (var p in pairs)
                 p.SetMatrix (name, value);
             return this;
         }
-        public MaterialPropertyBlockMethodChain SetTexture (string name, Texture value) {
+        public Block SetTexture (string name, Texture value) {
             return SetTexture (Shader.PropertyToID (name), value);
         }
-        public MaterialPropertyBlockMethodChain SetTexture(int name, Texture value) {
+        public Block SetTexture(int name, Texture value) {
             foreach (var p in pairs)
                 p.SetTexture (name, value);
             return this;
         }
-        public MaterialPropertyBlockMethodChain SetVector (string name, Vector4 value) {
+        public Block SetVector (string name, Vector4 value) {
             return SetVector (Shader.PropertyToID (name), value);
         }
-        public MaterialPropertyBlockMethodChain SetVector(int name, Vector4 value) {
+        public Block SetVector(int name, Vector4 value) {
             foreach (var p in pairs)
                 p.SetVector (name, value);
             return this;
         }
-        public MaterialPropertyBlockMethodChain SetBuffer(string name, ComputeBuffer value) {
+        public Block SetBuffer(string name, ComputeBuffer value) {
             return SetBuffer (Shader.PropertyToID (name), value);
         }
-        public MaterialPropertyBlockMethodChain SetBuffer(int name, ComputeBuffer value) {
+        public Block SetBuffer(int name, ComputeBuffer value) {
             foreach (var p in pairs)
                 p.SetBuffer (name, value);
             return this;
@@ -152,11 +152,11 @@ namespace nobnak.Gist {
                 pairs [i] = new Pair (renderers [i], new MaterialPropertyBlock ());
             return pairs;
         }
-        public static MaterialPropertyBlockMethodChain operator+ (MaterialPropertyBlockMethodChain a, MaterialPropertyBlockMethodChain b) {
+        public static Block operator+ (Block a, Block b) {
             var pairs = new Pair[a.pairs.Length + b.pairs.Length];
             System.Array.Copy (a.pairs, pairs, a.pairs.Length);
             System.Array.Copy (b.pairs, 0, pairs, a.pairs.Length, b.pairs.Length);
-            return new MaterialPropertyBlockMethodChain (pairs);
+            return new Block (pairs);
         }
         #endregion
     }
