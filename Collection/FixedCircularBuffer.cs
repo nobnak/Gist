@@ -6,17 +6,15 @@ namespace nobnak.Gist.Collection {
 
     public class FixedCircularBuffer<T> : IEnumerable<T> {
 
-        public readonly int size;
-
-        protected readonly T[] array;
+        protected int size;
+        protected T[] array;
 
         protected int head = 0;
         protected int tail = 0;
         protected int count = 0;
 
         public FixedCircularBuffer(int size = 16) {
-            this.size = size;
-            this.array = new T[size];
+            Resize(size);
         }
 
         #region interface
@@ -43,10 +41,18 @@ namespace nobnak.Gist.Collection {
             head = ++head % size;
             --count;
         }
+        public void Resize(int size) {
+            if (size <= 0)
+                throw new System.InvalidCastException("Size must be greater than 0");
+            this.size = size;
+            this.array = new T[size];
+            this.tail = this.head = this.count = 0;
+        }
         public T this[int index] {
             get { return array[(head + index) % size]; }
             set { array[(head + index) % size] = value; }
         }
+        public int Count { get { return count; } }
         #endregion
     }
 }
