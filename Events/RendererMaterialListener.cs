@@ -1,17 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
+using nobnak.Gist.Wrapper;
 using UnityEngine;
 
 namespace nobnak.Gist.Events {
-        
+
     public class RendererMaterialListener : BaseMaterialListener {
 
-        protected MaterialPropertyBlockMethodChain block;
+        protected Block block;
 
-        public virtual MaterialPropertyBlockMethodChain Block {
+        public virtual Block Block {
             get { 
                 if (block == null)
-                    block = new MaterialPropertyBlockMethodChain (GetComponent<Renderer> ());
+                    block = new Block (GetComponent<Renderer> ());
                 return block;
             }
         }

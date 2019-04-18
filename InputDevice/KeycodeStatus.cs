@@ -7,7 +7,11 @@ namespace nobnak.Gist.InputDevice {
 	[System.Serializable]
 	public class KeycodeStatus {
 		[SerializeField]
-		protected KeyCode key = KeyCode.None;
+		protected KeyCode key;
+		
+		public KeycodeStatus(KeyCode key = KeyCode.None) {
+			this.key = key;
+		}
 
 		public event System.Action Down;
 		public event System.Action Up;
