@@ -12,6 +12,7 @@ namespace nobnak.Gist {
         protected bool useCache;
         protected int validatedFrameCount = -1;
 
+		protected bool isUnderValidation;
         protected bool initialValidity;
         protected bool validity;
         protected System.Func<bool>[] checker;
@@ -44,6 +45,8 @@ namespace nobnak.Gist {
         }
 
         public bool Validate(bool force = false) {
+			if (isUnderValidation)
+				return false;
             if (!force && IsValid)
                 return true;
 
@@ -60,8 +63,13 @@ namespace nobnak.Gist {
         }
 
         protected void _Validate() {
-            if (Validation != null)
-                Validation();
+			try {
+				isUnderValidation = true;
+				if (Validation != null)
+					Validation();
+			} finally {
+				isUnderValidation = false;
+			}
         }
         protected bool Check(bool useChache) {
             if (useCache && validatedFrameCount == Time.frameCount)
