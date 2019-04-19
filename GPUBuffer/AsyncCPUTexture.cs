@@ -8,11 +8,17 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace nobnak.Gist.GPUBuffer {
-	public class AsyncCPUTexture<T> : System.IDisposable, ITextureData<T> where T:struct {
+
+	public abstract class AsyncCPUTexture {
+		public enum StateEnum { Init = 0, Progress, Completed }
+
+		protected StateEnum state;
+	}
+
+	public class AsyncCPUTexture<T> : AsyncCPUTexture, System.IDisposable, ITextureData<T> where T:struct {
+
 		public event System.Action<IList<T>, ListTextureData<T>> OnComplete;
 		public event Action<ITextureData<T>> OnLoad;
-
-		protected bool active = false;
 
 		protected T[] data;
 		protected ListTextureData<T> output;
@@ -26,27 +32,36 @@ namespace nobnak.Gist.GPUBuffer {
 
 		#region interface
 		public Texture Source { get; set; }
-		public virtual void Update() {
-			if (active) {
-				if (req.hasError) {
-					Debug.LogFormat("Failed to read back from GPU async");
-					active = false;
-				} else if (req.done) {
-					Release();
-					var nativeData = req.GetData<T>();
-					System.Array.Resize(ref data, nativeData.Length);
-					nativeData.UnsafeCopyTo(data);
-					output = GenerateCPUTexture(data, size);
-					if (OnComplete != null)
-						OnComplete.Invoke(data, output);
-				}
-			} else {
-				if (Source != null) {
-					active = true;
-					req = AsyncGPUReadback.Request(Source);
-					size = new Vector2Int(Source.width, Source.height);
-				}
+		public virtual StateEnum Update() {
+			switch (state) {
+				case StateEnum.Progress:
+					if (req.hasError) {
+						Debug.LogFormat("Failed to read back from GPU async");
+						Release();
+						state = StateEnum.Completed;
+					} else if (req.done) {
+						Release();
+						var nativeData = req.GetData<T>();
+						System.Array.Resize(ref data, nativeData.Length);
+						nativeData.UnsafeCopyTo(data);
+						output = GenerateCPUTexture(data, size);
+						if (OnComplete != null)
+							OnComplete.Invoke(data, output);
+						state = StateEnum.Completed;
+					}
+					break;
+				case StateEnum.Init:
+				case StateEnum.Completed:
+					if (Source != null) {
+						req = AsyncGPUReadback.Request(Source);
+						size = new Vector2Int(req.width, req.height);
+						state = StateEnum.Progress;
+					} else {
+						state = StateEnum.Init;
+					}
+					break;
 			}
+			return state;
 		}
 #endregion
 #region ITextureData
@@ -78,8 +93,7 @@ namespace nobnak.Gist.GPUBuffer {
 				output.Dispose();
 				output = null;
 			}
-			active = false;
 		}
-#endregion
+		#endregion
 	}
 }
