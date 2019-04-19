@@ -1,10 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using nobnak.Gist.Wrapper;
 using UnityEngine;
-using nobnak.Gist;
 
 namespace nobnak.Gist.Layers {
-        
+
     [ExecuteInEditMode]
     public class LayerPanel : MonoBehaviour {
         public enum DepthModeEnum { Normalized = 0, Exact }
@@ -22,13 +20,13 @@ namespace nobnak.Gist.Layers {
         public Vector2 size = Vector2.one;
         public Rect viewport = new Rect (0f, 0f, 1f, 1f);
 
-        MaterialPropertyBlockMethodChain block;
+        Block block;
 
         #region Unity
         void OnEnable() {
             Renderer rend;
             if ((rend = GetComponent<Renderer> ()) != null)
-                block = new MaterialPropertyBlockMethodChain (rend);
+                block = new Block (rend);
         }
         void Update() {
             if (targetCam == null)

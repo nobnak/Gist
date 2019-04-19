@@ -1,4 +1,4 @@
-#pragma warning disable CS0067
+#pragma warning disable 0067
 
 using nobnak.Gist.Extensions.NativeArrayExt;
 using nobnak.Gist.ThreadSafe;

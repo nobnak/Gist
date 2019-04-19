@@ -1,20 +1,20 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using nobnak.Gist.Wrapper;
+using UnityEngine;
 
 namespace nobnak.Gist {
 
     [RequireComponent(typeof(ParticleSystem))]
     public class ParticleSystemMaterialPropertyBlock : MonoBehaviour {
-        MaterialPropertyBlockMethodChain block;
+        Block block;
 
         #region Unity
         void Awake () {
             var ps = GetComponent<ParticleSystem>();
             var renderer = ps.GetComponent<ParticleSystemRenderer> ();
-            block = new MaterialPropertyBlockMethodChain (renderer);
+            block = new Block (renderer);
     	}
         #endregion
 
-        public MaterialPropertyBlockMethodChain Block { get { return block; } }
+        public Block Block { get { return block; } }
     }
 }

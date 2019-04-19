@@ -1,4 +1,4 @@
-#pragma warning disable CS0067
+#pragma warning disable 0067
 
 using System;
 using System.Collections;
