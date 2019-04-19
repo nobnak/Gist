@@ -152,6 +152,8 @@ namespace nobnak.Gist.ThreadSafe {
 		protected IList<T> pixels;
 
 		public ListTextureData(IList<T> pixels, Vector2Int size) : base(size) {
+			if (pixels.Count < (size.x * size.y))
+				Debug.LogWarningFormat("Size mismatch : pixels={0} size={1}", pixels.Count, size);
 			Load(pixels);
 		}
 
@@ -172,7 +174,8 @@ namespace nobnak.Gist.ThreadSafe {
 		#endregion
 		#region private
 		protected override T GetPixelDirect(int x, int y) {
-			return pixels[GetLinearIndex(x, y)];
+			var i = GetLinearIndex(x, y);
+			return pixels[i];
 		}
 		protected override void SetPixelDirect(int x, int y, T c) {
 			pixels[GetLinearIndex(x, y)] = c;
