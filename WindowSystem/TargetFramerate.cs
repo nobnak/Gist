@@ -11,7 +11,7 @@ namespace nobnak.Gist.WindowSystem {
 		[SerializeField]
 		protected FilePath serialized;
 		[SerializeField]
-		protected KeycodeToggle toggleUI;
+		protected KeycodeToggle toggleUI = new KeycodeToggle();
 		[SerializeField]
 		protected FrameRateJob frameRate;
 
