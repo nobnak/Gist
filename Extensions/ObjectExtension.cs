@@ -19,7 +19,7 @@ namespace nobnak.Gist.ObjectExt {
 					Object.DestroyImmediate(obj);
 			}
         }
-		public static void Destroy(this Component comp, float t = 0f) {
+		public static void DestroyGameObject(this Component comp, float t = 0f) {
 			if (comp != null && comp.gameObject != null)
 				comp.gameObject.Destroy(t);
 		}

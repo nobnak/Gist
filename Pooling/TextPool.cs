@@ -15,7 +15,7 @@ namespace nobnak.Gist.Pooling {
             pool = new MemoryPool<TextMesh>(
                 () => Instantiate(fab, transform),
                 (tm) => tm.gameObject.SetActive(false),
-                (tm) => tm.Destroy());
+                (tm) => tm.DestroyGameObject());
         }
         protected virtual void OnDisable() {
             if (pool != null) {
