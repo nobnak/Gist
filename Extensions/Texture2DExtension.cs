@@ -28,7 +28,7 @@ namespace nobnak.Gist.Extensions.Texture2DExt {
 		public static void Destroy(this Texture2D tex) {
 			if (tex != null) {
 				Debug.LogFormat("Destroy Texture2D : {0}", tex.SizeToString());
-				ObjectExt.ObjectExtension.Destroy(tex);
+				ObjectExt.ObjectExtension.DestroySelf(tex);
 				tex = null;
 			}
 		}

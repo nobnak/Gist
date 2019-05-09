@@ -11,7 +11,7 @@ using UnityEditor;
 namespace nobnak.Gist.ObjectExt {
 
     public static class ObjectExtension {
-        public static void Destroy(this Object obj, float t = 0f) {
+        public static void DestroySelf(this Object obj, float t = 0f) {
 			if (obj != null) {
 				if (Application.isPlaying)
 					Object.Destroy(obj, t);
@@ -19,11 +19,15 @@ namespace nobnak.Gist.ObjectExt {
 					Object.DestroyImmediate(obj);
 			}
         }
-		public static void DestroyGameObject(this Component comp, float t = 0f) {
-			if (comp != null && comp.gameObject != null)
-				comp.gameObject.Destroy(t);
+		public static void DestroyGo(this Component comp, float t = 0f) {
+			if (comp != null)
+				comp.gameObject.DestroyGo(t);
 		}
-		public static T DeepCopy<T>(this T src) {
+        public static void DestroyGo(this GameObject go, float t = 0f) {
+            if (go != null)
+                go.DestroySelf(t);
+        }
+        public static T DeepCopy<T>(this T src) {
 			var json = JsonUtility.ToJson(src);
 			return JsonUtility.FromJson<T>(json);
 		}

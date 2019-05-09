@@ -17,7 +17,7 @@ namespace nobnak.Gist.Pooling {
 			materialToTuple.Clear();
 			tupleToValue.Clear();
 			foreach (var m in mats)
-				m.Destroy();
+				m.DestroySelf();
 			Debug.LogFormat("Destroy {0} materials from pool", mats.Length);
 		}
 		#endregion
@@ -78,7 +78,7 @@ namespace nobnak.Gist.Pooling {
 			}
 
 			public void Dispose() {
-				mat.Destroy();
+				mat.DestroySelf();
 			}
 		}
 		#endregion

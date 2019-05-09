@@ -136,7 +136,7 @@ namespace nobnak.Gist.Resizable {
 
         protected virtual void ReleaseTexture() {
             NotifyBeforeDestroyTexture ();
-            tex.Destroy();
+            tex.DestroySelf();
             tex = null;
         }
 		#endregion
