@@ -86,8 +86,8 @@ namespace nobnak.Gist.Loader {
 		}
 		protected virtual bool LoadTarget() {
 			var result = false;
+			var path = file.FullPath;
 			try {
-				var path = file.FullPath;
 				result = (!string.IsNullOrEmpty(path)
 					&& File.Exists(path)
 					&& (target == null
@@ -101,7 +101,9 @@ namespace nobnak.Gist.Loader {
 					target.Destroy();
 					target = null;
 				}
-			} catch { }
+			} catch (System.Exception e) {
+				Debug.LogErrorFormat("Exception at loading : {0}\n{1}", path, e);
+			}
 			return result;
 		}
 

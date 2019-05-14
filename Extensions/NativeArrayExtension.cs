@@ -1,4 +1,3 @@
-//#define UNSAFE
 using nobnak.Gist.Syscall;
 using System.Collections;
 using System.Collections.Generic;
@@ -25,7 +24,10 @@ namespace nobnak.Gist.Extensions.NativeArrayExt {
 					hDst.Free();
 				}
 			}
+#else
+			Debug.LogWarning("Unsafe copy is not enabled");
+			src.CopyTo(dst);
 #endif
-        }
+		}
 	}
 }

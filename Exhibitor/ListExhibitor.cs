@@ -65,7 +65,7 @@ namespace nobnak.Gist.Exhibitor {
                 if (n == null)
                     continue;
                 Remove(n);
-				n.Destroy();
+				n.DestroyGo();
             }
             nodes.Clear();
         }

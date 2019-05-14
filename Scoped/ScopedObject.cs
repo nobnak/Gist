@@ -8,7 +8,7 @@ namespace nobnak.Gist.Scoped {
         public ScopedObject(T data) : base(data) {  }
 
         protected override void Disposer(T data) {
-            data.Destroy();
+            data.DestroySelf();
         }
 
         public static implicit operator ScopedObject<T>(T data) {

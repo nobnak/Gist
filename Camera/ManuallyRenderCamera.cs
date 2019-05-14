@@ -24,7 +24,7 @@ namespace nobnak.Gist {
 
         #region IDisposable implementation
         public void Dispose () {
-            manualCamGo.Destroy();
+            manualCamGo.DestroySelf();
         }
         #endregion
 
