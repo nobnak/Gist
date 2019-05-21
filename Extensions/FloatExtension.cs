@@ -45,5 +45,12 @@ namespace nobnak.Gist.Extension.FloatArray {
 			foreach (var v in values)
 				yield return v / sum;
 		}
+
+        public static float RoundBelowZero(this float v, int d = 7, System.MidpointRounding r = default(System.MidpointRounding)) {
+            return (float)System.Math.Round(v, d, r);
+        }
+        public static Vector3 RoundBelowZero(this Vector3 v, int d = 7) {
+            return new Vector3(v[0].RoundBelowZero(d), v[1].RoundBelowZero(d), v[2].RoundBelowZero(d));
+        }
     }
 }
