@@ -58,5 +58,9 @@ namespace nobnak.Gist.ObjectExt {
 			}
 		}
 #endif
+
+		public static bool IsPrefab(this GameObject go) {
+			return go.scene.rootCount == 0;
+		}
 	}
 }
