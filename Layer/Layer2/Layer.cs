@@ -12,7 +12,7 @@ namespace nobnak.Gist.Layer2 {
         public const float CIRCLE_INV_DEG = 1f / 360;
 
 		[SerializeField]
-		protected Events events;
+		protected Events events = new Events();
 
 		protected Validator validator = new Validator();
 
@@ -104,7 +104,7 @@ namespace nobnak.Gist.Layer2 {
 		public class LayerEvent : UnityEngine.Events.UnityEvent<Layer> { }
 		[System.Serializable]
 		public class Events {
-			public LayerEvent LayerOnChange;
+			public LayerEvent LayerOnChange = new LayerEvent();
 		}
 		#endregion
 	}
