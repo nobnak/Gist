@@ -16,23 +16,23 @@ namespace nobnak.Gist.Layer2 {
 
 		protected Validator validator = new Validator();
 
+        #region Unity
+        protected virtual void OnEnable() {
+            validator.Validate();
+            NotifyLayerOnChange();
+        }
         public Layer() {
             LayerToWorld = new DefferedMatrix();
             LocalToLayer = new DefferedMatrix();
             LocalToWorld = new DefferedMatrix();
-        }
 
-        #region Unity
-        protected virtual void OnEnable() {
-			validator.Reset();
+            validator.Reset();
 			validator.Validation += () => {
                 transform.hasChanged = false;
                 GenerateLayerData();
                 NotifyLayerOnChange();
             };
 			validator.SetCheckers(() => !transform.hasChanged);
-			validator.Validate();
-            NotifyLayerOnChange();
         }
         protected virtual void OnValidate() {
 			validator.Invalidate();
