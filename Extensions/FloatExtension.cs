@@ -53,7 +53,7 @@ namespace nobnak.Gist.Extension.FloatArray {
             return new Vector3(v[0].RoundBelowZero(d), v[1].RoundBelowZero(d), v[2].RoundBelowZero(d));
         }
 
-		public const float DX = 0.1f;
+		public const float DX = 1e-3f;
 		public static float Quantize(this float v, float dx = DX) {
 			return dx * (long)(v / dx);
 		}
