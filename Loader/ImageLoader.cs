@@ -31,10 +31,11 @@ namespace nobnak.Gist.Loader {
 			validator.Validated += () => NotifyChanged();
 
 			watcher = new FileSystemWatcher();
-			watcher.Changed += (s, e) => validator.Invalidate();
-			watcher.Created += (s, e) => validator.Invalidate();
-			watcher.Deleted += (s, e) => validator.Invalidate();
-			watcher.Renamed += (s, e) => validator.Invalidate();
+			watcher.IncludeSubdirectories = false;
+			watcher.Changed += ListenFilesystemEvent;
+			watcher.Created += ListenFilesystemEvent;
+			watcher.Deleted += ListenFilesystemEvent;
+			//watcher.Renamed += (s, e) => validator.Invalidate();
 
 			reactivePath.Changed += v => {
 				try {
@@ -71,6 +72,12 @@ namespace nobnak.Gist.Loader {
 		#endregion
 
 		#region private
+		protected virtual void ListenFilesystemEvent(object s, FileSystemEventArgs e) {
+			if (file.FullPath == e.FullPath) {
+				Debug.LogFormat("File changed : path={0} changed={1}", e.FullPath, e.ChangeType);
+				validator.Invalidate();
+			}
+		}
 		protected virtual void NotifyChanged() {
 			if (Changed != null)
 				Changed(target);
