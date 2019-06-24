@@ -31,6 +31,9 @@ namespace nobnak.Gist.Extensions.ComponentExt {
 			foreach (var c in Children<T>(root.transform, ignoreGrandchildren))
 				yield return c;
 		}
+        public static IEnumerable<T> Children<T>(this GameObject root, bool ignoreGrandchildren = true) {
+            return root.transform.Children<T>(ignoreGrandchildren);
+        }
 		public static IEnumerable<T> Parent<T>(this Transform root, bool ignoreGrandparent = true) {
 			if (root == null)
 				yield break;
