@@ -55,7 +55,7 @@ namespace nobnak.Gist.Extension.FloatArray {
 
 		public const float DX = 1e-3f;
 		public static float Quantize(this float v, float dx = DX) {
-			return dx * (long)(v / dx);
+			return dx * Mathf.RoundToInt(v / dx);
 		}
 		public static Vector3 Quantize(this Vector3 v, float dx = DX) {
 			return new Vector3(v.x.Quantize(dx), v.y.Quantize(dx), v.z.Quantize(dx));
