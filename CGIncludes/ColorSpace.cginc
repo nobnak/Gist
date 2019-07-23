@@ -1,9 +1,11 @@
 #ifndef __COLOR_SPACE__
 #define __COLOR_SPACE__
 
+static const float4 RGB2HSV_K = float4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+static const float4 HSV2RGB_K = float4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+
 float3 RGB2HSV(float3 c) {
-    float4 K = float4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
-    float4 p = c.g < c.b ? float4(c.bg, K.wz) : float4(c.gb, K.xy);
+    float4 p = c.g < c.b ? float4(c.bg, RGB2HSV_K.wz) : float4(c.gb, RGB2HSV_K.xy);
     float4 q = c.r < p.x ? float4(p.xyw, c.r) : float4(c.r, p.yzx);
 
     float d = q.x - min(q.w, q.y);
@@ -12,9 +14,8 @@ float3 RGB2HSV(float3 c) {
 }
 
 float3 HSV2RGB(float3 c) {
-    float4 K = float4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-    float3 p = abs(frac(c.xxx + K.xyz) * 6.0 - K.www);
-    return c.z * lerp(K.xxx, saturate(p - K.xxx), c.y);
+    float3 p = abs(frac(c.xxx + HSV2RGB_K.xyz) * 6.0 - HSV2RGB_K.www);
+    return c.z * lerp(HSV2RGB_K.xxx, saturate(p - HSV2RGB_K.xxx), c.y);
 }
 
 float3 HSVShift(float3 c, float3 hsvTint) { return HSV2RGB(saturate(RGB2HSV(c) + hsvTint)); }
