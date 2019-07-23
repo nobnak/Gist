@@ -121,7 +121,8 @@ namespace nobnak.Gist.Resizable {
 			}
 
             tex = format.CreateTexture(width, height);
-			Debug.LogFormat("Create ResizableRenderTexture : {0}\n{1}",
+			Debug.LogFormat("{0} : Create {1}\n{2}",
+				GetType().Name,
 				string.Format("size={0}x{1}", tex.width, tex.height),
 				format);
         }
