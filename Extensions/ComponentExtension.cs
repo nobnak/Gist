@@ -75,12 +75,24 @@ namespace nobnak.Gist.Extensions.ComponentExt {
             foreach (var i in me.Children<Input>(ignoreGrandchildren))
                 method(i);
         }
-        public static IEnumerable<Output> CallbackChildren<Input, Output>(this Component me, System.Func<Input, Output> method) {
+        public static IEnumerable<Output> CallbackChildren<Input, Output>(
+            this Component me, System.Func<Input, Output> method) {
             foreach (var i in me.GetComponentsInChildren<Input>())
                 yield return method(i);
 		}
 
-		public static bool IsVisibleLayer(this Component c) {
+        public static void CallbackParent<Input>(
+            this Component me, System.Action<Input> method, bool ignoreGrandparent = true) {
+            foreach (var i in me.Parent<Input>(ignoreGrandparent))
+                method(i);
+        }
+        public static IEnumerable<Output> CallbackParent<Input, Output>(
+           this Component me, System.Func<Input, Output> method, bool ignoreGrandparent = true) {
+            foreach (var i in me.Parent<Input>(ignoreGrandparent))
+                yield return method(i);
+        }
+
+        public static bool IsVisibleLayer(this Component c) {
 			return Camera.current != null && c != null
 				&& (Camera.current.cullingMask & (1 << c.gameObject.layer)) != 0;
 		}
