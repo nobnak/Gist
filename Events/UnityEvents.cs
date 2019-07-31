@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace nobnak.Gist.Events {
 
+	[System.Serializable]
+	public class BoolEvent : UnityEngine.Events.UnityEvent<bool> { }
+
     [System.Serializable]
     public class TextureEvent : UnityEngine.Events.UnityEvent<Texture> {}
     [System.Serializable]
