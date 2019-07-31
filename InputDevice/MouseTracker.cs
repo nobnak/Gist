@@ -26,7 +26,7 @@ namespace nobnak.Gist.InputDevice {
 
         public Vector2 PrevPosition { get; protected set; }
         public Vector2 CurrPosition { get; protected set; }
-        public Vector2 Positiondiff { get; protected set; }
+        public Vector2 PositionDiff { get; protected set; }
 
         #region Static
         public static ButtonFlag GetSelection() {
@@ -61,7 +61,7 @@ namespace nobnak.Gist.InputDevice {
             CurrPosition = Input.mousePosition;
             if (PrevSelection == ButtonFlag.None)
                 PrevPosition = CurrPosition;
-            Positiondiff = CurrPosition - PrevPosition;
+            PositionDiff = CurrPosition - PrevPosition;
         }
 
         protected virtual void UpdateSelection() {
