@@ -1,11 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
+using nobnak.Gist.Events;
 using UnityEngine;
-using static Hunting.SpoutController;
 
 namespace nobnak.Gist.Scoped {
 
-	[ExecuteAlways]
+    [ExecuteAlways]
     public class ObjectModal : MonoBehaviour {
 		[SerializeField]
 		protected bool isActive;
