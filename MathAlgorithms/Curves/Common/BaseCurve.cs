@@ -12,7 +12,7 @@ namespace Gist.MathAlgorithms.Curves.Common {
         protected List<Vector3> points = new List<Vector3>();
 
         public BaseCurve() {
-            validator.Invalidated += () => {
+            validator.Validated += () => {
                 if (Changed != null)
                     Changed();
             };
