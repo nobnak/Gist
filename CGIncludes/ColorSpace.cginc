@@ -22,7 +22,12 @@ float3 HSVShift(float3 c, float3 hsvTint) { return HSV2RGB(saturate(RGB2HSV(c) +
 float3 HSVShift(float3 c, float4 hsvTint) { return HSV2RGB(saturate(RGB2HSV(c) + hsvTint.rgb * hsvTint.a)); }
 
 #define contrast_brightness(c, p) (p.x * (c - 0.5) + 0.5 + p.y)
-
+float3 ContrastBrightness3(float3 c, float2 p) {
+	return contrast_brightness(c, p);
+}
+float4 ContrastBrightness4(float4 c, float2 p) {
+	return float4(contrast_brightness(c.xyz, p), c.w);
+}
 
 float Luminance(float3 c) {
 	return dot(c, float3(0.3126, 0.7152, 0.0722));
