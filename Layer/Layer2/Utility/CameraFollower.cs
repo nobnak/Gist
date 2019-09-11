@@ -11,6 +11,8 @@ namespace nobnak.Gist.Layer2 {
         protected Camera source;
         [SerializeField]
         protected Layer target;
+        [SerializeField]
+        protected bool local = true;
 
 		[SerializeField]
 		protected ScaleMode scaleMode;
@@ -35,11 +37,14 @@ namespace nobnak.Gist.Layer2 {
 
 		#region private
 		private bool FollowRotation() {
-            var curr = target.transform.localRotation;
-            var next = source.transform.localRotation;
+            var curr = local ? target.transform.localRotation : target.transform.rotation;
+            var next = local ? source.transform.localRotation : source.transform.rotation;
             if (curr == next)
                 return false;
-            target.transform.localRotation = next;
+            if (local)
+                target.transform.localRotation = next;
+            else
+                target.transform.rotation = next;
             return true;
         }
 
