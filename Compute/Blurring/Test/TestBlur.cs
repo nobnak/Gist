@@ -8,6 +8,8 @@ namespace nobnak.Gist.Compute.Blurring.Test {
     [ExecuteAlways]
     public class TestBlur : MonoBehaviour {
 
+        public enum UpdateMode { None = 0, Update, Camera }
+
         public TextureEvent BlurredOnCreate;
 
         [SerializeField]
@@ -18,6 +20,8 @@ namespace nobnak.Gist.Compute.Blurring.Test {
         [SerializeField]
         [Range(0, 10)]
         protected int iterations = 1;
+        [SerializeField]
+        protected UpdateMode updateMode;
 
         protected Blur blur;
         protected RenderTexture blurred;
@@ -34,11 +38,24 @@ namespace nobnak.Gist.Compute.Blurring.Test {
             blurred.DestroySelf();
         }
         void Update() {
-            if (image == null)
-                return;
+            if (updateMode == UpdateMode.Update) {
+                if (image == null)
+                    return;
 
-            if (blur.Render(image, ref blurred, iterations, lod))
-                BlurredOnCreate.Invoke(blurred);
+                if (blur.Render(image, ref blurred, iterations, lod))
+                    BlurredOnCreate.Invoke(blurred);
+            }
+        }
+        void OnRenderImage(RenderTexture source, RenderTexture destination) {
+            switch (updateMode) {
+                case UpdateMode.Camera:
+                    blur.Render(source, ref blurred, iterations, lod);
+                    Graphics.Blit(blurred, destination);
+                    break;
+                default:
+                    Graphics.Blit(source, destination);
+                    break;
+            }
         }
         #endregion
     }
