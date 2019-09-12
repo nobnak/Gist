@@ -4,6 +4,7 @@ using System.Collections;
 namespace nobnak.Gist.Wrapper {
     public interface IBlock<T> {
         T Apply ();
+        T Clear();
 
         #region Set
         T SetColor(string name, Color value);
@@ -60,6 +61,11 @@ namespace nobnak.Gist.Wrapper {
         public Block Apply () {
             foreach (var p in pairs)
                 p.Apply ();
+            return this;
+        }
+        public Block Clear() {
+            foreach (var p in pairs)
+                p.Clear();
             return this;
         }
 
@@ -177,6 +183,11 @@ namespace nobnak.Gist.Wrapper {
             Renderer.SetPropertyBlock (Block);
             return this;
     	}
+        public Pair Clear() {
+            duringSession = false;
+            Renderer.SetPropertyBlock(null);
+            return this;
+        }
 
         #region Set
         public Pair SetColor(string name, Color value) {
