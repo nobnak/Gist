@@ -112,7 +112,7 @@ namespace nobnak.Gist.Compute.Blurring {
             tmp1 = t;
         }
         public static Vector2Int LoD(int width, int height, int lod = 0) {
-            return new Vector2Int(width >> lod, height >> lod);
+            return new Vector2Int(Mathf.Max(1, width >> lod), Mathf.Max(1, height >> lod));
         }
         public static Vector2Int LoD(Vector2Int size, int lod = 0) {
             return LoD(size.x, size.y, lod);

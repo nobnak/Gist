@@ -13,10 +13,10 @@ namespace nobnak.Gist.Compute.Blurring.Test {
         [SerializeField]
         protected Texture image;
         [SerializeField]
-        [Range(0, 4)]
+        [Range(0, 16)]
         protected int lod = 0;
         [SerializeField]
-        [Range(0, 100)]
+        [Range(0, 10)]
         protected int iterations = 1;
 
         protected Blur blur;
