@@ -23,7 +23,7 @@ namespace nobnak.Gist.Interaction {
         [SerializeField]
         protected float duration = 0.5f;
 
-        protected List<Collider> colliders = new List<Collider>();
+        protected List<ColliderInfo> colliders = new List<ColliderInfo>();
         protected MemoryPool<Collider> pool;
         protected Vector3 plane;
 
@@ -50,7 +50,7 @@ namespace nobnak.Gist.Interaction {
 
         }
         void OnDisable() {
-            ClearColliders();
+            ClearColliders(true);
             if (pool != null) {
                 pool.Dispose();
                 pool = null;
@@ -67,10 +67,17 @@ namespace nobnak.Gist.Interaction {
         #endregion
 
         #region member
-        private void ClearColliders() {
-            foreach (var c in colliders)
-                pool.Free(c);
-            colliders.Clear();
+        private void ClearColliders(bool all = false) {
+            var expirationTime = KenkenUtil.CurrTime - duration;
+            for (var i = 0; i < colliders.Count; ) {
+                var ci = colliders[i];
+                if (all || ci.birthTime < expirationTime) {
+                    colliders.RemoveAt(i);
+                    pool.Free(ci.collider);
+                } else {
+                    i++;
+                }
+            }
         }
         private void Add(Vector2 size) {
             var pos = targetCamera.ScreenToWorldPoint(Input.mousePosition);
@@ -86,20 +93,21 @@ namespace nobnak.Gist.Interaction {
             c.transform.rotation = targetCamera.transform.rotation;
             c.transform.localScale = new Vector3(h * size.x, w * size.y, length);
             c.gameObject.SetActive(true);
-            colliders.Add(c);
+            var ci = new ColliderInfo(c);
+            colliders.Add(ci);
         }
         #endregion
 
         #region definition
-        public struct CollisionInfo {
+        public struct ColliderInfo {
             public readonly float birthTime;
             public readonly Collider collider;
 
-            public CollisionInfo(float birthTime, Collider collider) {
+            public ColliderInfo(float birthTime, Collider collider) {
                 this.birthTime = birthTime;
                 this.collider = collider;
             }
-            public CollisionInfo(Collider collider) : this(KenkenUtil.CurrTime, collider) {}
+            public ColliderInfo(Collider collider) : this(KenkenUtil.CurrTime, collider) {}
         }
         #endregion
     }
