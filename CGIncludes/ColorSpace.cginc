@@ -31,6 +31,7 @@ float3 ContrastBrightness3(float3 c, float2 p) {
 float4 ContrastBrightness4(float4 c, float2 p) {
 	return float4(contrast_brightness(c.xyz, p), c.w);
 }
+#define CB4(c, p) ContrastBrightness4(c, p)
 float4 CB4ZB(float4 c, float2 p) {
 	return float4(contrast_brightness_zerobased(c.xyz, p), c.w);
 }
