@@ -45,17 +45,12 @@ namespace nobnak.Gist.Compute.Blurring {
             var ds = CS.DispatchSize(K_MAIN, w, h);
             CS.Dispatch(K_MAIN, ds.x, ds.y, ds.z);
         }
-        public bool Render(Texture src, ref RenderTexture dst, int iterations, int lod = 0) {
+        public void Render(Texture src, RenderTexture dst, int iterations, int lod = 0) {
             iterations = Mathf.Max(0, iterations);
             lod = Mathf.Clamp(lod, 0, 16);
 
             var size = new Vector2Int(src.width, src.height);
             var lodSize = LoD(size, lod);
-            var dstResized = dst == null || dst.width != lodSize.x || dst.height != lodSize.y;
-            if (dstResized) {
-                dst.DestroySelf();
-                dst = CreateRT(lodSize);
-            }
 
             var last = src;
             RenderTexture lastTmp = null;
@@ -83,6 +78,19 @@ namespace nobnak.Gist.Compute.Blurring {
             Graphics.Blit(last, dst);
             if (lastTmp != null)
                 RenderTexture.ReleaseTemporary(lastTmp);
+        }
+        public bool Render(Texture src, ref RenderTexture dst, int iterations, int lod = 0) {
+            iterations = Mathf.Max(0, iterations);
+            lod = Mathf.Clamp(lod, 0, 16);
+
+            var size = new Vector2Int(src.width, src.height);
+            var lodSize = LoD(size, lod);
+            var dstResized = dst == null || dst.width != lodSize.x || dst.height != lodSize.y;
+            if (dstResized) {
+                dst.DestroySelf();
+                dst = CreateRT(lodSize);
+            }
+            Render(src, dst, iterations, lod);
 
             return dstResized;
         }
@@ -97,6 +105,11 @@ namespace nobnak.Gist.Compute.Blurring {
             dst.enableRandomWrite = true;
             dst.Create();
             return dst;
+        }
+        public static RenderTexture CreateRT(Texture src, int lod) {
+            var size = new Vector2Int(src.width, src.height);
+            var lodSize = LoD(size, lod);
+            return CreateRT(lodSize);
         }
         public static RenderTexture GetTempRT(Vector2Int nextSize) {
             var nextTmp = RenderTexture.GetTemporary(nextSize.x, nextSize.y, 0, RenderTextureFormat.ARGBHalf);
