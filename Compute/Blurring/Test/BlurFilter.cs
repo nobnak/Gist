@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace nobnak.Gist.Compute.Blurring.Test {
     [ExecuteAlways]
-    public class TestBlur : MonoBehaviour {
+    public class BlurFilter : MonoBehaviour {
 
         public enum UpdateMode { None = 0, Update, Camera }
 
