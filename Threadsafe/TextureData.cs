@@ -250,4 +250,34 @@ namespace nobnak.Gist.ThreadSafe {
 		}
 		#endregion
 	}
+
+    public class FuncFilter<T> : ITextureData<T> {
+        protected ITextureData<T> source;
+        protected System.Func<T, T> func;
+
+        public FuncFilter(ITextureData<T> source, System.Func<T, T> func) {
+            this.func = func;
+            this.source = source;
+        }
+
+        #region interface
+        public T this[Vector2 uv] => func(source[uv]);
+
+        public T this[int x, int y] => func(source[x, y]);
+
+        public T this[float nx, float ny] => func(source[nx, ny]);
+
+        public Vector2Int Size => source.Size;
+
+        public Func<float, float, T> Interpolation {
+            get => source.Interpolation;
+            set => source.Interpolation = value;
+        }
+
+        public event Action<ITextureData<T>> OnLoad;
+
+        public void Dispose() {
+        }
+        #endregion
+    }
 }
