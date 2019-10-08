@@ -94,7 +94,11 @@ namespace nobnak.Gist.Compute.Blurring {
 
             return dstResized;
         }
-
+        public void FindSize(int sourceRes, int blurRes, out int iterations, out int lod) {
+            var flod = Mathf.Max(0, Mathf.Log(sourceRes, 2) - Mathf.Log(blurRes, 2));
+            lod = Mathf.FloorToInt(flod);
+            iterations = Mathf.RoundToInt(Mathf.Lerp(0, 4, flod - lod));
+        }
         #endregion
 
         #region static
