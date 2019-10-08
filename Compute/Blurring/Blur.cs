@@ -95,6 +95,8 @@ namespace nobnak.Gist.Compute.Blurring {
             return dstResized;
         }
         public void FindSize(int sourceRes, int blurRes, out int iterations, out int lod) {
+            // Cascaded Gaussians : sigma^2 = sigma_0^2 + sigma_1^2
+            // See : http://www.cse.psu.edu/~rtc12/CSE486/lecture10.pdf
             var flod = Mathf.Max(0, Mathf.Log(sourceRes, 2) - Mathf.Log(blurRes, 2));
             lod = Mathf.FloorToInt(flod);
             iterations = Mathf.RoundToInt(Mathf.Lerp(0, 4, flod - lod));
