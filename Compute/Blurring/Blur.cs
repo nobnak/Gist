@@ -1,5 +1,6 @@
 ﻿using nobnak.Gist.Extensions.GPUExt;
 using nobnak.Gist.ObjectExt;
+using nobnak.Gist.Pooling;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,8 +20,10 @@ namespace nobnak.Gist.Compute.Blurring {
 
         protected readonly int K_MAIN;
         protected int iterations = 1;
+        protected RenderTexturePool pool;
 
         public Blur() {
+            pool = new RenderTexturePool(RenderTextureFormat.ARGBHalf);
             CS = Resources.Load<ComputeShader>(PATH);
             K_MAIN = CS.FindKernel("KMain");
         }
@@ -56,28 +59,28 @@ namespace nobnak.Gist.Compute.Blurring {
             RenderTexture lastTmp = null;
             for (var l = 1; l <= lod; l++) {
                 var nextSize = LoD(size, l);
-                var nextTmp = GetTempRT(nextSize);
+                var nextTmp = CreateTempRT(nextSize);
                 var next = nextTmp;
                 Render(last, next);
 
                 if (lastTmp != null)
-                    RenderTexture.ReleaseTemporary(lastTmp);
+                    ReleaseTempRT(lastTmp);
                 last = lastTmp = nextTmp;
             }
 
             for (var i = 0; i < iterations; i++) {
-                var nextTmp = GetTempRT(lodSize);
+                var nextTmp = CreateTempRT(lodSize);
                 var next = nextTmp;
                 Render(last, next);
 
                 if (lastTmp != null)
-                    RenderTexture.ReleaseTemporary(lastTmp);
+                    ReleaseTempRT(lastTmp);
                 last = lastTmp = nextTmp;
             }
 
             Graphics.Blit(last, dst);
             if (lastTmp != null)
-                RenderTexture.ReleaseTemporary(lastTmp);
+                ReleaseTempRT(lastTmp);
         }
         public bool Render(Texture src, ref RenderTexture dst, int iterations, int lod = 0) {
             iterations = Mathf.Max(0, iterations);
@@ -85,7 +88,9 @@ namespace nobnak.Gist.Compute.Blurring {
 
             var size = new Vector2Int(src.width, src.height);
             var lodSize = LoD(size, lod);
-            var dstResized = dst == null || dst.width != lodSize.x || dst.height != lodSize.y;
+            var dstResized = dst == null 
+                || dst.width != lodSize.x || dst.height != lodSize.y
+                || !dst.enableRandomWrite;
             if (dstResized) {
                 dst.DestroySelf();
                 dst = CreateRT(lodSize);
@@ -117,13 +122,18 @@ namespace nobnak.Gist.Compute.Blurring {
             var lodSize = LoD(size, lod);
             return CreateRT(lodSize);
         }
-        public static RenderTexture GetTempRT(Vector2Int nextSize) {
-            var nextTmp = RenderTexture.GetTemporary(nextSize.x, nextSize.y, 0, RenderTextureFormat.ARGBHalf);
+        public static RenderTexture CreateTempRT(Vector2Int nextSize) {
+            var desc = new RenderTextureDescriptor(nextSize.x, nextSize.y, RenderTextureFormat.ARGBHalf, 0);
+            desc.enableRandomWrite = true;
+
+            var nextTmp = RenderTexture.GetTemporary(desc);
             nextTmp.filterMode = FilterMode.Bilinear;
             nextTmp.wrapMode = TextureWrapMode.Clamp;
-            nextTmp.enableRandomWrite = true;
             nextTmp.Create();
             return nextTmp;
+        }
+        public static void ReleaseTempRT(RenderTexture tex) {
+            RenderTexture.ReleaseTemporary(tex);
         }
         public static void Swap(ref RenderTexture tmp0, ref RenderTexture tmp1) {
             var t = tmp0;
