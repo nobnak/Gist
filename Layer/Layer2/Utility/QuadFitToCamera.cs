@@ -1,4 +1,5 @@
-﻿using nobnak.Gist.Extensions.ComponentExt;
+﻿using nobnak.Gist.Cameras;
+using nobnak.Gist.Extensions.ComponentExt;
 using nobnak.Gist.Layer2;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,9 +12,13 @@ namespace nobnak.Gist.Layer2 {
         [SerializeField]
         protected Camera target;
 
+        protected CameraData cameraData;
+
         #region interface
         private void Update() {
-            if (target != null) {
+            if (target != null && !cameraData.Equals(target)) {
+                cameraData = target;
+
                 var h = target.orthographicSize * 2f;
                 var w = target.aspect * h;
 
