@@ -14,6 +14,10 @@ namespace nobnak.Gist.Cameras {
         public readonly RenderTexture targetTexture;
 
         public CameraData(Camera cam) {
+            if (cam == null) {
+                this = default;
+                return;
+            }
             localToWorldMatrix = cam.transform.localToWorldMatrix;
             worldToCameraMatrix = cam.worldToCameraMatrix;
             projectionMatrix = cam.projectionMatrix;
