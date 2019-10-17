@@ -42,7 +42,6 @@ namespace nobnak.Gist.Interaction {
                 },
                 c => {
                     c.gameObject.SetActive(false);
-                    c.transform.SetParent(null);
                 },
                 c => c.DestroyGo());
 
