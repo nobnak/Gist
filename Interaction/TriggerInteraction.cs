@@ -1,4 +1,5 @@
 ﻿using K.Model;
+using nobnak.Gist.Extensions.ScreenExt;
 using nobnak.Gist.ObjectExt;
 using nobnak.Gist.Pooling;
 using System.Collections;
@@ -26,6 +27,7 @@ namespace nobnak.Gist.Interaction {
         protected List<ColliderInfo> colliders = new List<ColliderInfo>();
         protected MemoryPool<Collider> pool;
         protected Vector3 plane;
+        protected Validator validator = new Validator();
 
         #region unity
         void OnEnable() {
@@ -40,15 +42,21 @@ namespace nobnak.Gist.Interaction {
                 },
                 c => {
                     c.gameObject.SetActive(false);
+                    c.transform.SetParent(null);
                 },
                 c => c.DestroyGo());
-        
+
+            validator.Reset();
+            validator.Validation += () => {
+                SetVisibility(showDebug);
+            };
 
             if (targetCamera == null && (targetCamera = GetComponent<Camera>()) == null)
                 targetCamera = Camera.main;
             plane = Vector3.Project(targetCamera.transform.position, targetCamera.transform.forward);
 
         }
+
         void OnDisable() {
             ClearColliders(true);
             if (pool != null) {
@@ -63,6 +71,8 @@ namespace nobnak.Gist.Interaction {
                 var size = sizeScale * Vector2.one;
                 Add(size);
             }
+
+            validator.Validate();
         }
         #endregion
 
@@ -74,15 +84,17 @@ namespace nobnak.Gist.Interaction {
                 if (all || ci.birthTime < expirationTime) {
                     colliders.RemoveAt(i);
                     pool.Free(ci.collider);
+                    validator.Invalidate();
                 } else {
                     i++;
                 }
             }
         }
         private void Add(Vector2 size) {
-            var pos = targetCamera.ScreenToWorldPoint(Input.mousePosition);
+            validator.Invalidate();
+            var uv = Input.mousePosition.UV();
+            var pos = targetCamera.ViewportToWorldPoint(uv);
             pos = Vector3.ProjectOnPlane(pos - plane, plane) + plane;
-            var uv = (Vector2)targetCamera.ScreenToViewportPoint(Input.mousePosition);
             var h = targetCamera.orthographicSize * 2f;
             var w = targetCamera.aspect * h;
 
@@ -95,6 +107,13 @@ namespace nobnak.Gist.Interaction {
             c.gameObject.SetActive(true);
             var ci = new ColliderInfo(c);
             colliders.Add(ci);
+        }
+        private void SetVisibility(bool showDebug) {
+            foreach (var c in colliders) {
+                var r = c.collider.GetComponent<Renderer>();
+                if (r != null)
+                    r.enabled = showDebug;
+            }
         }
         #endregion
 
