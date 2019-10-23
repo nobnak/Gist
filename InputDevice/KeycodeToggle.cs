@@ -11,11 +11,11 @@ namespace nobnak.Gist.InputDevice {
 
 		public event System.Action<KeycodeToggle> Toggle;
 
+        protected Validator validator = new Validator();
+        protected bool lastGuiVisible;
+
 		public KeycodeToggle(KeyCode key = KeyCode.None) : base(key) {
-			Down += () => {
-				guiVisible = !guiVisible;
-				NotifyToggle();
-			};
+            Reset();
 		}
 
 		#region interface
@@ -23,10 +23,25 @@ namespace nobnak.Gist.InputDevice {
 		public override void Reset() {
 			base.Reset();
 			Toggle = null;
-		}
-		#endregion
-		#region member
-		protected virtual void NotifyToggle() {
+
+            Down += () => {
+                guiVisible = !guiVisible;
+                validator.Invalidate();
+            };
+            validator.Reset();
+            validator.Validation += () => {
+                lastGuiVisible = guiVisible;
+                NotifyToggle();
+            };
+            validator.SetCheckers(() => lastGuiVisible == guiVisible);
+        }
+        public override void Update() {
+            base.Update();
+            validator.Validate();
+        }
+        #endregion
+        #region member
+        protected virtual void NotifyToggle() {
 			if (Toggle != null)
 				Toggle(this);
 		}
