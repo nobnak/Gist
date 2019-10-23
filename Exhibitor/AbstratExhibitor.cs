@@ -7,17 +7,15 @@ using nobnak.Gist.ObjectExt;
 
 namespace nobnak.Gist.Exhibitor {
 
-	public abstract class AbstractExhibitorGUI : MonoBehaviour, IExhibitor {
+	public abstract class AbstractExhibitor : MonoBehaviour, IExhibitor {
 
 		#region IExhibitor
 		public abstract void Invalidate();
 		public abstract string SerializeToJson();
 		public abstract void DeserializeFromJson(string json);
 		public abstract object RawData();
-		#endregion
 
-		#region GUI
-		public abstract void Draw();
+		public virtual void Draw() {}
 		#endregion
 	}
 }

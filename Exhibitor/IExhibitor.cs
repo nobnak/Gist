@@ -13,5 +13,6 @@ namespace nobnak.Gist.Exhibitor {
         string SerializeToJson();
         void DeserializeFromJson(string json);
 		object RawData();
-    }
+		void Draw();
+	}
 }

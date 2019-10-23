@@ -80,6 +80,7 @@ namespace nobnak.Gist.Exhibitor {
             CurrentData = JsonUtility.FromJson<DataTransformType>(json);
         }
 		public virtual object RawData() { return CurrentData; }
+        public virtual void Draw() { }
         #endregion
 
     }
