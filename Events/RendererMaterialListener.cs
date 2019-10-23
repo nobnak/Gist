@@ -3,9 +3,21 @@ using UnityEngine;
 
 namespace nobnak.Gist.Events {
 
+    [ExecuteAlways]
     public class RendererMaterialListener : BaseMaterialListener {
 
         protected Block block;
+
+        #region unity
+        void OnEnable() {
+            if (block != null)
+                block.Apply();
+        }
+        void OnDisable() {
+            if (block != null)
+                block.Clear();
+        }
+        #endregion
 
         public virtual Block Block {
             get { 

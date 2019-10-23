@@ -35,5 +35,11 @@ namespace nobnak.Gist.Layer2.Extensions {
 		public static Vector2 WorldToUvPos(this Layer l, Vector3 worldPos) {
 			return l.LocalToUvPos(l.WorldToLocalPos(worldPos));
 		}
+        public static Vector3 ProjectOn(this Layer l, Vector3 worldpos, float depth = 0f) {
+            var layerpos = l.LayerToWorld.InverseTransformPoint(worldpos);
+            layerpos.z = depth;
+            worldpos = l.LayerToWorld.TransformPoint(layerpos);
+            return worldpos;
+        }
 	}
 }

@@ -69,7 +69,7 @@ inline float3 blend_mode3(float3 t, float3 b, int mode) {
 	}
 }
 inline float4 blend_mode4(float4 _target, float4 _blend, int _mode) {
-	return lerp(_target, float4(blend_mode3(_target.rgb, _blend.rgb, _mode), 1), _blend.a);
+	return lerp(_target, float4(blend_mode3(_target.rgb, _blend.rgb, _mode), _target.a), _blend.a);
 }
 
 #endif

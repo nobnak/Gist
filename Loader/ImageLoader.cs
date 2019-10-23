@@ -15,8 +15,10 @@ namespace nobnak.Gist.Loader {
 		protected FilePath file;
 		[SerializeField]
 		protected Format2D format = new Format2D(TextureFormat.ARGB32, true, false);
+        [SerializeField]
+        protected bool markNonReadable = true;
 
-		protected Reactive<string> reactivePath = new Reactive<string>();
+        protected Reactive<string> reactivePath = new Reactive<string>();
 
 		protected Texture2D target;
 		protected FileSystemWatcher watcher;
@@ -99,7 +101,7 @@ namespace nobnak.Gist.Loader {
 					&& File.Exists(path)
 					&& (target == null
 					? (target = format.CreateTexture(2, 2))
-					: target).LoadImage(File.ReadAllBytes(path)));
+					: target).LoadImage(File.ReadAllBytes(path), markNonReadable));
 
 				if (result) {
 					Debug.LogFormat("Load Image : {0}", path);

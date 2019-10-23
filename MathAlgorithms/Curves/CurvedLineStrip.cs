@@ -59,8 +59,9 @@ namespace Gist.MathAlgorithms.Curves {
                     istart = imid;
             }
 
-            return (dist - cummulativeLength[istart]) /
+            var t = (dist - cummulativeLength[istart]) /
                 (cummulativeLength[iend] - cummulativeLength[istart]);
+            return Mathf.Lerp(pointParameters[istart], pointParameters[iend], t);
         }
         public float FindParameter(float dist) {
             int istart, iend;

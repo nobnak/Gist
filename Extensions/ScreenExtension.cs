@@ -15,5 +15,12 @@ namespace nobnak.Gist.Extensions.ScreenExt {
 				(screen.y <= MAX_RESOLUTION ? screen.y : MAX_RESOLUTION));
 			return screen;
 		}
+
+        public static Vector2 UV(this Vector3 mousePosition) {
+            var uv = new Vector2(
+                (float)mousePosition.x / Screen.width, 
+                (float)mousePosition.y / Screen.height);
+            return uv;
+        }
 	}
 }
