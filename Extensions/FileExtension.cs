@@ -9,29 +9,29 @@ namespace nobnak.Gist.Extensions.FileExt {
 
 		public static bool TrySave(this string path, string text) {
 			try {
-				File.WriteAllText(path, text);
+                path.Save(text);
 				return true;
-			} catch {
+			} catch (System.Exception e) {
+                Debug.Log($"Failed to save file : path={path}, readon={e.Message}");
 				return false;
 			}
 		}
 		public static bool TryLoad(this string path, out string text) {
 			try {
-				text = File.ReadAllText(path);
+                text = path.Load();
 				return true;
-			} catch {
+			} catch (System.Exception e) {
+                Debug.Log($"Faild to Load file : path={path}, readon={e.Message}");
 				text = default(string);
 				return false;
 			}
 		}
 
 		public static void Save(this string path, string text) {
-			path.TrySave(text);
-		}
+            File.WriteAllText(path, text);
+        }
 		public static string Load(this string path) {
-			string text;
-			path.TryLoad(out text);
-			return text;
+            return File.ReadAllText(path);
 		}
 
         public static string SanitizeFilename(this string filename, char rep = '_') {
