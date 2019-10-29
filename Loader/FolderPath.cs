@@ -42,8 +42,6 @@ namespace nobnak.Gist.Loader {
                 text = default;
                 return false;
             }
-
-            string json;
             return path.TryLoad(out text);
         }
         #endregion
