@@ -14,8 +14,18 @@ namespace nobnak.Gist.Layer2 {
 
         protected CameraData cameraData;
 
-        #region interface
+        #region unity
+        private void OnEnable() {
+            cameraData = default;
+            Apply();
+        }
         private void Update() {
+            Apply();
+        }
+        #endregion
+
+        #region member
+        private void Apply() {
             if (target != null && !cameraData.Equals(target)) {
                 cameraData = target;
 
