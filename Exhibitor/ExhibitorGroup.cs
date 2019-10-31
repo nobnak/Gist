@@ -21,16 +21,17 @@ namespace nobnak.Gist.Exhibitor {
         private void OnEnable() {
             dataValidator.Reset();
             dataValidator.Validation += () => {
-                ResetDataFromModel();
+                data.UpdateFrom(exhibitors);
                 tabNames = exhibitors.Select(v => v.name).ToArray();
             };
         }
         #endregion
 
         #region interface
+        #region Exhibitor
         public override void DeserializeFromJson(string json) {
             JsonUtility.FromJsonOverwrite(json, data);
-            ApplyDataToModel();
+            data.ApplyTo(exhibitors);
         }
         public override object RawData() {
             dataValidator.Validate();
@@ -40,23 +41,35 @@ namespace nobnak.Gist.Exhibitor {
             dataValidator.Validate();
             return JsonUtility.ToJson(data, true);
         }
-        public override void ApplyDataToModel() {
-            data.ApplyTo(exhibitors);
+        public override void ApplyViewModelToModel() {
+            Debug.Log($"ApplyDataToModel");
+            foreach (var ex in exhibitors)
+                ex.ApplyViewModelToModel();
         }
-        public override void ResetDataFromModel() {
-            data.UpdateFrom(exhibitors);
+        public override void ResetViewModelFromModel() {
+            foreach(var ex in exhibitors)
+                ex.ResetViewModelFromModel();
         }
         public override void Draw() {
             GUILayout.BeginVertical();
             GUILayout.Label("", GUI.skin.horizontalSlider);
 
             selectedTab = GUILayout.Toolbar(selectedTab, tabNames);
-            if (0 <= selectedTab && selectedTab < exhibitors.Length) {
-                var ex = exhibitors[selectedTab];
+            var ex = SelectedExhibitor;
+            if (ex != null){
                 ex.Draw();
             }
 
             GUILayout.EndVertical();
+        }
+        #endregion
+
+        public AbstractExhibitor SelectedExhibitor {
+            get {
+                return (0 <= selectedTab && selectedTab < exhibitors.Length)
+                    ? exhibitors[selectedTab] 
+                    : null;
+            }
         }
         #endregion
 

@@ -15,11 +15,11 @@ namespace nobnak.Gist.Exhibitor {
 		public abstract object RawData();
 
 		public virtual void Draw() { }
-        public virtual void ApplyDataToModel() { }
-        public virtual void ResetDataFromModel() { }
+        public virtual void ApplyViewModelToModel() { }
+        public virtual void ResetViewModelFromModel() { }
 
         public virtual void Invalidate() {
-            ApplyDataToModel();
+            ApplyViewModelToModel();
         }
         #endregion
     }
