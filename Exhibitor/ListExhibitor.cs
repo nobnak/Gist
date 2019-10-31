@@ -1,9 +1,8 @@
 using nobnak.Gist.Extensions.ComponentExt;
 using nobnak.Gist.Layer2;
+using nobnak.Gist.ObjectExt;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
-using nobnak.Gist.ObjectExt;
 
 namespace nobnak.Gist.Exhibitor {
 

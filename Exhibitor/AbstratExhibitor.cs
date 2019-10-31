@@ -10,12 +10,17 @@ namespace nobnak.Gist.Exhibitor {
 	public abstract class AbstractExhibitor : MonoBehaviour, IExhibitor {
 
 		#region IExhibitor
-		public abstract void Invalidate();
 		public abstract string SerializeToJson();
 		public abstract void DeserializeFromJson(string json);
 		public abstract object RawData();
 
-		public virtual void Draw() {}
-		#endregion
-	}
+		public virtual void Draw() { }
+        public virtual void ApplyDataToModel() { }
+        public virtual void ResetDataFromModel() { }
+
+        public virtual void Invalidate() {
+            ApplyDataToModel();
+        }
+        #endregion
+    }
 }
