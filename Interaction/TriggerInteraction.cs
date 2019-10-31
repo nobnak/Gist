@@ -1,14 +1,12 @@
-﻿using K.Model;
 using nobnak.Gist.Extensions.ScreenExt;
 using nobnak.Gist.ObjectExt;
 using nobnak.Gist.Pooling;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace nobnak.Gist.Interaction {
 
-    public class TriggerInteraction : MonoBehaviour {
+	public class TriggerInteraction : MonoBehaviour {
 
         [SerializeField]
         protected Camera targetCamera;
@@ -73,11 +71,17 @@ namespace nobnak.Gist.Interaction {
 
             validator.Validate();
         }
-        #endregion
+		#endregion
 
-        #region member
-        private void ClearColliders(bool all = false) {
-            var expirationTime = KenkenUtil.CurrTime - duration;
+		#region static
+		public static float CurrTime {
+			get { return Time.realtimeSinceStartup; }
+		}
+		#endregion
+
+		#region member
+		private void ClearColliders(bool all = false) {
+            var expirationTime = CurrTime - duration;
             for (var i = 0; i < colliders.Count; ) {
                 var ci = colliders[i];
                 if (all || ci.birthTime < expirationTime) {
@@ -125,7 +129,7 @@ namespace nobnak.Gist.Interaction {
                 this.birthTime = birthTime;
                 this.collider = collider;
             }
-            public ColliderInfo(Collider collider) : this(KenkenUtil.CurrTime, collider) {}
+            public ColliderInfo(Collider collider) : this(CurrTime, collider) {}
         }
         #endregion
     }
