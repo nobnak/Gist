@@ -42,7 +42,6 @@ namespace nobnak.Gist.Exhibitor {
             return JsonUtility.ToJson(data, true);
         }
         public override void ApplyViewModelToModel() {
-            Debug.Log($"ApplyDataToModel");
             foreach (var ex in exhibitors)
                 ex.ApplyViewModelToModel();
         }
@@ -51,6 +50,8 @@ namespace nobnak.Gist.Exhibitor {
                 ex.ResetViewModelFromModel();
         }
         public override void Draw() {
+            dataValidator.Validate();
+
             GUILayout.BeginVertical();
             GUILayout.Label("", GUI.skin.horizontalSlider);
 
@@ -61,6 +62,9 @@ namespace nobnak.Gist.Exhibitor {
             }
 
             GUILayout.EndVertical();
+        }
+        public override void Invalidate() {
+            SelectedExhibitor?.Invalidate();
         }
         #endregion
 
