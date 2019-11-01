@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace nobnak.Gist.Exhibitor {
 
-    public abstract class AbstractExhibitor : MonoBehaviour, IExhibitor {
+    public abstract class AbstractExhibitor : MonoBehaviour {
 
 		#region IExhibitor
 		public abstract string SerializeToJson();
