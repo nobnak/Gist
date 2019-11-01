@@ -12,17 +12,16 @@ namespace nobnak.Gist.Exhibitor {
         [SerializeField]
         protected Data data = new Data();
 
-        protected Validator dataValidator = new Validator();
+        protected Validator validator = new Validator();
 
         protected int selectedTab = 0;
         protected string[] tabNames = new string[0];
 
         #region Unity
         private void OnEnable() {
-            dataValidator.Reset();
-            dataValidator.Validation += () => {
-                data.UpdateFrom(exhibitors);
-                tabNames = exhibitors.Select(v => v.name).ToArray();
+            validator.Reset();
+            validator.Validation += () => {
+                ReflectChangeOf(MVVMComponent.Model);
             };
         }
         #endregion
@@ -32,13 +31,14 @@ namespace nobnak.Gist.Exhibitor {
         public override void DeserializeFromJson(string json) {
             JsonUtility.FromJsonOverwrite(json, data);
             data.ApplyTo(exhibitors);
+            ReflectChangeOf(MVVMComponent.ViewModel);
         }
         public override object RawData() {
-            dataValidator.Validate();
+            validator.Validate();
             return data;
         }
         public override string SerializeToJson() {
-            dataValidator.Validate();
+            validator.Validate();
             return JsonUtility.ToJson(data, true);
         }
         public override void ApplyViewModelToModel() {
@@ -48,9 +48,12 @@ namespace nobnak.Gist.Exhibitor {
         public override void ResetViewModelFromModel() {
             foreach(var ex in exhibitors)
                 ex.ResetViewModelFromModel();
+
+            data.UpdateFrom(exhibitors);
+            tabNames = exhibitors.Select(v => v.name).ToArray();
         }
         public override void Draw() {
-            dataValidator.Validate();
+            validator.Validate();
 
             GUILayout.BeginVertical();
             GUILayout.Label("", GUI.skin.horizontalSlider);
@@ -63,8 +66,8 @@ namespace nobnak.Gist.Exhibitor {
 
             GUILayout.EndVertical();
         }
-        public override void Invalidate() {
-            SelectedExhibitor?.Invalidate();
+        public override void ReflectChangeOf(MVVMComponent latestOne) {
+            SelectedExhibitor?.ReflectChangeOf(latestOne);
         }
         #endregion
 

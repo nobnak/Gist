@@ -20,42 +20,39 @@ namespace nobnak.Gist.Exhibitor {
         [SerializeField]
         protected Data data = new Data();
 
-        protected Validator dataValidator = new Validator();
+        protected Validator validator = new Validator();
         protected BaseView view;
 
         #region unity
         private void OnEnable() {
-            dataValidator.Reset();
-            dataValidator.Validation += () => {
-                ResetViewModelFromModel();
-                ClearView();
+            validator.Reset();
+            validator.Validation += () => {
+                ReflectChangeOf(MVVMComponent.Model);
             };
         }
         private void OnValidate() {
-            //dataValidator.Invalidate();
+            ReflectChangeOf(MVVMComponent.ViewModel);
         }
         private void Update() {
-            dataValidator.Validate();
+            validator.Validate();
         }
         #endregion
 
         #region interface
         #region Exhibitor
         public override void DeserializeFromJson(string json) {
-            Debug.Log($"DeserializeFromJson");
             JsonUtility.FromJsonOverwrite(json, data);
-            ApplyViewModelToModel();
+            ReflectChangeOf(MVVMComponent.ViewModel);
         }
         public override object RawData() {
-            dataValidator.Validate();
+            validator.Validate();
             return data;
         }
         public override string SerializeToJson() {
-            dataValidator.Validate();
+            validator.Validate();
             return JsonUtility.ToJson(data);
         }
         public override void ResetViewModelFromModel() {
-            Debug.Log($"ResetDataFromModel");
             data.name = gameObject.name;
             var n = data.node;
             n.position = converter.EncodePosition(transform.localPosition);
@@ -64,12 +61,17 @@ namespace nobnak.Gist.Exhibitor {
             data.node = n;
         }
         public override void ApplyViewModelToModel() {
-            Debug.Log($"ApplyDataToModel:");
             gameObject.name = data.name;
             var n = data.node;
             transform.localPosition = converter.DecodePosition(n.position, 0f);
             transform.localRotation = converter.DecodeRotation(n.rotation);
             transform.localScale = converter.DecodePosition(n.scale, 1f);
+        }
+        public override void ResetView() {
+            if (view != null) {
+                view.Dispose();
+                view = null;
+            }
         }
         public override void Draw() {
             GetView().Draw();
@@ -80,18 +82,12 @@ namespace nobnak.Gist.Exhibitor {
 
         #region member
         protected BaseView GetView() {
-            dataValidator.Validate();
+            validator.Validate();
             if (view == null) {
                 var factory = new SimpleViewFactory();
                 view = ClassConfigurator.GenerateClassView(new BaseValue<object>(data), factory);
             }
             return view;
-        }
-        protected void ClearView() {
-            if (view != null) {
-                view.Dispose();
-                view = null;
-            }
         }
         #endregion
 

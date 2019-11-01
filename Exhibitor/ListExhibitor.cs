@@ -11,32 +11,31 @@ using UnityEngine;
 namespace nobnak.Gist.Exhibitor {
 
     public abstract class ListExhibitor<ArtWorkType, DataTransformType> 
-        : AbstractExhibitor
-        where ArtWorkType : Component {
+        : AbstractExhibitor where ArtWorkType : Component {
 
         public Layer layer;
         public Transform parent;
         public ArtWorkType nodefab;
 
         protected List<ArtWorkType> nodes = new List<ArtWorkType>();
-        protected Validator dataValidator = new Validator();
+        protected Validator validator = new Validator();
 
         protected BaseView view;
 
         #region Unity
         protected virtual void OnEnable() {
-            dataValidator.Reset();
-            dataValidator.Validation += () => {
+            validator.Reset();
+            validator.Validation += () => {
                 ResetNodesFromData();
+                ResetView();
             };
-            dataValidator.Validate();
+            validator.Validate();
         }
         protected virtual void Update() {
-            dataValidator.Validate();
+            validator.Validate();
         }
         protected virtual void OnValidate() {
-            dataValidator.Invalidate();
-            ClearView();
+            validator.Invalidate();
         }
         protected virtual void OnDisable() {
             Clear();
@@ -78,38 +77,48 @@ namespace nobnak.Gist.Exhibitor {
         #endregion
 
         #region IExhibitor
-        public override void Invalidate() { dataValidator.Invalidate(); }
+        public override void ReflectChangeOf(MVVMComponent latestOne) {
+            switch (latestOne) {
+                case MVVMComponent.Model:
+                case MVVMComponent.ViewModel:
+                    validator.Invalidate();
+                    break;
+            }
+        }
         public override string SerializeToJson() {
+            validator.Validate();
             return JsonUtility.ToJson(CurrentData);
         }
         public override void DeserializeFromJson(string json) {
             CurrentData = JsonUtility.FromJson<DataTransformType>(json);
+            validator.Invalidate();
         }
 		public override object RawData() { return CurrentData; }
         public override void Draw() {
+            validator.Validate();
             GetView().Draw();
+        }
+        public override void ResetView() {
+            if (view != null) {
+                view.Dispose();
+                view = null;
+            }
         }
         #endregion
 
         public abstract DataTransformType CurrentData { get; set; }
         public abstract void ResetNodesFromData();
 
-        public virtual Validator Validator { get { return dataValidator; } }
+        public virtual Validator Validator { get { return validator; } }
         #endregion
 
         public virtual BaseView GetView() {
-            dataValidator.Validate();
+            validator.Validate();
             if (view == null) {
                 var f = new SimpleViewFactory();
                 view = ClassConfigurator.GenerateClassView(new BaseValue<object>(CurrentData), f);
             }
             return view;
-        }
-        public virtual void ClearView() {
-            if(view != null) {
-                view.Dispose();
-                view = null;
-            }
         }
     }
 }
