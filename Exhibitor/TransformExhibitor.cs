@@ -12,7 +12,9 @@ namespace nobnak.Gist.Exhibitor {
     public class TransformExhibitor : ListExhibitor<Transform, TransformExhibitor.Data> {
         [SerializeField]
         protected Data data;
-        
+
+        #region interface
+
         #region ListExhibitor
         public override Data CurrentData {
             get { return data; }
@@ -21,7 +23,7 @@ namespace nobnak.Gist.Exhibitor {
                 Invalidate();
             }
         }
-        protected override void Validate() {
+        public override void ResetNodesFromData() {
             Clear();
             if (data != null && data.exhibits != null)
                 AddRange(data.exhibits.Select(i => {
@@ -41,7 +43,9 @@ namespace nobnak.Gist.Exhibitor {
             tr.localScale = ndata.scale;
             return tr;
         }
+        #endregion
 
+        #region classes
         [System.Serializable]
         public class Data {
             public Exhibit[] exhibits;
@@ -57,7 +61,7 @@ namespace nobnak.Gist.Exhibitor {
             public Vector3 rotation;
             public Vector3 scale;
         }
-        
+        #endregion
     }
 
 }

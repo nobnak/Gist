@@ -16,7 +16,9 @@ namespace nobnak.Gist.Exhibitor {
         [SerializeField]
         protected Settings settings;
 
-        #region BaseExhibitor
+        #region interfaces
+
+        #region ListExhibitor
         public override Data CurrentData {
             get { return data; }
             set {
@@ -24,10 +26,7 @@ namespace nobnak.Gist.Exhibitor {
                 Invalidate();
             }
         }
-        #endregion
-
-        #region ListExhibitor
-        protected override void Validate() {
+        public override void ResetNodesFromData() {
             Clear();
             if (data != null && data.exhibits != null)
                 AddRange(data.exhibits.Select(i => {
@@ -47,6 +46,7 @@ namespace nobnak.Gist.Exhibitor {
             tr.localScale = settings.ConvertPosition(ndata.scale, 1f);
             return tr;
         }
+        #endregion
 
         #region Classes
         [System.Serializable]
