@@ -1,13 +1,8 @@
-using nobnak.Gist.Extensions.ComponentExt;
-using nobnak.Gist.Layer2;
-using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
-using nobnak.Gist.ObjectExt;
 
 namespace nobnak.Gist.Exhibitor {
 
-	public abstract class AbstractExhibitor : MonoBehaviour, IExhibitor {
+    public abstract class AbstractExhibitor : MonoBehaviour, IExhibitor {
 
 		#region IExhibitor
 		public abstract string SerializeToJson();
