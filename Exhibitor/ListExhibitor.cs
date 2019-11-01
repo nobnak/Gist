@@ -1,3 +1,7 @@
+using ModelDrivenGUISystem;
+using ModelDrivenGUISystem.Factory;
+using ModelDrivenGUISystem.ValueWrapper;
+using ModelDrivenGUISystem.View;
 using nobnak.Gist.Extensions.ComponentExt;
 using nobnak.Gist.Layer2;
 using nobnak.Gist.ObjectExt;
@@ -7,7 +11,7 @@ using UnityEngine;
 namespace nobnak.Gist.Exhibitor {
 
     public abstract class ListExhibitor<ArtWorkType, DataTransformType> 
-        : MonoBehaviour, IExhibitor
+        : AbstractExhibitor
         where ArtWorkType : Component {
 
         public Layer layer;
@@ -15,34 +19,37 @@ namespace nobnak.Gist.Exhibitor {
         public ArtWorkType nodefab;
 
         protected List<ArtWorkType> nodes = new List<ArtWorkType>();
-        protected Validator validator = new Validator();
+        protected Validator dataValidator = new Validator();
 
-        public virtual Validator Validator { get { return validator; } }
-
-        public abstract DataTransformType CurrentData { get; set; }
-        protected abstract void Validate();
+        protected BaseView view;
 
         #region Unity
         protected virtual void OnEnable() {
-            validator.Reset();
-            validator.Validation += () => Validate();
-            validator.Validate();
+            dataValidator.Reset();
+            dataValidator.Validation += () => {
+                ResetNodesFromData();
+            };
+            dataValidator.Validate();
         }
         protected virtual void Update() {
-            validator.Validate();
+            dataValidator.Validate();
         }
         protected virtual void OnValidate() {
-            validator.Invalidate();
+            dataValidator.Invalidate();
+            ClearView();
         }
         protected virtual void OnDisable() {
             Clear();
         }
         #endregion
 
+        #region interfaces
+
         #region List
         protected virtual void Add(ArtWorkType n) {
             n.gameObject.hideFlags = HideFlags.DontSave;
             n.transform.SetParent(parent, false);
+            n.hideFlags = HideFlags.DontSave;
             nodes.Add(n);
             n.CallbackSelf<IExhibitorListener>(l => l.ExhibitorOnParent(parent));
         }
@@ -71,16 +78,38 @@ namespace nobnak.Gist.Exhibitor {
         #endregion
 
         #region IExhibitor
-        public virtual void Invalidate() { validator.Invalidate(); }
-        public virtual string SerializeToJson() {
+        public override void Invalidate() { dataValidator.Invalidate(); }
+        public override string SerializeToJson() {
             return JsonUtility.ToJson(CurrentData);
         }
-        public virtual void DeserializeFromJson(string json) {
+        public override void DeserializeFromJson(string json) {
             CurrentData = JsonUtility.FromJson<DataTransformType>(json);
         }
-		public virtual object RawData() { return CurrentData; }
-        public virtual void Draw() { }
+		public override object RawData() { return CurrentData; }
+        public override void Draw() {
+            GetView().Draw();
+        }
         #endregion
 
+        public abstract DataTransformType CurrentData { get; set; }
+        public abstract void ResetNodesFromData();
+
+        public virtual Validator Validator { get { return dataValidator; } }
+        #endregion
+
+        public virtual BaseView GetView() {
+            dataValidator.Validate();
+            if (view == null) {
+                var f = new SimpleViewFactory();
+                view = ClassConfigurator.GenerateClassView(new BaseValue<object>(CurrentData), f);
+            }
+            return view;
+        }
+        public virtual void ClearView() {
+            if(view != null) {
+                view.Dispose();
+                view = null;
+            }
+        }
     }
 }
