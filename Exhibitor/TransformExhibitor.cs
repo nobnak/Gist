@@ -20,7 +20,7 @@ namespace nobnak.Gist.Exhibitor {
             get { return data; }
             set {
                 data = value;
-                ReflectChangeOf(MVVMComponent.ViewModel);
+                ReflectChangeOf(MVVMComponent.Model);
             }
         }
         public override void ResetNodesFromData() {

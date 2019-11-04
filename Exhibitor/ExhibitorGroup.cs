@@ -21,7 +21,8 @@ namespace nobnak.Gist.Exhibitor {
         private void OnEnable() {
             validator.Reset();
             validator.Validation += () => {
-                ReflectChangeOf(MVVMComponent.Model);
+                data.UpdateFrom(exhibitors);
+                tabNames = exhibitors.Select(v => v.name).ToArray();
             };
         }
         #endregion
@@ -48,9 +49,6 @@ namespace nobnak.Gist.Exhibitor {
         public override void ResetViewModelFromModel() {
             foreach(var ex in exhibitors)
                 ex.ResetViewModelFromModel();
-
-            data.UpdateFrom(exhibitors);
-            tabNames = exhibitors.Select(v => v.name).ToArray();
         }
         public override void Draw() {
             validator.Validate();

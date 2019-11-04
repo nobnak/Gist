@@ -23,7 +23,7 @@ namespace nobnak.Gist.Exhibitor {
             get { return data; }
             set {
                 data = value;
-                ReflectChangeOf(MVVMComponent.ViewModel);
+                ReflectChangeOf(MVVMComponent.Model);
             }
         }
         public override void ResetNodesFromData() {
@@ -40,7 +40,7 @@ namespace nobnak.Gist.Exhibitor {
             node.gameObject.name = info.name;
             return Decode(node, info.node);
         }
-        public Transform Decode(Transform tr, Transform2DExhibitor.TransformData ndata) {
+        public virtual Transform Decode(Transform tr, Transform2DExhibitor.TransformData ndata) {
             tr.localPosition = settings.ConvertPosition(ndata.position, 0f);
             tr.localRotation = Quaternion.Euler(settings.ConvertRotation(ndata.rotation));
             tr.localScale = settings.ConvertPosition(ndata.scale, 1f);

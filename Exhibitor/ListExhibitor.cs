@@ -26,8 +26,7 @@ namespace nobnak.Gist.Exhibitor {
         protected virtual void OnEnable() {
             validator.Reset();
             validator.Validation += () => {
-                ResetNodesFromData();
-                ResetView();
+                ReflectChangeOf(MVVMComponent.Model);
             };
             validator.Validate();
         }
@@ -38,6 +37,7 @@ namespace nobnak.Gist.Exhibitor {
             validator.Invalidate();
         }
         protected virtual void OnDisable() {
+            validator.Invalidate();
             Clear();
         }
         #endregion
@@ -77,14 +77,6 @@ namespace nobnak.Gist.Exhibitor {
         #endregion
 
         #region IExhibitor
-        public override void ReflectChangeOf(MVVMComponent latestOne) {
-            switch (latestOne) {
-                case MVVMComponent.Model:
-                case MVVMComponent.ViewModel:
-                    validator.Invalidate();
-                    break;
-            }
-        }
         public override string SerializeToJson() {
             validator.Validate();
             return JsonUtility.ToJson(CurrentData);
@@ -97,6 +89,13 @@ namespace nobnak.Gist.Exhibitor {
         public override void Draw() {
             validator.Validate();
             GetView().Draw();
+        }
+
+        public override void ResetViewModelFromModel() {
+            ResetNodesFromData();
+        }
+        public override void ApplyViewModelToModel() {
+            ResetNodesFromData();
         }
         public override void ResetView() {
             if (view != null) {
@@ -112,7 +111,8 @@ namespace nobnak.Gist.Exhibitor {
         public virtual Validator Validator { get { return validator; } }
         #endregion
 
-        public virtual BaseView GetView() {
+        #region member
+        protected virtual BaseView GetView() {
             validator.Validate();
             if (view == null) {
                 var f = new SimpleViewFactory();
@@ -120,5 +120,6 @@ namespace nobnak.Gist.Exhibitor {
             }
             return view;
         }
+        #endregion
     }
 }
