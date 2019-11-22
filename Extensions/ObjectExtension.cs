@@ -32,8 +32,14 @@ namespace nobnak.Gist.ObjectExt {
 			return JsonUtility.FromJson<T>(json);
 		}
 
-#if UNITY_EDITOR
-		public static string AssetFolderName(this Object obj) {
+        public static void Destroy(this System.IDisposable obj) {
+            if (obj != null) {
+                obj.Dispose();
+            }
+        }
+
+        #if UNITY_EDITOR
+        public static string AssetFolderName(this Object obj) {
 			string folder = null;
 			try {
 				folder = Path.GetDirectoryName(AssetDatabase.GetAssetPath(obj));
