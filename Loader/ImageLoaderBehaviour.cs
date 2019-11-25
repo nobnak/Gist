@@ -12,8 +12,6 @@ namespace nobnak.Gist.Loader {
 
 		[SerializeField]
 		protected ImageLoader loader;
-		[SerializeField]
-		protected Texture2D defaultTexture;
 
 		#region Unity
 		protected void OnEnable() {
@@ -30,7 +28,7 @@ namespace nobnak.Gist.Loader {
 		#endregion
 
 		protected void ListenOnChanged(Texture2D tex) {
-			Changed.Invoke(tex == null ? defaultTexture : tex);
+			Changed.Invoke(tex);
 		}
 	}
 }

@@ -17,6 +17,8 @@ namespace nobnak.Gist.Loader {
 		protected Format2D format = new Format2D(TextureFormat.ARGB32, true, false);
         [SerializeField]
         protected bool markNonReadable = true;
+        [SerializeField]
+        protected Texture2D defaultTexture;
 
         protected Reactive<string> reactivePath = new Reactive<string>();
 
@@ -81,8 +83,7 @@ namespace nobnak.Gist.Loader {
 			}
 		}
 		protected virtual void NotifyChanged() {
-			if (Changed != null)
-				Changed(target);
+			Changed(target == null ? defaultTexture : target);
 		}
 		protected virtual void ClearTarget() {
 			if (target != null) {
