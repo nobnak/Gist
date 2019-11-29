@@ -10,8 +10,8 @@ namespace nobnak.Gist.Loader {
 		[SerializeField]
 		protected Texture2DEvent Changed;
 
-		[SerializeField]
-		protected ImageLoader loader;
+        [SerializeField]
+        protected ImageLoader loader = new ImageLoader();
 
 		#region Unity
 		protected void OnEnable() {
