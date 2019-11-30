@@ -22,8 +22,9 @@ float3 HSVShift(float3 c, float3 hsvTint) { return HSV2RGB(saturate(RGB2HSV(c) +
 float3 HSVShift(float3 c, float4 hsvTint) { return HSV2RGB(saturate(RGB2HSV(c) + hsvTint.rgb * hsvTint.a)); }
 
 
-#define contrast_brightness(c, p) (p.x * (c - 0.5) + 0.5 + p.y)
-#define contrast_brightness_zerobased(c, p) (p.x * c + p.y)
+#define contrast_brightness_offset(c, p) (p.x * (c - p.z) + p.z + p.y)
+#define contrast_brightness(c, p) contrast_brightness_offset(c, float3(p, 0.5))
+#define contrast_brightness_zerobased(c, p) contrast_brightness_offset(c, float3(p, 0))
 
 float3 ContrastBrightness3(float3 c, float2 p) {
 	return contrast_brightness(c, p);
