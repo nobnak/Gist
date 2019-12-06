@@ -28,19 +28,16 @@ namespace nobnak.Gist.Interaction {
         protected Validator validator = new Validator();
 
         #region interface
-        public void Add(Vector2 uvPos, Vector2 normSize, params object[] data) {
-            var pos = targetCamera.ViewportToWorldPoint(uvPos);
+        public void AddInScreenSpace(Vector2 uvPos, Vector2 normSize, params object[] data) {
+            var worldPos = targetCamera.ViewportToWorldPoint(uvPos);
 
             var h = targetCamera.orthographicSize * 2f;
             var aspect = targetCamera.aspect;
             var w = aspect * h;
-            var worldSize = new Vector3(h * normSize.x, h * normSize.y, length);
-            //worldSize = targetCamera.transform.TransformVector(worldSize);
-            Debug.Log($"Touch Size in world coord: {worldSize}");
-
-            Add(pos, worldSize, data);
+            var worldSize = new Vector2(h * normSize.x, h * normSize.y);
+            AddInWorldSpace(worldPos, worldSize, data);
         }
-        public void Add(Vector3 worldPos, Vector3 worldSize, params object[] data) {
+        public void AddInWorldSpace(Vector3 worldPos, Vector2 worldSize, params object[] data) {
             validator.Invalidate();
             var forward = targetCamera.transform.forward;
             var near = targetCamera.nearClipPlane;
@@ -52,7 +49,7 @@ namespace nobnak.Gist.Interaction {
             c.transform.SetParent(transform, false);
             c.transform.position = worldPos;
             c.transform.rotation = targetCamera.transform.rotation;
-            c.transform.localScale = worldSize;
+            c.transform.localScale = new Vector3(worldSize.x, worldSize.y, length);
 
             c.Data = data;
 
@@ -101,7 +98,7 @@ namespace nobnak.Gist.Interaction {
             if (Input.GetMouseButtonDown(0)) {
                 var uvSize = sizeScale * Vector2.one;
                 var uvPos = Input.mousePosition.UV();
-                Add(uvPos, uvSize);
+                AddInScreenSpace(uvPos, uvSize);
             }
 
             validator.Validate();
