@@ -11,7 +11,7 @@ namespace nobnak.Gist.Interaction {
         [SerializeField]
         protected Camera targetCamera;
         [SerializeField]
-        protected Collider fab;
+        protected ColliderInfo fab;
 
         [SerializeField]
         protected bool showDebug;
@@ -23,13 +23,44 @@ namespace nobnak.Gist.Interaction {
         protected float duration = 0.5f;
 
         protected List<ColliderInfo> colliders = new List<ColliderInfo>();
-        protected MemoryPool<Collider> pool;
+        protected MemoryPool<ColliderInfo> pool;
         protected Vector3 plane;
         protected Validator validator = new Validator();
 
+        #region interface
+        public void AddInScreenSpace(Vector2 uvPos, Vector2 normSize, params object[] data) {
+            var worldPos = targetCamera.ViewportToWorldPoint(uvPos);
+
+            var h = targetCamera.orthographicSize * 2f;
+            var aspect = targetCamera.aspect;
+            var w = aspect * h;
+            var worldSize = new Vector2(h * normSize.x, h * normSize.y);
+            AddInWorldSpace(worldPos, worldSize, data);
+        }
+        public void AddInWorldSpace(Vector3 worldPos, Vector2 worldSize, params object[] data) {
+            validator.Invalidate();
+            var forward = targetCamera.transform.forward;
+            var near = targetCamera.nearClipPlane;
+            worldPos = Vector3.ProjectOnPlane(worldPos - plane, plane) + plane;
+            worldPos += forward * (2f * near * 2f + 0.5f * length);
+
+            var c = pool.New();
+
+            c.transform.SetParent(transform, false);
+            c.transform.position = worldPos;
+            c.transform.rotation = targetCamera.transform.rotation;
+            c.transform.localScale = new Vector3(worldSize.x, worldSize.y, length);
+
+            c.Data = data;
+
+            colliders.Add(c);
+            c.gameObject.SetActive(true);
+        }
+        #endregion
+
         #region unity
         void OnEnable() {
-            pool = new MemoryPool<Collider>(
+            pool = new MemoryPool<ColliderInfo>(
                 () => {
                     var c = Instantiate(fab);
                     var r = c.GetComponent<Renderer>();
@@ -65,71 +96,42 @@ namespace nobnak.Gist.Interaction {
             ClearColliders();
 
             if (Input.GetMouseButtonDown(0)) {
-                var size = sizeScale * Vector2.one;
-                Add(size);
+                var uvSize = sizeScale * Vector2.one;
+                var uvPos = Input.mousePosition.UV();
+                AddInScreenSpace(uvPos, uvSize);
             }
 
             validator.Validate();
         }
-		#endregion
+        #endregion
 
-		#region static
-		public static float CurrTime {
-			get { return Time.realtimeSinceStartup; }
-		}
-		#endregion
-
-		#region member
-		private void ClearColliders(bool all = false) {
+        #region member
+        private void ClearColliders(bool all = false) {
             var expirationTime = CurrTime - duration;
             for (var i = 0; i < colliders.Count; ) {
                 var ci = colliders[i];
                 if (all || ci.birthTime < expirationTime) {
                     colliders.RemoveAt(i);
-                    pool.Free(ci.collider);
+                    pool.Free(ci);
                     validator.Invalidate();
                 } else {
                     i++;
                 }
             }
         }
-        private void Add(Vector2 size) {
-            validator.Invalidate();
-            var uv = Input.mousePosition.UV();
-            var pos = targetCamera.ViewportToWorldPoint(uv);
-            pos = Vector3.ProjectOnPlane(pos - plane, plane) + plane;
-            var h = targetCamera.orthographicSize * 2f;
-            var w = targetCamera.aspect * h;
 
-            var c = pool.New();
-            c.transform.SetParent(transform, false);
-            c.transform.position = pos + targetCamera.transform.forward
-                * (2f * targetCamera.nearClipPlane * 2f + 0.5f * length);
-            c.transform.rotation = targetCamera.transform.rotation;
-            c.transform.localScale = new Vector3(h * size.x, w * size.y, length);
-            c.gameObject.SetActive(true);
-            var ci = new ColliderInfo(c);
-            colliders.Add(ci);
-        }
         private void SetVisibility(bool showDebug) {
             foreach (var c in colliders) {
-                var r = c.collider.GetComponent<Renderer>();
+                var r = c.GetComponent<Renderer>();
                 if (r != null)
                     r.enabled = showDebug;
             }
         }
         #endregion
 
-        #region definition
-        public struct ColliderInfo {
-            public readonly float birthTime;
-            public readonly Collider collider;
-
-            public ColliderInfo(float birthTime, Collider collider) {
-                this.birthTime = birthTime;
-                this.collider = collider;
-            }
-            public ColliderInfo(Collider collider) : this(CurrTime, collider) {}
+        #region static
+        public static float CurrTime {
+            get { return Time.realtimeSinceStartup; }
         }
         #endregion
     }
