@@ -83,7 +83,8 @@ namespace nobnak.Gist.Loader {
 			}
 		}
 		protected virtual void NotifyChanged() {
-			Changed(target == null ? defaultTexture : target);
+            if (Changed != null)
+			    Changed(target == null ? defaultTexture : target);
 		}
 		protected virtual void ClearTarget() {
 			if (target != null) {
