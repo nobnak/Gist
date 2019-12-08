@@ -56,7 +56,7 @@ namespace nobnak.Gist.Loader {
 		public virtual Texture2D Target {
 			get {
 				Validate();
-				return target;
+				return target == null ? defaultTexture : target;
 			}
 		}
 
@@ -84,7 +84,7 @@ namespace nobnak.Gist.Loader {
 		}
 		protected virtual void NotifyChanged() {
             if (Changed != null)
-			    Changed(target == null ? defaultTexture : target);
+			    Changed(Target);
 		}
 		protected virtual void ClearTarget() {
 			if (target != null) {
