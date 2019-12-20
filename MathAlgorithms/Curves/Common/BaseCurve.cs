@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Gist.MathAlgorithms.Curves.Common {
+namespace nobnak.Gist.MathAlgorithms.Curves.Common {
 
     public abstract class BaseCurve : IParametricCurve, IList<Vector3> {
         public event System.Action Changed;

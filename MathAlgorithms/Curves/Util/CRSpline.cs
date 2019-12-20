@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Gist.MathAlgorithms.Curves.CatmulRomSplineExt {
+namespace nobnak.Gist.MathAlgorithms.Curves.CatmulRomSplineExt {
 
     public static class CRSpline {
         public static Vector3 Position(this float t, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3) {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Gist.MathAlgorithms.Curves.Common {
+namespace nobnak.Gist.MathAlgorithms.Curves.Common {
 
     public interface ILineStrip {
         float Length { get; }

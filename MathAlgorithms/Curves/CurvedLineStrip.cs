@@ -1,8 +1,8 @@
-﻿using Gist.MathAlgorithms.Curves.Common;
+﻿using nobnak.Gist.MathAlgorithms.Curves.Common;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Gist.MathAlgorithms.Curves {
+namespace nobnak.Gist.MathAlgorithms.Curves {
 
     public class CurvedLineStrip : ILineStrip {
         protected List<Vector3> points = new List<Vector3>();

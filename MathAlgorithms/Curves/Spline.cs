@@ -1,9 +1,8 @@
-﻿using Gist.MathAlgorithms.Curves.CatmulRomSplineExt;
-using Gist.MathAlgorithms.Curves.Common;
-using System.Linq;
+﻿using nobnak.Gist.MathAlgorithms.Curves.CatmulRomSplineExt;
+using nobnak.Gist.MathAlgorithms.Curves.Common;
 using UnityEngine;
 
-namespace Gist.MathAlgorithms.Curves {
+namespace nobnak.Gist.MathAlgorithms.Curves {
 
     public class Spline : BaseCurve {
         public const float EPSILON = 1e-6f;
