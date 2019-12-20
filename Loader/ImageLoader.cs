@@ -83,7 +83,8 @@ namespace nobnak.Gist.Loader {
 			}
 		}
 		protected virtual void NotifyChanged() {
-			Changed(Target);
+            if (Changed != null)
+			    Changed(Target);
 		}
 		protected virtual void ClearTarget() {
 			if (target != null) {

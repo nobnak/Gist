@@ -1,11 +1,9 @@
-using nobnak.Gist.InputDevice;
-using nobnak.Gist.Loader;
 using System.Linq;
 using UnityEngine;
 
 namespace nobnak.Gist.Exhibitor {
 
-    public class ExhibitorGroup : AbstractExhibitor {
+	public class ExhibitorGroup : AbstractExhibitor {
 
         [SerializeField]
         protected AbstractExhibitor[] exhibitors = new AbstractExhibitor[0];
@@ -54,7 +52,7 @@ namespace nobnak.Gist.Exhibitor {
             validator.Validate();
 
             GUILayout.BeginVertical();
-            GUILayout.Label("", GUI.skin.horizontalSlider);
+            GUILayout.Label("", UnityEngine.GUI.skin.horizontalSlider);
 
             selectedTab = GUILayout.Toolbar(selectedTab, tabNames);
             var ex = SelectedExhibitor;

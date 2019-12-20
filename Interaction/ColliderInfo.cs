@@ -1,12 +1,8 @@
-﻿using K.Model;
-using nobnak.Gist.Interaction;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace nobnak.Gist.Interaction {
 
-    [ExecuteAlways]
+	[ExecuteAlways]
     [RequireComponent(typeof(Collider))]
     public class ColliderInfo : MonoBehaviour {
 
