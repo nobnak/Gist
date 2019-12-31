@@ -10,6 +10,7 @@ namespace nobnak.Gist.MathAlgorithms.Curves.Common {
         bool Valid { get; }
         float ParameterLength { get; }
 
+        ParametricPoint PointAt(float t);
         Vector3 PositionAt(float t);
         Vector3 DirectionAt(float t);
         float CurvatureAt(float t);

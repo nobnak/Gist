@@ -26,6 +26,10 @@ namespace nobnak.Gist.MathAlgorithms.Curves.Common {
         public abstract Vector3 PositionAt(float t);
         public abstract Vector3 DirectionAt(float t);
         public abstract float CurvatureAt(float t);
+
+        public ParametricPoint PointAt(float t) {
+            return new ParametricPoint(this, t);
+        }
         #endregion
 
         #region IList
