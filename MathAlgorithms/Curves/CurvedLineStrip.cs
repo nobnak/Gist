@@ -15,10 +15,9 @@ namespace nobnak.Gist.MathAlgorithms.Curves {
         protected float totalLength;
 
         public CurvedLineStrip(IParametricCurve curve) {
-            totalLength = 0f;
-
             var last = curve.ParameterLength * N_SUBDIVITION;
             var p0 = curve.PositionAt(0f);
+            totalLength = 0f;
             cumulativeLength.Add(totalLength);
             pointParameters.Add(0f);
             points.Add(p0);
@@ -57,11 +56,11 @@ namespace nobnak.Gist.MathAlgorithms.Curves {
             iend = cumulativeLength.Count - 1;
             if (dist < cumulativeLength[istart]) {
                 iend = istart + 1;
-                return 0f;
+                return pointParameters[istart];
             }
             if (cumulativeLength[iend] <= dist) {
                 istart = iend - 1;
-                return 0f;
+                return pointParameters[iend];
             }
 
             int idiff;
