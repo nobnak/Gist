@@ -37,7 +37,7 @@ namespace nobnak.Gist.Exhibitor {
             return data;
         }
         public override string SerializeToJson() {
-            validator.Validate();
+            validator.Validate(true);
             return JsonUtility.ToJson(data, true);
         }
         public override void ApplyViewModelToModel() {
