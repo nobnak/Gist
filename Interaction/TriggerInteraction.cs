@@ -95,7 +95,7 @@ namespace nobnak.Gist.Interaction {
         void Update() {
             ClearColliders();
 
-            if (Input.GetMouseButtonDown(0)) {
+            if (Input.GetMouseButton(0)) {
                 var uvSize = sizeScale * Vector2.one;
                 var uvPos = Input.mousePosition.UV();
                 AddInScreenSpace(uvPos, uvSize);
