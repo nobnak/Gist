@@ -38,7 +38,11 @@ namespace nobnak.Gist.ObjectExt {
             }
         }
 
-        #if UNITY_EDITOR
+        public static bool IsDefault<T>(this T v) {
+            return EqualityComparer<T>.Default.Equals(v, default(T));
+        }
+
+#if UNITY_EDITOR
         public static string AssetFolderName(this Object obj) {
 			string folder = null;
 			try {
