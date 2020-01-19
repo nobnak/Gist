@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace nobnak.Gist.Loader {
 
+    [ExecuteAlways]
 	public class ImageLoaderBehaviour : MonoBehaviour {
 
 		[SerializeField]
