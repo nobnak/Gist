@@ -318,7 +318,7 @@ namespace nobnak.Gist.Wrapper {
         #endregion
 
         void CheckLoad() {
-            if (!duringSession) {
+            if (!duringSession && Renderer != null) {
                 duringSession = true;
                 Renderer.GetPropertyBlock (Block);
             }
