@@ -180,12 +180,14 @@ namespace nobnak.Gist.Wrapper {
 
     	public Pair Apply() {
             duringSession = false;
-            Renderer.SetPropertyBlock (Block);
+            if (Renderer != null)
+                Renderer.SetPropertyBlock (Block);
             return this;
     	}
         public Pair Clear() {
             duringSession = false;
-            Renderer.SetPropertyBlock(null);
+            if (Renderer != null)
+                Renderer.SetPropertyBlock(null);
             return this;
         }
 
