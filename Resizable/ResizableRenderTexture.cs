@@ -107,7 +107,7 @@ namespace nobnak.Gist.Resizable {
 			validator.Validate();
 		}
 		public virtual void Release() {
-			tex.Release();
+			ReleaseTexture();
 		}
 		#endregion
 
