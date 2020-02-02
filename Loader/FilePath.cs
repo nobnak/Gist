@@ -7,7 +7,9 @@ namespace nobnak.Gist.Loader {
 
 	[System.Serializable]
 	public class FilePath {
-		public const string DEFAULT_FILEPATH = @"%USERPROFILE%\Documents\ChangeThis.txt";
+		public const string DEFAULT_FILEPATH_PATTERN = @"%USERPROFILE%\Documents\{0}";
+		public const string DEFAULT_FILENAME = @"ChangeThis.txt";
+		public static readonly string DEFAULT_FILEPATH = string.Format(DEFAULT_FILEPATH_PATTERN, DEFAULT_FILENAME);
 
 		public string filepath = DEFAULT_FILEPATH;
 
