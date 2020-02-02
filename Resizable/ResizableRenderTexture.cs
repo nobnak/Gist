@@ -141,6 +141,11 @@ namespace nobnak.Gist.Resizable {
             tex = null;
         }
 		#endregion
-		
+
+		#region static
+		public static implicit operator RenderTexture(ResizableRenderTexture v) {
+			return v.Texture;
+		}
+		#endregion
 	}
 }
