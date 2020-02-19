@@ -11,6 +11,8 @@ namespace nobnak.Gist.Events {
     public class TextureEvent : UnityEngine.Events.UnityEvent<Texture> {}
     [System.Serializable]
     public class Texture2DEvent : UnityEngine.Events.UnityEvent<Texture2D> {}
+	[System.Serializable]
+	public class RenderTextureEvent : UnityEngine.Events.UnityEvent<RenderTexture> { }
     [System.Serializable]
     public class FloatEvent : UnityEngine.Events.UnityEvent<float> {}
     [System.Serializable]
