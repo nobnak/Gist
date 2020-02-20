@@ -32,7 +32,7 @@ namespace nobnak.Gist.Extensions.VisualisationExt {
                     Graphics.DrawTexture(rect, tex, mat);
                 }
 
-                offset.x += gap + height;
+                offset.x += gap + width;
             }
             GL.PopMatrix();
         }
