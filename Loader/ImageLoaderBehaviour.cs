@@ -9,7 +9,7 @@ namespace nobnak.Gist.Loader {
 	public class ImageLoaderBehaviour : MonoBehaviour {
 
 		[SerializeField]
-		protected Texture2DEvent Changed;
+		protected Texture2DEvent Changed = new Texture2DEvent();
 
         [SerializeField]
         protected ImageLoader loader = new ImageLoader();
