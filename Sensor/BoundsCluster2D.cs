@@ -162,6 +162,12 @@ namespace nobnak.Gist.Sensor {
 				this.args = args;
 			}
 			public Bounds(FastBounds2D bb, params T[] args) : this(bb, Time.timeSinceLevelLoad, args) { }
+
+			#region object
+			public override string ToString() {
+				return $"<{GetType().Name}:b={bb},c={center},t={time},nargs={args.Length}>";
+			}
+			#endregion
 		}
 
 		public class Cluster {
