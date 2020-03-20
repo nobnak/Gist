@@ -11,22 +11,24 @@ namespace nobnak.Gist.Sensor {
 	}
 
 	public class BoundsCluster2D<T> : BaseBoundsCluter2D {
-		public System.Action<List<Cluster>> OnUpdateCluster;
-		public System.Action<List<Cluster>> OnAddCluster;
-		public System.Action<List<Cluster>> OnRemoveCluster;
+		public event System.Action<IList<Cluster>> ClustersUpdated;
+		public event System.Action<IList<Cluster>> ClusterdAdded;
+		public event System.Action<IList<Cluster>> ClustersRemoved;
 
 		Queue<Bounds> points;
 		List<Cluster> clusters;
-		List<Cluster> clusterAdded;
-		List<Cluster> clusterRemoved;
+		List<Cluster> clustersAdded;
+		List<Cluster> clustersRemoved;
+		List<Cluster> clustersUpdated;
 		Pooling.MemoryPool<Cluster> poolCluster;
 
 		public BoundsCluster2D(Data data) {
 			this.data = data;
 			points = new Queue<Bounds>();
 			clusters = new List<Cluster>();
-			clusterAdded = new List<Cluster>();
-			clusterRemoved = new List<Cluster>();
+			clustersAdded = new List<Cluster>();
+			clustersRemoved = new List<Cluster>();
+			clustersUpdated = new List<Cluster>();
 			poolCluster = new Pooling.MemoryPool<Cluster>(
 				() => new Cluster(),
 				c => c.Reset(),
@@ -63,20 +65,21 @@ namespace nobnak.Gist.Sensor {
 			if (clusters.Count > data.clusterCountLimit) {
 				var oldestIndex = FindOldestClusterIndex();
 				if (oldestIndex >= 0)
-					clusterRemoved.Add(clusters[oldestIndex]);
+					clustersRemoved.Add(clusters[oldestIndex]);
 			}
 
 			MakeClusters();
 			RemoveOldClusters();
 			Notify();
 
-			clusterAdded.Clear();
-			clusterRemoved.ForEach(c => poolCluster.Free(c));
-			clusterRemoved.Clear();
+			clustersAdded.Clear();
+			clustersRemoved.ForEach(c => poolCluster.Free(c));
+			clustersRemoved.Clear();
+			clustersUpdated.Clear();
 		}
 
 		public virtual void Clear() {
-			clusterRemoved.AddRange(clusters);
+			clustersRemoved.AddRange(clusters);
 			clusters.Clear();
 		}
 		public virtual IEnumerable<Bounds> IteratePoints() {
@@ -109,9 +112,12 @@ namespace nobnak.Gist.Sensor {
 				} else {
 					c = poolCluster.New();
 					clusters.Add(c);
-					clusterAdded.Add(c);
+					clustersAdded.Add(c);
 				}
+
 				c.Add(p);
+				if (!clustersUpdated.Contains(c))
+					clustersUpdated.Add(c);
 			}
 		}
 		protected void RemoveOldClusters() {
@@ -119,10 +125,10 @@ namespace nobnak.Gist.Sensor {
 			foreach (var c in clusters) {
 				c.RemoveBeforeTime(t);
 				if (c.Count == 0)
-					clusterRemoved.Add(c);
+					clustersRemoved.Add(c);
 			}
 
-			foreach (var c in clusterRemoved)
+			foreach (var c in clustersRemoved)
 				clusters.Remove(c);
 		}
 		private int FindOldestClusterIndex() {
@@ -139,12 +145,12 @@ namespace nobnak.Gist.Sensor {
 			return oldestIndex;
 		}
 		protected void Notify() {
-			if (OnUpdateCluster != null)
-				OnUpdateCluster(clusters);
-			if (clusterAdded.Count > 0 && OnAddCluster != null)
-				OnAddCluster(clusterAdded);
-			if (clusterRemoved.Count > 0 && OnRemoveCluster != null)
-				OnRemoveCluster(clusterRemoved);
+			if (clustersUpdated.Count > 0)
+				ClustersUpdated?.Invoke(clustersUpdated);
+			if (clustersAdded.Count > 0)
+				ClusterdAdded?.Invoke(clustersAdded);
+			if (clustersRemoved.Count > 0)
+				ClustersRemoved?.Invoke(clustersRemoved);
 		}
 		#endregion
 
