@@ -92,6 +92,11 @@ namespace nobnak.Gist.Primitive {
 			Encapsulate(fb.min_x, fb.min_y);
 			Encapsulate(fb.max_x, fb.max_y);
 		}
+		public Vector2 Sample() {
+			return new Vector2(
+				Random.Range(min_x, max_x),
+				Random.Range(min_y, max_y));
+		}
 		#endregion
 
 		#region static
@@ -107,6 +112,14 @@ namespace nobnak.Gist.Primitive {
 		}
 		public static explicit operator FastBounds(FastBounds2D fb2) {
 			return new FastBounds(fb2.min_x, fb2.min_y, 0f, fb2.max_x, fb2.max_y, 0f);
+		}
+		public static FastBounds2D operator +(FastBounds2D fb2, Vector2 offset) {
+			var of_x = offset.x;
+			var of_y = offset.y;
+			return new FastBounds2D(
+				fb2.min_x + of_x, fb2.min_y + of_y,
+				fb2.max_x + of_x, fb2.max_y + of_y
+				);
 		}
 		#endregion
 	}
