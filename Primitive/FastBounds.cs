@@ -43,6 +43,18 @@ namespace nobnak.Gist.Primitive {
 		public FastBounds(Vector3 min, Vector3 max) :
 			this(min.x, min.y, min.z, max.x, max.y, max.z) { }
 
+		#region interface
+		#region object
+		public override string ToString() {
+			var buf = new StringBuilder("<FastBounds : ");
+			var c = Center;
+			var s = Size;
+			buf.AppendFormat("center=({0:e2},{1:e2},{2:e2})", c.x, c.y, c.z);
+			buf.AppendFormat(", size=({0:e2},{1:e2},{2:e2})>", s.x, s.y, s.z);
+			return buf.ToString();
+		}
+		#endregion
+
 		public Vector3 Center {
 			get {
 				return new Vector3(
@@ -98,21 +110,21 @@ namespace nobnak.Gist.Primitive {
 			Encapsulate(fb.min_x, fb.min_y, fb.min_z);
 			Encapsulate(fb.max_x, fb.max_y, fb.max_z);
 		}
-
-		public override string ToString() {
-			var buf = new StringBuilder("<FastBounds : ");
-			var c = Center;
-			var s = Size;
-			buf.AppendFormat("center=({0:e2},{1:e2},{2:e2})", c.x, c.y, c.z);
-			buf.AppendFormat(", size=({0:e2},{1:e2},{2:e2})>", s.x, s.y, s.z);
-			return buf.ToString();
+		public Vector3 Sample() {
+			return new Vector3(
+				Random.Range(min_x, max_x),
+				Random.Range(min_y, max_y),
+				Random.Range(min_z, max_z));
 		}
+		#endregion
 
+		#region static
 		public static implicit operator FastBounds(Bounds b) {
 			return new FastBounds(b.min, b.max);
 		}
 		public static explicit operator Bounds(FastBounds fb) {
 			return new Bounds(fb.Center, fb.Size);
 		}
+		#endregion
 	}
 }
