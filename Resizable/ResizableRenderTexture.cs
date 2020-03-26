@@ -86,6 +86,15 @@ namespace nobnak.Gist.Resizable {
 				}
 			}
 		}
+		public virtual RenderTextureFormat TextureFormat {
+			get { return format.textureFormat; }
+			set {
+				if (format.textureFormat != value) {
+					Invalidate();
+					format.textureFormat = value;
+				}
+			}
+		}
 		public virtual FormatRT Format {
 			get { return format; }
 			set {
