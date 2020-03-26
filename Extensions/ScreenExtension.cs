@@ -24,17 +24,23 @@ namespace nobnak.Gist.Extensions.ScreenExt {
                 (float)mousePosition.y / Screen.height);
             return uv;
         }
-		public static Vector2Int LOD(int width, int height, int lod = 0, int maxLod = 4) {
-			lod = Mathf.Clamp(lod, 0, maxLod);
-			return new Vector2Int(
-				width >> lod,
-				height >> lod);
+		public static Vector2Int LOD(int width, int height, int lod = 0, 
+			int maxLod = 4, int minLod = 0) {
+			lod = Mathf.Clamp(lod, minLod, maxLod);
+			if (lod > 0) {
+				width >>= lod;
+				height >>= lod;
+			} else if (lod < 0) {
+				width <<= -lod;
+				height <<= -lod;
+			}
+			return new Vector2Int(width, height);
 		}
-		public static Vector2Int LOD(this Vector2Int size, int lod = 0, int maxLod = 4) {
-			return LOD(size.x, size.y, lod, maxLod);
+		public static Vector2Int LOD(this Vector2Int size, int lod = 0, int maxLod = 4, int minLod = 0) {
+			return LOD(size.x, size.y, lod, maxLod, minLod);
 		}
-		public static Vector2Int LOD(this Camera c, int lod = 0, int maxLod = 4) {
-			return LOD(c.pixelWidth, c.pixelHeight, lod, maxLod);
+		public static Vector2Int LOD(this Camera c, int lod = 0, int maxLod = 4, int minLod = 0) {
+			return LOD(c.pixelWidth, c.pixelHeight, lod, maxLod, minLod);
 		}
 
 		public static Vector2Int Size(this Camera c) {
