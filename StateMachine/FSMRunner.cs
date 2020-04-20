@@ -108,12 +108,12 @@ namespace nobnak.Gist.StateMachine {
 			return this;
 		}
 		public FSM<T> GotoQueued(T nextStateName, params object[] reason) {
-			Enqueue(new StateData(nextStateName, reason));
+			Enqueue(nextStateName, reason);
 			return this;
         }
 
 		public FSM<T> GotoImmediate(T nextStateName, params object[] reason) {
-			Enqueue(new StateData(nextStateName, reason));
+			Enqueue(nextStateName, reason);
 			_GotoInQueue();
             return this;
         }
@@ -151,7 +151,7 @@ namespace nobnak.Gist.StateMachine {
 
 		protected void Enqueue(T nextStateName, object[] reason) {
 			if (!EqualsToLastQueued(nextStateName))
-				Enqueue(new StateData(nextStateName, reason));
+				_Enqueue(new StateData(nextStateName, reason));
 		}
 		protected void _Goto(StateData nextData) {
             State next;
@@ -188,7 +188,7 @@ namespace nobnak.Gist.StateMachine {
 				Interlocked.Decrement(ref _lock);
 			}
         }
-        protected void Enqueue(StateData next) {
+        protected void _Enqueue(StateData next) {
             _lastQueuedStateName = next;
             stateQueue.Enqueue(next);
         }
