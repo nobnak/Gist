@@ -1,4 +1,4 @@
-﻿using nobnak.Gist.GLTools;
+using nobnak.Gist.GLTools;
 using nobnak.Gist.Scoped;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,6 +18,7 @@ namespace nobnak.Gist.Extensions.VisualisationExt {
             var screen = (destination == null)
                 ? new Vector2(Screen.width, Screen.height)
                 : new Vector2(destination.width, destination.height);
+			var screenAspect = screen.x / screen.y;
 
             GL.PushMatrix();
             GL.LoadPixelMatrix();
@@ -36,8 +37,8 @@ namespace nobnak.Gist.Extensions.VisualisationExt {
                     Graphics.DrawTexture(rect, tex, mat);
                 }
 #else
-                var outputWidth = size * srcWidth / screen.x;
-                var outputHeight = size * srcHeight / screen.y;
+                var outputWidth = size * aspect / screenAspect;
+                var outputHeight = size;
                 var woffset = offset.x / screen.x;
                 var hoffset = offset.y / screen.y;
                 Copy.DrawTexture(tex, destination, outputWidth, outputHeight, woffset, hoffset);
