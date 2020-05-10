@@ -42,6 +42,9 @@ namespace nobnak.Gist.Extensions.ScreenExt {
 		public static Vector2Int LOD(this Camera c, int lod = 0, int maxLod = 4, int minLod = 0) {
 			return LOD(c.pixelWidth, c.pixelHeight, lod, maxLod, minLod);
 		}
+		public static Vector2Int LOD(this Texture tex, int lod = 0, int maxLod = 4, int minLod = 0) {
+			return LOD(tex.width, tex.height, lod, maxLod, minLod);
+		}
 
 		public static Vector2Int Size(this Camera c) {
 			return new Vector2Int(c.pixelWidth, c.pixelHeight);
