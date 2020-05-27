@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace nobnak.Gist.Database {
+namespace nobnak.Gist.Collection {
 
 	public class RefCounter<T> {
 
@@ -26,16 +26,16 @@ namespace nobnak.Gist.Database {
 			}
 		}
 
-		public Handler Get() { return new Handler(this); }
+		public Deposit GetDeposit() { return new Deposit(this); }
 		#endregion
 
 		#region definition
-		public class Handler : System.IDisposable {
+		public class Deposit : System.IDisposable {
 
 			protected RefCounter<T> counter;
 			protected bool disposed = false;
 
-			public Handler(RefCounter<T> counter) {
+			public Deposit(RefCounter<T> counter) {
 				this.counter = counter;
 				lock (counter)
 					counter.count++;
@@ -43,7 +43,7 @@ namespace nobnak.Gist.Database {
 
 			#region interface
 
-			public static implicit operator T (Handler h) {
+			public static implicit operator T (Deposit h) {
 				return h.counter.target;
 			}
 
@@ -57,7 +57,7 @@ namespace nobnak.Gist.Database {
 			}
 			#endregion
 
-			~Handler() {
+			~Deposit() {
 				Dispose();
 			}
 			#endregion

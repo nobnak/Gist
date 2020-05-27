@@ -5,8 +5,12 @@ using UnityEngine;
 
 namespace nobnak.Gist.Primitive {
 
+	public interface IFastBoudns2D {
+		FastBounds2D GetBounds();
+	}
+
 	[StructLayout(LayoutKind.Explicit, Pack = 4)]
-	public struct FastBounds2D {
+	public struct FastBounds2D : IFastBoudns2D {
 		[FieldOffset(0)]
 		public Vector2 Min;
 		[FieldOffset(0)]
@@ -41,6 +45,12 @@ namespace nobnak.Gist.Primitive {
 		#region object
 		public override string ToString() {
 			return $"<{GetType().Name}:min={Min},max={Max}>";
+		}
+		#endregion
+
+		#region IFastBoudns2D
+		public FastBounds2D GetBounds() {
+			return this;
 		}
 		#endregion
 
