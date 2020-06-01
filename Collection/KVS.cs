@@ -45,7 +45,7 @@ namespace nobnak.Gist.Collection {
 			#endregion
 		}
 		public class Table<K, R>
-			: IEnumerable<R>
+			: IEnumerable<R>, IReadOnlyDictionary<K, R>
 			where R : Row<K> {
 
 			protected Dictionary<K, int> keyToIndex = new Dictionary<K, int>();
@@ -84,26 +84,47 @@ namespace nobnak.Gist.Collection {
 			}
 			#endregion
 
-			public bool ContainsKey(K k) {
-				return keyToIndex.ContainsKey(k);
-			}
-			public int Count { get => rows.Count; }
-			public bool TryGet(K key, out R value) {
+			#region IReadonlyDictionary
+			public IEnumerable<K> Keys => keyToIndex.Keys;
+			public IEnumerable<R> Values => rows;
+			public bool TryGetValue(K key, out R value) {
 				var found = keyToIndex.TryGetValue(key, out int index);
 				value = (found ? rows[index] : default);
 				return found;
 			}
+			IEnumerator<KeyValuePair<K, R>> IEnumerable<KeyValuePair<K, R>>.GetEnumerator() {
+				return rows.Select(v => new KeyValuePair<K, R>(v.key, v)).GetEnumerator();
+			}
+			#endregion
+
+			public bool ContainsKey(K k) {
+				return keyToIndex.ContainsKey(k);
+			}
+			public int Count { get => rows.Count; }
+			public K KeyAt(int index) {
+				return indexToKey[index];
+			}
+			public int IndexAt(K key) {
+				return keyToIndex[key];
+			}
+
 			public R Get(K key) {
-				if (!TryGet(key, out R value))
+				if (!TryGetValue(key, out R value))
 					throw new KeyNotFoundException($"Key({key}) Not Found");
 				return value;
 			}
 			public void Set(R row) {
 				var key = row.key;
-				if (!keyToIndex.TryGetValue(key, out int index))
+				if (!keyToIndex.TryGetValue(key, out int index)) {
 					index = rows.Count;
+					rows.Add(row);
+				} else {
+					rows[index] = row;
+#if UNITY_EDITOR
+					Debug.LogWarning("Replace item with key={Key} : {row}");
+#endif
+				}
 
-				rows[index] = row;
 				keyToIndex[key] = index;
 				indexToKey[index] = key;
 			}
