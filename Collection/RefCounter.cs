@@ -26,16 +26,16 @@ namespace nobnak.Gist.Collection {
 			}
 		}
 
-		public Deposit GetDeposit() { return new Deposit(this); }
+		public Token GetToken() { return new Token(this); }
 		#endregion
 
 		#region definition
-		public class Deposit : System.IDisposable {
+		public class Token : System.IDisposable {
 
 			protected RefCounter<T> counter;
 			protected bool disposed = false;
 
-			public Deposit(RefCounter<T> counter) {
+			public Token(RefCounter<T> counter) {
 				this.counter = counter;
 				lock (counter)
 					counter.count++;
@@ -43,7 +43,7 @@ namespace nobnak.Gist.Collection {
 
 			#region interface
 
-			public static implicit operator T (Deposit h) {
+			public static implicit operator T (Token h) {
 				return h.counter.target;
 			}
 
@@ -57,7 +57,7 @@ namespace nobnak.Gist.Collection {
 			}
 			#endregion
 
-			~Deposit() {
+			~Token() {
 				Dispose();
 			}
 			#endregion
