@@ -140,7 +140,7 @@ namespace nobnak.Gist.Collection {
 					_RemoveKeyAt(index);
 					if (index < ilast) {
 						_RemoveKeyAt(ilast);
-						_SetKeyAt(index, key);
+						_SetKeyAt(index, rlast.key);
 						rows[index] = rlast;
 					}
 					rows.RemoveAt(ilast);
