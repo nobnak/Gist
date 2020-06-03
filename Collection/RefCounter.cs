@@ -47,6 +47,12 @@ namespace nobnak.Gist.Collection {
 				return h.counter.target;
 			}
 
+			#region object
+			public override string ToString() {
+				return $"<{GetType().Name}:counter={counter} disposed={disposed}>";
+			}
+			#endregion
+
 			#region IDisposable
 			public void Dispose() {
 				lock (counter) {
