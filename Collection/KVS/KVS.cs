@@ -1,3 +1,4 @@
+using nobnak.Gist.Extensions.ReflectionExt;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,19 +29,8 @@ namespace nobnak.Gist.Collection.KVS {
 		#endregion
 
 		public IEnumerable<FieldInfo> GetFields() {
-			var bflags = BindingFlags.Instance | BindingFlags.Public;
 			var typeOfR = GetType();
-			var fieldOfKey = typeOfR.GetField(nameof(Key));
-			var fields = typeOfR.GetFields(bflags);
-			var ikeyfield = System.Array.IndexOf(fields, fieldOfKey);
-			if (ikeyfield < 0)
-				throw new System.InvalidProgramException();
-			if (ikeyfield > 0) {
-				fields[ikeyfield] = fields[0]; ;
-				fields[0] = fieldOfKey;
-			}
-			for (var j = 0; j < fields.Length; j++)
-				yield return fields[j];
+			return typeOfR.GetFields();
 		}
 		#endregion
 	}
@@ -64,7 +54,7 @@ namespace nobnak.Gist.Collection.KVS {
 				var fields = rows[0].GetFields().ToArray();
 				for (var i = 0; i < rows.Count; i++) {
 					var r = rows[i];
-					tmp.Append($"{i} : ");
+					tmp.Append($"{i} key={r.Key} : ");
 					for (var j = 0; j < fields.Length; j++) {
 						var f = fields[j];
 						tmp.Append($"{f.GetValue(r)},\t");
