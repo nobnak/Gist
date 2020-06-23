@@ -25,6 +25,7 @@ namespace nobnak.Gist.Collection {
 					return count > 0;
 			}
 		}
+		public T Value { get => target; }
 
 		public Token GetToken() { return new Token(this); }
 		#endregion
