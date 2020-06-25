@@ -60,5 +60,18 @@ namespace nobnak.Gist.Extension.FloatArray {
 		public static Vector3 Quantize(this Vector3 v, float dx = DX) {
 			return new Vector3(v.x.Quantize(dx), v.y.Quantize(dx), v.z.Quantize(dx));
 		}
-    }
+
+		#region smoothstep
+		public static float Smoothstep(this float t) {
+			return t * t * (3f - 2f * t);
+		}
+		public static float Smoothstep(this float v, float min, float max) {
+			var width = max - min;
+			if (-float.Epsilon <= width && width <= float.Epsilon)
+				return (v < min) ? 0f : 1f;
+
+			return Mathf.Clamp01((v - min) / width).Smoothstep();
+		}
+		#endregion
+	}
 }
