@@ -8,12 +8,15 @@ namespace nobnak.Gist.Pluggable {
 
 		public event System.Action<System.Exception> OnError;
 
-		protected List<IEnumerator> coroutines = new List<IEnumerator>();
+		public List<IEnumerator> coroutines = new List<IEnumerator>();
 
+		#region interface
+		public IReadOnlyCollection<IEnumerator> Coroutines {
+			get => coroutines;
+		}
 		public virtual void Start(IEnumerator co) {
 			coroutines.Add(co);
 		}
-
 		public virtual void Update() {
 			for (var i = 0; i < coroutines.Count; ) {
 				try {
@@ -30,9 +33,8 @@ namespace nobnak.Gist.Pluggable {
 				}
 				i++;
 			}
-
-
 		}
+		#endregion
 
 		#region method
 		protected virtual void ReplaceWithLast(int i) {
