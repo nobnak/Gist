@@ -92,6 +92,9 @@ namespace nobnak.Gist.Collection.KVS {
 		public K KeyAt(int index) {
 			return indexToKey[index];
 		}
+		public R RowAt(int index) {
+			return rows[index];
+		}
 		public int IndexAt(K key) {
 			return keyToIndex[key];
 		}
