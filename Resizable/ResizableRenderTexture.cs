@@ -150,7 +150,7 @@ namespace nobnak.Gist.Resizable {
 
 		#region static
 		public static implicit operator RenderTexture(ResizableRenderTexture v) {
-			return v.Texture;
+			return (v == null) ? null : v.Texture;
 		}
 		#endregion
 	}
