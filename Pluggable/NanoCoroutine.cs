@@ -29,7 +29,7 @@ namespace nobnak.Gist.Pluggable {
 					if (c.Current != null)
 						Debug.LogWarning($"{GetType().Name} : Only support yield return null");
 				} catch(System.Exception e) {
-					OnError?.Invoke(e);
+					(OnError ?? Debug.LogWarning)(e);
 				}
 				i++;
 			}
