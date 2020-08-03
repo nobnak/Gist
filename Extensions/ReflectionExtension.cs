@@ -18,10 +18,10 @@ namespace nobnak.Gist.Extensions.ReflectionExt {
 			return t.GetMembers(BF_PUBLIC_INSTANCE);
 		}
 
-		public static IEnumerable<MemberInfo> GetInstancePublicFields(this System.Type t) {
+		public static IEnumerable<FieldInfo> GetInstancePublicFields(this System.Type t) {
 			return t.GetFields(BF_PUBLIC_INSTANCE);
 		}
-		public static IEnumerable<MemberInfo> GetInstancePublicProperties(this System.Type t) {
+		public static IEnumerable<PropertyInfo> GetInstancePublicProperties(this System.Type t) {
 			return t.GetProperties(BF_PUBLIC_INSTANCE);
 		}
 
