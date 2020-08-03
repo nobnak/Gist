@@ -5,7 +5,7 @@ using UnityEngine;
 namespace nobnak.Gist {
 
     #region Timer class
-    public class Timer {
+    public class Timer : ITimer {
         public enum StateEnum { Init = 0, Active, Completed }
 
         public event System.Action<Timer> Elapsed;
