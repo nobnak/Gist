@@ -21,7 +21,7 @@ namespace nobnak.Gist.Collection.KVS {
 			var tmp = new StringBuilder();
 			tmp.Append($"<{GetType().Name} : ");
 			foreach (var f in GetFields()) {
-				tmp.Append($"{f.GetValue(this)},\t");
+				tmp.Append($"{f.Name} = {f.GetValue(this)},\t");
 			}
 			tmp.Append($">");
 			return tmp.ToString();
@@ -30,7 +30,7 @@ namespace nobnak.Gist.Collection.KVS {
 
 		public IEnumerable<FieldInfo> GetFields() {
 			var typeOfR = GetType();
-			return typeOfR.GetFields();
+			return typeOfR.GetInstancePublicFields();
 		}
 		#endregion
 	}
@@ -57,7 +57,7 @@ namespace nobnak.Gist.Collection.KVS {
 					tmp.Append($"{i} key={r.Key} : ");
 					for (var j = 0; j < fields.Length; j++) {
 						var f = fields[j];
-						tmp.Append($"{f.GetValue(r)},\t");
+						tmp.Append($"{f.Name} = {f.GetValue(r)},\t");
 					}
 					tmp.AppendLine();
 				}
