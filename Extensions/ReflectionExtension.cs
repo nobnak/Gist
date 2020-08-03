@@ -6,8 +6,6 @@ using UnityEngine;
 
 namespace nobnak.Gist.Extensions.ReflectionExt {
 
-
-
 	public static class ReflectionExtension {
 		public static readonly BindingFlags BF_PUBLIC_INSTANCE = BindingFlags.Instance | BindingFlags.Public;
 
@@ -16,14 +14,14 @@ namespace nobnak.Gist.Extensions.ReflectionExt {
 				.Cast<MemberInfo>()
 				.Concat(t.GetProperties(f));
 		}
-		public static IEnumerable<MemberInfo> GetMembers(this System.Type t) {
+		public static IEnumerable<MemberInfo> GetInstancePublicMembers(this System.Type t) {
 			return t.GetMembers(BF_PUBLIC_INSTANCE);
 		}
 
-		public static IEnumerable<MemberInfo> GetFields(this System.Type t) {
+		public static IEnumerable<MemberInfo> GetInstancePublicFields(this System.Type t) {
 			return t.GetFields(BF_PUBLIC_INSTANCE);
 		}
-		public static IEnumerable<MemberInfo> GetProperties(this System.Type t) {
+		public static IEnumerable<MemberInfo> GetInstancePublicProperties(this System.Type t) {
 			return t.GetProperties(BF_PUBLIC_INSTANCE);
 		}
 
