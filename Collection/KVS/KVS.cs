@@ -88,6 +88,9 @@ namespace nobnak.Gist.Collection.KVS {
 		public bool ContainsKey(K k) {
 			return keyToIndex.ContainsKey(k);
 		}
+		public bool ContainsKey(Row<K> row) {
+			return ContainsKey(row.Key);
+		}
 		public int Count { get => rows.Count; }
 		public K KeyAt(int index) {
 			return indexToKey[index];
