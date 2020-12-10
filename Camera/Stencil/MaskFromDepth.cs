@@ -90,7 +90,7 @@ namespace nobnak.Gist.Cameras {
 			var size = manualCam.Camera.Size();
 			depthBuf.Size = size;
 			depthTex.Size = size;
-			cap.Add(cmd, depthTex);
+			cap.Add(cmd, depthTex, DepthCapture.KW_OUTPUT.OUTPUT_CLIP);
 		}
 		#endregion
 

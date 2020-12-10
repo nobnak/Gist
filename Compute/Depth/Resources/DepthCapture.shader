@@ -12,6 +12,8 @@
 
             #include "UnityCG.cginc"
 
+			#pragma multi_compile ___ OUTPUT_CLIP
+
             struct appdata {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
@@ -34,7 +36,11 @@
 			float4 frag (v2f i) : SV_Target {
 				float d = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv);
 				d = Linear01Depth(d);
-				d = step(d, 0.5);
+
+				#if defined(OUTPUT_CLIP)
+				d = step(d, 1e-3f);
+				#endif
+
 				return d;
             }
             ENDCG
