@@ -43,6 +43,10 @@ namespace nobnak.Gist.Cameras {
 			validator.Validation += () => {
 				Prepare();
 			};
+			validator.SetCheckers(() => refCam != null 
+				&& manualCam.Camera.pixelWidth == refCam.pixelWidth
+				&& manualCam.Camera.pixelHeight == refCam.pixelHeight
+			);
 			validator.Validate();
 			depthBuf.AfterCreateTexture += v => validator.Invalidate();
 			depthTex.AfterCreateTexture += v => validator.Invalidate();
@@ -87,7 +91,7 @@ namespace nobnak.Gist.Cameras {
 			manualCam.Camera.targetTexture = null;
 			manualCam.Camera.cullingMask = tuner.CullingMask();
 
-			var size = manualCam.Camera.Size();
+			var size = refCam.Size();
 			depthBuf.Size = size;
 			depthTex.Size = size;
 			cap.Add(cmd, depthTex, DepthCapture.KW_OUTPUT.OUTPUT_CLIP);
