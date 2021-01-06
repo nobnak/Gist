@@ -86,6 +86,15 @@ namespace nobnak.Gist.Resizable {
 				}
 			}
 		}
+		public virtual RenderTextureFormat TextureFormat {
+			get { return format.textureFormat; }
+			set {
+				if (format.textureFormat != value) {
+					Invalidate();
+					format.textureFormat = value;
+				}
+			}
+		}
 		public virtual FormatRT Format {
 			get { return format; }
 			set {
@@ -116,15 +125,12 @@ namespace nobnak.Gist.Resizable {
             ReleaseTexture();
 
 			if (width < 2 || height < 2) {
-				Debug.LogFormat("Texture size too small : {0}x{1}", width, height);
+				Debug.Log($"Texture size too small : {width}x{height}");
 				return;
 			}
 
             tex = format.CreateTexture(width, height);
-			Debug.LogFormat("{0} : Create {1}\n{2}",
-				GetType().Name,
-				string.Format("size={0}x{1}", tex.width, tex.height),
-				format);
+			Debug.Log($"{GetType().Name} : {tex.width}x{tex.height}");
         }
         protected virtual void NotifyAfterCreateTexture() {
             if (AfterCreateTexture != null)
@@ -144,7 +150,7 @@ namespace nobnak.Gist.Resizable {
 
 		#region static
 		public static implicit operator RenderTexture(ResizableRenderTexture v) {
-			return v.Texture;
+			return (v == null) ? null : v.Texture;
 		}
 		#endregion
 	}

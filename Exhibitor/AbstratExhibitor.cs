@@ -18,19 +18,29 @@ namespace nobnak.Gist.Exhibitor {
 
         public virtual void ReflectChangeOf(MVVMComponent latestOne) {
             switch (latestOne) {
-                case MVVMComponent.Model:
-                    ResetViewModelFromModel();
-                    ResetView();
-                    break;
-                case MVVMComponent.ViewModel:
-                    ApplyViewModelToModel();
-                    ResetView();
-                    break;
-                case MVVMComponent.View:
-                    ApplyViewModelToModel();
-                    break;
-            }
+				case MVVMComponent.Model:
+					NotifyModelChanged();
+					break;
+				case MVVMComponent.ViewModel:
+					NotifyViewModelChanged();
+					break;
+				case MVVMComponent.View:
+					NotifyViewChanged();
+					break;
+			}
         }
-        #endregion
-    }
+
+		public virtual void NotifyModelChanged() {
+			ResetViewModelFromModel();
+			ResetView();
+		}
+		public virtual void NotifyViewModelChanged() {
+			ApplyViewModelToModel();
+			ResetView();
+		}
+		public virtual void NotifyViewChanged() {
+			ApplyViewModelToModel();
+		}
+		#endregion
+	}
 }

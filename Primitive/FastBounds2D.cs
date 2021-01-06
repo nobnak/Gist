@@ -5,8 +5,12 @@ using UnityEngine;
 
 namespace nobnak.Gist.Primitive {
 
+	public interface IFastBoudns2D {
+		FastBounds2D GetBounds();
+	}
+
 	[StructLayout(LayoutKind.Explicit, Pack = 4)]
-	public struct FastBounds2D {
+	public struct FastBounds2D : IFastBoudns2D {
 		[FieldOffset(0)]
 		public Vector2 Min;
 		[FieldOffset(0)]
@@ -36,6 +40,19 @@ namespace nobnak.Gist.Primitive {
 		}
 		public FastBounds2D(Vector2 min, Vector2 max) :
 			this(min.x, min.y, max.x, max.y) { }
+
+		#region interface
+		#region object
+		public override string ToString() {
+			return $"<{GetType().Name}:min={Min},max={Max}>";
+		}
+		#endregion
+
+		#region IFastBoudns2D
+		public FastBounds2D GetBounds() {
+			return this;
+		}
+		#endregion
 
 		public Vector2 Center {
 			get {
@@ -85,7 +102,14 @@ namespace nobnak.Gist.Primitive {
 			Encapsulate(fb.min_x, fb.min_y);
 			Encapsulate(fb.max_x, fb.max_y);
 		}
+		public Vector2 Sample() {
+			return new Vector2(
+				Random.Range(min_x, max_x),
+				Random.Range(min_y, max_y));
+		}
+		#endregion
 
+		#region static
 		public static implicit operator FastBounds2D(Rect b) {
 			return new FastBounds2D(b.min, b.max);
 		}
@@ -99,5 +123,14 @@ namespace nobnak.Gist.Primitive {
 		public static explicit operator FastBounds(FastBounds2D fb2) {
 			return new FastBounds(fb2.min_x, fb2.min_y, 0f, fb2.max_x, fb2.max_y, 0f);
 		}
+		public static FastBounds2D operator +(FastBounds2D fb2, Vector2 offset) {
+			var of_x = offset.x;
+			var of_y = offset.y;
+			return new FastBounds2D(
+				fb2.min_x + of_x, fb2.min_y + of_y,
+				fb2.max_x + of_x, fb2.max_y + of_y
+				);
+		}
+		#endregion
 	}
 }

@@ -10,12 +10,21 @@ namespace nobnak.Gist.Loader {
 	public class FolderPath {
 		public const string DEFAULT_FILEPATH = @"%USERPROFILE%\Documents\";
 
-        [SerializeField]
-        protected FolderSelectionMethod method = FolderSelectionMethod.SpecialFolder;
-        [SerializeField]
-        protected System.Environment.SpecialFolder specialFolder = System.Environment.SpecialFolder.MyDocuments;
+		[SerializeField]
+		protected FolderSelectionMethod method;
+		[SerializeField]
+		protected System.Environment.SpecialFolder specialFolder;
         [SerializeField]
         protected string folderpath = DEFAULT_FILEPATH;
+
+		public FolderPath(
+			FolderSelectionMethod method = FolderSelectionMethod.SpecialFolder,
+			System.Environment.SpecialFolder specialFolder = System.Environment.SpecialFolder.MyDocuments,
+			string folderpath = DEFAULT_FILEPATH) {
+			this.method = method;
+			this.specialFolder = specialFolder;
+			this.folderpath = folderpath;
+		}
 
 		#region public
 		public virtual string Folder {

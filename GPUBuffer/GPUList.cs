@@ -121,9 +121,13 @@ namespace nobnak.Gist.GPUBuffer {
         public T this[int index] {
             get { return data[index]; }
             set {
-                dirty = DirtyFlag.Data;
-                count = (index >= count ? (index + 1) : count);
-                data[index] = value;
+				try {
+					dirty = DirtyFlag.Data;
+					count = (index >= count ? (index + 1) : count);
+					data[index] = value;
+				} catch (System.Exception e) {
+					Debug.LogWarning($"Exception at index={index} count={count} capacity={capacity} data.Length={data.Length}\n{e}");
+				}
             }
         }
         public int IndexOf(T item) {

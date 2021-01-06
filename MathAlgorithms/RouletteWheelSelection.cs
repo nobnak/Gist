@@ -5,6 +5,14 @@ using System.Linq;
 
 namespace nobnak.Gist.MathAlgorithms {
 
+	public static class RouletteWheelSelectionExtension {
+
+		public static int Sample(this IList<float> weights) {
+			var wmax = weights.Max();
+			return RouletteWheelSelection.Sample(wmax, weights);
+		}
+	}
+
 	public class RouletteWheelSelection  {
 		public const int DEFAULT_ITERATION_LIMIT = 100;
 		public const float EPSILON = 1e-6f;

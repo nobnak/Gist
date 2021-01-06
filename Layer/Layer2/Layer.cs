@@ -13,6 +13,8 @@ namespace nobnak.Gist.Layer2 {
 
 		[SerializeField]
 		protected Events events = new Events();
+		[SerializeField]
+		protected Transform targetTransform = null;
 
 		protected Validator validator = new Validator();
 
@@ -28,11 +30,11 @@ namespace nobnak.Gist.Layer2 {
 
             validator.Reset();
 			validator.Validation += () => {
-                transform.hasChanged = false;
+				TargetTransform.hasChanged = false;
                 GenerateLayerData();
                 NotifyLayerOnChange();
             };
-			validator.SetCheckers(() => !transform.hasChanged);
+			validator.SetCheckers(() => !TargetTransform.hasChanged);
         }
         protected virtual void OnValidate() {
 			validator.Invalidate();
@@ -59,8 +61,9 @@ namespace nobnak.Gist.Layer2 {
         public virtual bool Raycast(Ray ray, out float distance) {
             distance = default(float);
 
-            var n = transform.forward;
-            var c = transform.position;
+			var tr = TargetTransform;
+			var n = tr.forward;
+            var c = tr.position;
             var det = Vector3.Dot(n, ray.direction);
             if (-EPSILON < det && det < EPSILON)
                 return false;
@@ -80,6 +83,10 @@ namespace nobnak.Gist.Layer2 {
 		#endregion
 
 		#region private
+		protected virtual Transform TargetTransform {
+			get => targetTransform == null ? transform : targetTransform;
+		}
+
 		protected virtual void NotifyLayerOnChange() {
             foreach (var c in transform.Children<ILayerListener>(false))
                 c.TargetOnChange(this);
@@ -87,10 +94,11 @@ namespace nobnak.Gist.Layer2 {
 				events.LayerOnChange.Invoke(this);
 		}
         protected virtual void GenerateLayerData() {
-            var localScale = transform.localScale;
+			var tr = TargetTransform;
+			var localScale = tr.localScale;
             localScale.z = 1f;
 
-            var layer = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
+            var layer = Matrix4x4.TRS(tr.position, tr.rotation, Vector3.one);
             var local = Matrix4x4.Scale(localScale);
             LayerToWorld.Reset(layer);
             LocalToLayer.Reset(local);

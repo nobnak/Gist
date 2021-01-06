@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using nobnak.Gist.MathAlgorithms.Distribution;
 
 namespace nobnak.Gist {
 
@@ -11,16 +12,24 @@ namespace nobnak.Gist {
         protected Vector2 dist;
         protected float sigma;
         protected float cutoff;
+		protected bool noisy;
 
         protected Vector2 currUV;
         protected float currValue;
 
-        public MCMC(System.Func<Vector2, float> Func, Vector2 dist, float sigma, float cutoff) {
+        public MCMC(
+			System.Func<Vector2, float> Func, 
+			Vector2 dist, 
+			float sigma, 
+			float cutoff,
+			bool noisy = false) {
+
             this.Func = Func;
             this.dist = dist;
             this.sigma = sigma;
             this.cutoff = Mathf.Max (cutoff, EPSILON);
-        }
+			this.noisy = noisy;
+		}
 
         public IEnumerable<Vector2> Sequence(int nInitialize, int limit, int skip = 0) {
             currUV = new Vector2(Random.value, Random.value);
@@ -32,18 +41,24 @@ namespace nobnak.Gist {
             for (var i = 0; i < limit; i++) {
                 for (var j = 0; j < skip; j++)
                     Next ();
-                if (cutoff < currValue)
-                    yield return currUV;
+				if (cutoff < currValue) {
+					yield return noisy ? (currUV + 0.1f * RandomStep()) : currUV;
+				}
                 Next ();
             }
         }
 
-        Vector2 RandomStep() {
-            return new Vector2 (
+		public Vector2 RandomStep() {
+#if RANDOM_UNIFORM
+			return new Vector2 (
                 sigma * dist.x * Random.Range (-1f, 1f),
-                sigma * dist.y * Random.Range (-1f, 1f));                
-        }
-        void Next() {
+                sigma * dist.y * Random.Range (-1f, 1f));
+#else
+			var g = Gaussian.BoxMuller();
+			return new Vector2(sigma * dist.x * g.x, sigma * dist.y * g.y);
+#endif
+		}
+		public void Next() {
             var next = RandomStep() + currUV;
             next = Repeat(next);
 
@@ -53,12 +68,12 @@ namespace nobnak.Gist {
                 currValue = nextValue;
             }
         }
-        Vector2 Repeat(Vector2 uv) {
+		public Vector2 Repeat(Vector2 uv) {
             var ix = Mathf.FloorToInt (uv.x);
             var iy = Mathf.FloorToInt (uv.y);
             return new Vector2 (uv.x - ix, uv.y - iy);
         }
-        Vector2 Reflect(Vector2 uv) {
+		public Vector2 Reflect(Vector2 uv) {
             if (uv.x < 0f)
                 uv.x = -uv.x;
             else if (uv.x > 1f)
