@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace nobnak.Gist.Extensions.ComponentExt {
@@ -90,6 +91,10 @@ namespace nobnak.Gist.Extensions.ComponentExt {
            this Component me, System.Func<Input, Output> method, bool ignoreGrandparent = true) {
             foreach (var i in me.Parent<Input>(ignoreGrandparent))
                 yield return method(i);
+        }
+
+        public static IEnumerable<Input> FindInterface<Input>() {
+            return Object.FindObjectsOfType<MonoBehaviour>().OfType<Input>();
         }
 
         public static bool IsVisibleLayer(this Component c) {
