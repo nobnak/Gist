@@ -26,14 +26,48 @@ namespace nobnak.Gist.Extensions.ReflectionExt {
 		}
 
 		public static object GetValue(this MemberInfo m, object target) {
-			switch (m.MemberType) {
-				case MemberTypes.Field:
-					return ((FieldInfo)m).GetValue(target);
-				case MemberTypes.Property:
-					return ((PropertyInfo)m).GetValue(target);
-				default:
-					return null;
-			}
-		}
-	}
+            if (TryGetValue(m, target, out object v))
+                return v;
+            return null;
+        }
+        public static bool TryGetValue<OUT>(this MemberInfo m, object target, out OUT v) {
+            switch (m.MemberType) {
+                case MemberTypes.Field:
+                    var fi = (FieldInfo)m;
+                    if (typeof(OUT).IsAssignableFrom(fi.FieldType)) {
+                        v = (OUT)fi.GetValue(target);
+                        return true;
+                    }
+                    break;
+                case MemberTypes.Property:
+                    var pi = (PropertyInfo)m;
+                    if (typeof(OUT).IsAssignableFrom(pi.PropertyType)) {
+                        v = (OUT)pi.GetValue(target);
+                        return true;
+                    }
+                    break;
+            }
+            v = default;
+            return false;
+        }
+        public static bool TrySetValue<IN>(this MemberInfo m, object target, IN v) {
+            switch (m.MemberType) {
+                case MemberTypes.Field:
+                    var fi = (FieldInfo)m;
+                    if (fi.FieldType.IsAssignableFrom(typeof(IN))) { 
+                        fi.SetValue(target, v);
+                        return true;
+                    }
+                    break;
+                case MemberTypes.Property:
+                    var pi = (PropertyInfo)m;
+                    if (pi.PropertyType.IsAssignableFrom(typeof(IN))) {
+                        pi.SetValue(target, v);
+                        return true;
+                    }
+                    break;
+            }
+            return false;
+        }
+    }
 }

@@ -20,7 +20,7 @@ namespace nobnak.Gist.Exhibitor {
             validator.Reset();
             validator.Validation += () => {
                 data.UpdateFrom(exhibitors);
-                tabNames = exhibitors.Select(v => v.name).ToArray();
+                tabNames = exhibitors.Select(v => v.Name).ToArray();
             };
         }
         #endregion
