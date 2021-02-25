@@ -9,15 +9,13 @@ namespace nobnak.Gist.DocSys {
 
 	public static class DocGen {
 
-		public static readonly System.Type T_Attribute = typeof(TooltipAttribute);
-
 		public static bool IsList(this System.Type t) {
 			return t.GetInterfaces()
 				.Any(v => v.IsGenericType
 					&& (v.GetGenericTypeDefinition() == typeof(IList<>)));
 		}
 
-		public static string GenerateTextFromTooltip(this MemberInfo mi) {
+		public static string GetTooltip(this MemberInfo mi) {
 			return string.Join(", ",
 				mi.GetCustomAttributes<TooltipAttribute>()
 				.Cast<TooltipAttribute>()
@@ -25,7 +23,7 @@ namespace nobnak.Gist.DocSys {
 		}
 		public static string GenerateListElement(this MemberInfo info, int i, string name) {
 			return $"{new string('\t', i)}- {name} : "
-			 + $"{GenerateTextFromTooltip(info)}";
+			 + $"{GetTooltip(info)}";
 		}
 		public static IEnumerable<string> GenerateDoc(this FieldInfo info, int i) {
 
