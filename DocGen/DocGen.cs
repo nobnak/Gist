@@ -17,7 +17,7 @@ namespace nobnak.Gist.DocSys {
 
 		public static string GetTooltip(this MemberInfo mi) {
 			return string.Join(", ",
-				mi.GetCustomAttributes<TooltipAttribute>()
+				mi.GetCustomAttributes<TooltipAttribute>(true)
 				.Cast<TooltipAttribute>()
 				.Select(attr => attr.tooltip));
 		}
