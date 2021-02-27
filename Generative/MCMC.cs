@@ -8,8 +8,8 @@ namespace nobnak.Gist {
     public class MCMC {
         public const float EPSILON = 1e-6f;
 
-        protected System.Func<Vector2, float> Func;
-        protected Vector2 dist;
+        protected System.Func<Vector2, float> heightFunc;
+        protected Vector2 distunit;
         protected float sigma;
         protected float cutoff;
 		protected bool noisy;
@@ -18,14 +18,14 @@ namespace nobnak.Gist {
         protected float currValue;
 
         public MCMC(
-			System.Func<Vector2, float> Func, 
-			Vector2 dist, 
+			System.Func<Vector2, float> HeightFunc, 
+			Vector2 distunit, 
 			float sigma, 
 			float cutoff,
 			bool noisy = false) {
 
-            this.Func = Func;
-            this.dist = dist;
+            this.heightFunc = HeightFunc;
+            this.distunit = distunit;
             this.sigma = sigma;
             this.cutoff = Mathf.Max (cutoff, EPSILON);
 			this.noisy = noisy;
@@ -33,7 +33,7 @@ namespace nobnak.Gist {
 
         public IEnumerable<Vector2> Sequence(int nInitialize, int limit, int skip = 0) {
             currUV = new Vector2(Random.value, Random.value);
-            currValue = Mathf.Max (Func (currUV), cutoff);
+            currValue = Mathf.Max (heightFunc (currUV), cutoff);
 
             for (var i = 0; i < nInitialize; i++)
                 Next();
@@ -55,14 +55,14 @@ namespace nobnak.Gist {
                 sigma * dist.y * Random.Range (-1f, 1f));
 #else
 			var g = Gaussian.BoxMuller();
-			return new Vector2(sigma * dist.x * g.x, sigma * dist.y * g.y);
+			return new Vector2(sigma * distunit.x * g.x, sigma * distunit.y * g.y);
 #endif
 		}
 		public void Next() {
             var next = RandomStep() + currUV;
             next = Repeat(next);
 
-            var nextValue = Mathf.Max (Func (next), cutoff);
+            var nextValue = Mathf.Max (heightFunc (next), cutoff);
             if (Mathf.Min(1f, nextValue / currValue) >= Random.value) {
                 currUV = next;
                 currValue = nextValue;
