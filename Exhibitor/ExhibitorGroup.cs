@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -20,13 +21,14 @@ namespace nobnak.Gist.Exhibitor {
             validator.Reset();
             validator.Validation += () => {
                 data.UpdateFrom(exhibitors);
-                tabNames = exhibitors.Select(v => v.name).ToArray();
+                tabNames = exhibitors.Select(v => v.Name).ToArray();
             };
         }
         #endregion
 
         #region interface
-        #region Exhibitor
+
+        #region AbstractExhibitor
         public override void DeserializeFromJson(string json) {
             JsonUtility.FromJsonOverwrite(json, data);
             data.ApplyTo(exhibitors);
@@ -74,6 +76,9 @@ namespace nobnak.Gist.Exhibitor {
                     : null;
             }
         }
+		public IEnumerable<AbstractExhibitor> Exhibitors {
+			get => exhibitors;
+		}
         #endregion
 
         #region classes

@@ -30,7 +30,8 @@ namespace nobnak.Gist.Cameras {
 
         #region IEquatable
         public bool Equals(Camera other) {
-            return localToWorldMatrix.Equals(other.transform.localToWorldMatrix)
+            return other != null
+                && localToWorldMatrix.Equals(other.transform.localToWorldMatrix)
                 && worldToCameraMatrix.Equals(other.worldToCameraMatrix)
                 && projectionMatrix.Equals(other.projectionMatrix)
                 && screenSize.Equals(ScreenSize(other))
