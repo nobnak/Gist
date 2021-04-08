@@ -2,6 +2,7 @@ using nobnak.Gist.Extensions.Int;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Text;
 using UnityEngine;
 
 namespace nobnak.Gist.GPUBuffer {
@@ -39,6 +40,17 @@ namespace nobnak.Gist.GPUBuffer {
 		}
 
 		#region interface
+
+		#region object
+		public override string ToString() {
+			var tt = GetType();
+			var tmp = new StringBuilder($"{tt.Name}<{tt.GenericTypeArguments[0].Name}>:\n");
+			for (var i = 0; i < count; i++)
+				tmp.AppendLine($"{i}. {data[i]}");
+			return tmp.ToString();
+		}
+		#endregion
+
 		public ComputeBuffer Buffer {
             get {
                 Upload();
