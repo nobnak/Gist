@@ -2,6 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace nobnak.Gist.Extensions.ScreenExt {
 
 	public static class ScreenExtension {
@@ -60,6 +64,19 @@ namespace nobnak.Gist.Extensions.ScreenExt {
 		public static void SetGlobalScreenParams(this Camera c) {
 			var s = c.Size();
 			SetGlobalScreenParams(s);
+		}
+
+		public static void ScaleGUIBasedOnDpi(float targetDpi = 96f) {
+			var scale = Screen.dpi / targetDpi;
+#if UNITY_EDITOR
+			var typeGameView = System.Type.GetType("UnityEditor.GameView,UnityEditor");
+			var gameView = EditorWindow.GetWindow(typeGameView);
+			var propLowRes = typeGameView.GetProperty("lowResolutionForAspectRatios");
+			var isLowRes = (bool)propLowRes.GetValue(gameView);
+			if (isLowRes)
+				scale *= 0.5f;
+#endif
+			GUIUtility.ScaleAroundPivot(new Vector2(scale, scale), Vector2.zero);
 		}
 	}
 }
