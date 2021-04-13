@@ -7,6 +7,7 @@ namespace nobnak.Gist.Resizable {
     public class ResizableRenderTexture : System.IDisposable {
         public event System.Action<RenderTexture> AfterCreateTexture;
         public event System.Action<RenderTexture> BeforeDestroyTexture;
+		public event System.Action<RenderTexture> Changed;
 
 		[SerializeField]
 		protected Vector2Int size;
@@ -131,21 +132,26 @@ namespace nobnak.Gist.Resizable {
 
             tex = format.CreateTexture(width, height);
 			Debug.Log($"{GetType().Name} : {tex.width}x{tex.height}");
-        }
-        protected virtual void NotifyAfterCreateTexture() {
+			NotifyChanged();
+		}
+		protected virtual void ReleaseTexture() {
+			NotifyBeforeDestroyTexture();
+			tex.DestroySelf();
+			tex = null;
+			NotifyChanged();
+		}
+		protected virtual void NotifyAfterCreateTexture() {
             if (AfterCreateTexture != null)
                 AfterCreateTexture (tex);
-        }
-        protected virtual void NotifyBeforeDestroyTexture() {
+		}
+		protected virtual void NotifyBeforeDestroyTexture() {
             if (BeforeDestroyTexture != null)
                 BeforeDestroyTexture (tex);
-        }
-
-        protected virtual void ReleaseTexture() {
-            NotifyBeforeDestroyTexture ();
-            tex.DestroySelf();
-            tex = null;
-        }
+		}
+		protected virtual void NotifyChanged() {
+			if (Changed != null)
+				Changed(tex);
+		}
 		#endregion
 
 		#region static
