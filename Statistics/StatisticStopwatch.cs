@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace nobnak.Gist.Statistics {
 
-	public class StatisticStopwatch {
+	public class StatisticStopwatch : IReadonlyStatisticalMoment {
 
 		public System.Action Updated;
 
@@ -13,7 +13,16 @@ namespace nobnak.Gist.Statistics {
 		public readonly StatisticalMoment sm = new StatisticalMoment();
 
 		#region interface
+
+		#region IReadonlyStatisticalMoment
+		public float Average => sm.Average;
+		public int Count => sm.Count;
+		public float SD => sm.SD;
+		public float UnbiasedVariance => sm.UnbiasedVariance;
+		#endregion
+
 		public StatisticalMoment Stat { get => sm; }
+
 		public void Start() {
 			sw.Restart();
 		}
