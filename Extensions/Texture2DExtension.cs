@@ -36,5 +36,9 @@ namespace nobnak.Gist.Extensions.Texture2DExt {
 		public static string SizeToString(this Texture2D tex) {
 			return string.Format("size={0}x{1}", tex.width, tex.height);
 		}
+
+		public static Vector2Int Size(this Texture tex) {
+			return new Vector2Int(tex.width, tex.height);
+		}
 	}
 }

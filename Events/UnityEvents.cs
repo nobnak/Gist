@@ -24,4 +24,7 @@ namespace nobnak.Gist.Events {
 	public class Matrix4x4Event : UnityEngine.Events.UnityEvent<Matrix4x4> { }
 	[System.Serializable]
 	public class NamedMatrix4x4Event : UnityEngine.Events.UnityEvent<string, Matrix4x4> { }
+
+	[System.Serializable]
+	public class GoEvent : UnityEngine.Events.UnityEvent<GameObject> { }
 }
