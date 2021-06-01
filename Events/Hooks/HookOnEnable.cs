@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace nobnak.Gist.Events.Hooks {
 
+	[ExecuteAlways]
 	public class HookOnEnable : MonoBehaviour {
 
 		[SerializeField]
