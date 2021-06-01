@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 
 namespace nobnak.Gist.Extensions.GPUExt {
 
@@ -25,6 +26,10 @@ namespace nobnak.Gist.Extensions.GPUExt {
 				(int)gsx * DispatchSize(x, (int)gsx),
 				(int)gsy * DispatchSize(y, (int)gsy),
 				(int)gsz * DispatchSize(z, (int)gsz));
+		}
+
+		public static bool IsSupportedForReadPixels(this GraphicsFormat format) {
+			return SystemInfo.IsFormatSupported(format, FormatUsage.ReadPixels);
 		}
 	}
 }
