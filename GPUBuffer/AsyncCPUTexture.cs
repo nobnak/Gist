@@ -1,5 +1,6 @@
 #pragma warning disable 0067
 
+using nobnak.Gist.Extensions.GPUExt;
 using nobnak.Gist.Extensions.NativeArrayExt;
 using nobnak.Gist.ThreadSafe;
 using System;
@@ -40,6 +41,10 @@ namespace nobnak.Gist.GPUBuffer {
 		}
 		public virtual void Start() {
 			if (state == StateEnum.Stopped && Source != null) {
+				if (!Source.graphicsFormat.IsSupportedForReadPixels()) {
+					Debug.LogWarning($"Format is not supported for readpixel : {Source.graphicsFormat}");
+					return;
+				}
 				req = AsyncGPUReadback.Request(Source);
 				size = new Vector2Int(req.width, req.height);
 				state = StateEnum.Progress;
