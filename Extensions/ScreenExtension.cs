@@ -66,6 +66,10 @@ namespace nobnak.Gist.Extensions.ScreenExt {
 			SetGlobalScreenParams(s);
 		}
 
+		public static float AspectRatio(this Vector2 v) {
+			return v.x / v.y;
+		}
+
 		public static void ScaleGUIBasedOnDpi(float targetDpi = 96f) {
 			var scale = Screen.dpi / targetDpi;
 #if UNITY_EDITOR
