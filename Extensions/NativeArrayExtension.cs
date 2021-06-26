@@ -25,7 +25,7 @@ namespace nobnak.Gist.Extensions.NativeArrayExt {
 				}
 			}
 #else
-			Debug.LogWarning("Unsafe copy is not enabled");
+			//Debug.LogWarning("Unsafe copy is not enabled");
 			src.CopyTo(dst);
 #endif
 		}
