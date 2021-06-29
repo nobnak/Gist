@@ -1,7 +1,8 @@
 ﻿Shader "Hidden/RestoreAndMergeMask" {
     Properties {
-        _MainTex ("Texture", 2D) = "white" {}
-		_CharTex ("Character", 2D) = "black"
+        _MainTex ("Prev Texture", 2D) = "white" {}
+		_RefTex ("Reference Texture", 2D) = "black" {}
+        _ColorAdjust ("Color Adjuster", Vector) = (1,0,0,0)
     }
     SubShader {
         Cull Off ZWrite Off ZTest Always
@@ -12,6 +13,7 @@
             #pragma fragment frag
 
             #include "UnityCG.cginc"
+            #include "Assets/Packages/Gist/CGIncludes/ColorSpace.cginc"
 
             struct appdata {
                 float4 vertex : POSITION;
@@ -25,15 +27,17 @@
 
 			sampler2D _MainTex;
 			float4 _MainTex_TexelSize;
-			sampler2D _CharTex;
-			float4 _CharTex_TexelSize;
+			sampler2D _RefTex;
+			float4 _RefTex_TexelSize;
 
 			float4 _User_Time;
 			float4 _Throttle;
 
+            float4 _ColorAdjust;
+
             v2f vert (appdata v) {
 				float4 uv = v.uv.xyxy;
-				if (_CharTex_TexelSize.y < 0)
+				if (_RefTex_TexelSize.y < 0)
 					uv.w = 1 - uv.y;
 
                 v2f o;
@@ -43,13 +47,18 @@
             }
 
 			float4 frag (v2f i) : SV_Target {
-				float4 cmain = tex2D(_MainTex, i.uv.zw);
-				float4 cchar = tex2D(_CharTex, i.uv.xy);
+				float4 cprev = tex2D(_MainTex, i.uv.zw);
+				float4 cref = tex2D(_RefTex, i.uv.xy);
 				float dt = _User_Time.x;
+                
+                //float lum = saturate(dot(cref.xyz, float3(0.2, 0.7, 0.1)));
+                float lum = saturate(dot(cref.xyz, 1));
+                cref = saturate(ContrastBrightness4(cref, _ColorAdjust.xy));
 
-				cmain = lerp(cmain, 1, saturate(_Throttle.x * dt));
-				cmain = lerp(cmain, 0, saturate(cchar.x * _Throttle.y * dt));
-				return cmain;
+				float4 cnext = cprev;
+                cnext = saturate(cnext + saturate(_Throttle.x * dt));
+                cnext = lerp(cnext, min(cnext, 1 - cref), saturate(cref * _Throttle.y * dt));
+				return cnext;
             }
             ENDCG
         }

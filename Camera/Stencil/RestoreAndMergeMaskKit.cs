@@ -8,11 +8,13 @@ namespace nobnak.Gist.Cameras {
 	public class RestoreAndMergeMaskKit : System.IDisposable {
 
 		public const string PATH = "RestoreAndMergeMaskKit";
+		public static readonly Vector2 DEFAULT_COLOR_ADJUSTER = new Vector2(1f, 0f);
 
 		public static readonly int P_MainTex = Shader.PropertyToID("_MainTex");
-		public static readonly int P_CharTex = Shader.PropertyToID("_CharTex");
+		public static readonly int P_RefTex = Shader.PropertyToID("_RefTex");
 		public static readonly int P_User_Time = Shader.PropertyToID("_User_Time");
 		public static readonly int P_Throttle = Shader.PropertyToID("_Throttle");
+		public static readonly int P_ColorAdjust = Shader.PropertyToID("_ColorAdjust");
 
 		protected Material mat;
 
@@ -33,28 +35,36 @@ namespace nobnak.Gist.Cameras {
 		#endregion
 
 		public void Render(
-			RenderTexture dst, 
-			Texture src, 
-			Texture charMaskTex, 
-			float thRestore,
-			float thMerge,
+			RenderTexture next, 
+			Texture prev, 
+			Texture refTex,
+			RenderParams rparams,
 			float dt
 		) {
 			mat.SetVector(P_User_Time, new Vector4(dt, Time.timeSinceLevelLoad, 0f, 0f));
-			mat.SetVector(P_Throttle, new Vector4(thRestore, thMerge));
+			mat.SetVector(P_Throttle, new Vector4(rparams.light, rparams.dark));
+			mat.SetVector(P_ColorAdjust, rparams.colorAdjuster);
 
-			mat.SetTexture(P_CharTex, charMaskTex);
+			mat.SetTexture(P_RefTex, refTex);
 
-			Graphics.Blit(src, dst, mat);
+			Graphics.Blit(prev, next, mat);
 		}
 		public void Render(
-			RenderTexture dst, 
-			Texture src, 
-			Texture charMaskTex,
-			float thRestore,
-			float thMerge
+			RenderTexture next, 
+			Texture prev, 
+			Texture refTex,
+			RenderParams rparams
 		) {
-			Render(dst, src, charMaskTex, thRestore, thMerge, Time.deltaTime);
+			Render(next, prev, refTex, rparams, Time.deltaTime);
+		}
+		#endregion
+
+		#region definitions
+		[System.Serializable]
+		public class RenderParams {
+			public float dark = 0f;
+			public float light = 0f;
+			public Vector2 colorAdjuster = new Vector2(1f, 0f);
 		}
 		#endregion
 	}
