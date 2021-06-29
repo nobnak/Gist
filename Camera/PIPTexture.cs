@@ -33,8 +33,12 @@ namespace nobnak.Gist.Cameras {
 
 				RemoveCommandBuffer();
 				CamBuf.Clear();
+				if (!tuner.enabled)
+					return;
+
+				var texSize = (Vector2)screenSize * tuner.sizeScale;
 				foreach (var (t, m, p) in data) {
-					var texSize = (Vector2)t.Size() * tuner.sizeScale;
+					//var texSize = (Vector2)t.Size() * tuner.sizeScale;
 					var vp = new Rect(offset_x, 0f, texSize.x, texSize.y);
 					CamBuf.SetViewport(vp);
 
@@ -107,6 +111,7 @@ namespace nobnak.Gist.Cameras {
 		#region definition
 		[System.Serializable]
 		public class Tuner {
+			public bool enabled = true;
 			public float sizeScale = 0.2f;
 		}
 		#endregion
