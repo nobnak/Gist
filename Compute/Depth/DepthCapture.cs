@@ -11,14 +11,18 @@ namespace nobnak.Gist.Compute.Depth {
 		public const string PATH = "DepthCapture";
 		public enum KW_OUTPUT {
 			___ = default,
-			OUTPUT_CLIP,
+			STEP_FUNC,
+			STEP_FUNC_INV,
 		}
+		public readonly int P_StepTh = Shader.PropertyToID("_StepTh");
 
 		protected Material mat;
+		protected float stepTh;
 
 		public DepthCapture() {
 			var s = Resources.Load<Shader>(PATH);
 			mat = new Material(s);
+			stepTh = mat.GetFloat(P_StepTh);
 		}
 
 		#region interface
@@ -31,10 +35,18 @@ namespace nobnak.Gist.Compute.Depth {
 		}
 		#endregion
 
-		public void Add(CommandBuffer buf, RenderTexture depth, KW_OUTPUT output = default) {
+		public float StepThreashold {
+			get => stepTh;
+			set {
+				stepTh = Mathf.Clamp01(value);
+			}
+		}
+		public void Capture(CommandBuffer buf, RenderTexture depth, KW_OUTPUT output = default) {
 			mat.shaderKeywords = null;
 			if (output != default)
 				mat.EnableKeyword(output.ToString());
+
+			mat.SetFloat(P_StepTh, stepTh);
 
 			buf.Blit(null, depth, mat);
 		}

@@ -1,6 +1,7 @@
 ﻿Shader "Hidden/CaptureDepth" {
     Properties {
         _MainTex ("Texture", 2D) = "white" {}
+        _StepTh ("Step threashold", Float) = 0.5
     }
     SubShader {
         Cull Off ZWrite Off ZTest Always
@@ -12,7 +13,7 @@
 
             #include "UnityCG.cginc"
 
-			#pragma multi_compile ___ OUTPUT_CLIP
+			#pragma multi_compile ___ STEP_FUNC STEP_FUNC_INV
 
             struct appdata {
                 float4 vertex : POSITION;
@@ -33,12 +34,16 @@
             sampler2D _MainTex;
 			sampler2D _CameraDepthTexture;
 
+            float _StepTh;
+
 			float4 frag (v2f i) : SV_Target {
 				float d = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv);
 				d = Linear01Depth(d);
 
-				#if defined(OUTPUT_CLIP)
-				d = step(d, 1e-3f);
+				#if defined(STEP_FUNC)
+				d = step(_StepTh, d);
+                #elif defined(STEP_FUNC_INV)
+                d = step(d, _StepTh);
 				#endif
 
 				return d;
