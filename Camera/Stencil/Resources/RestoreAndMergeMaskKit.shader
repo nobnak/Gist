@@ -55,9 +55,11 @@
                 float lum = saturate(dot(cref.xyz, 1));
                 cref = saturate(ContrastBrightness4(cref, _ColorAdjust.xy));
 
+                float4 cref_inv = saturate(1 - cref);
 				float4 cnext = cprev;
-                cnext = saturate(cnext + saturate(_Throttle.x * dt));
-                cnext = lerp(cnext, min(cnext, 1 - cref), saturate(cref * _Throttle.y * dt));
+                //cnext = saturate(cnext + saturate(_Throttle.x * dt));
+                cnext = lerp(cnext, min(max(cref_inv, cnext), cnext + saturate(cref_inv * _Throttle.x * dt)), cref_inv);
+                cnext = lerp(cnext, max(min(cref_inv, cnext), cnext - saturate(cref * _Throttle.y * dt)), cref);
 				return cnext;
             }
             ENDCG
