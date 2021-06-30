@@ -26,6 +26,7 @@ namespace nobnak.Gist.Cameras {
 
 		protected ManuallyRenderCamera manualCam;
 		protected CommandBuffer cmd;
+		protected CameraEventRetention commander;
 		protected DepthCapture cap;
 		protected CameraData currCamData;
 		protected Validator validator = new Validator();
@@ -40,6 +41,7 @@ namespace nobnak.Gist.Cameras {
 			link.targetCam = GetComponent<Camera>();
 
 			manualCam = new ManuallyRenderCamera(link.targetCam);
+			commander = new CameraEventRetention(manualCam.Camera);
 
 			cmd = new CommandBuffer();
 			cap = new DepthCapture();
@@ -65,12 +67,10 @@ namespace nobnak.Gist.Cameras {
 				depthTex.Size = size;
 				depthColorTex.Size = size;
 
-				var evt = CameraEvent.AfterEverything;
-				manualCam.Camera.RemoveCommandBuffer(evt, cmd);
 				cmd.Clear();
-				cap.StepThreashold = 1e-1f;
+				cap.StepThreashold = tuner.stepThreashold;
 				cap.Capture(cmd, depthColorTex, tuner.depthOutputMode);
-				manualCam.Camera.AddCommandBuffer(evt, cmd);
+				commander.Set(tuner.captureEvent, cmd);
 
 				pip.CurrTuner = tuner.pip;
 				pip.TargetCam = link.targetCam;
@@ -86,6 +86,10 @@ namespace nobnak.Gist.Cameras {
 			depthColorTex.AfterCreateTexture += v => validator.Invalidate();
 		}
 		private void OnDisable() {
+			if (commander != null) {
+				commander.Reset();
+				commander = null;
+			}
 			if (manualCam != null) {
 				manualCam.Dispose();
 				manualCam = null;
@@ -130,8 +134,10 @@ namespace nobnak.Gist.Cameras {
 		[System.Serializable]
 		public class Tuner {
 			public PIPTexture.Tuner pip = new PIPTexture.Tuner();
+			public CameraEvent captureEvent = CameraEvent.AfterForwardOpaque;
 			public LayerMask mask = default;
 			public DepthCapture.KW_OUTPUT depthOutputMode = DepthCapture.KW_OUTPUT.STEP_FUNC_INV;
+			public float stepThreashold = 0.5f;
 
 			public int CullingMask() {
 				return mask.value;

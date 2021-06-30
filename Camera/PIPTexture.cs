@@ -17,10 +17,15 @@ namespace nobnak.Gist.Cameras {
 
 		protected Camera targetCam;
 		protected CameraData camdata;
+		protected CameraEventRetention cmdRet;
 
-		public PIPTexture(Camera targetCamera = null, CameraEvent cevent = CameraEvent.AfterEverything) {
-			this.TargetCam = targetCamera;
+		public PIPTexture(Camera targetCamera = null, CameraEvent cevent = CameraEvent.AfterImageEffects) {
+			this.targetCam = targetCamera;
 			this.CamEvent = cevent;
+			this.cmdRet = new CameraEventRetention(targetCam);
+			this.CamBuf = new CommandBuffer() {
+				name = "PIP",
+			};
 
 			Valid.SetCheckers(() => camdata.Equals(TargetCam));
 			Valid.Validation += () => {
@@ -31,15 +36,19 @@ namespace nobnak.Gist.Cameras {
 				var screenSize = TargetCam.Size();
 				var offset_x = 0f;
 
-				RemoveCommandBuffer();
 				CamBuf.Clear();
 				if (!tuner.enabled)
 					return;
 
-				var texSize = (Vector2)screenSize * tuner.sizeScale;
+				var texHeight = screenSize.y * tuner.sizeScale;
 				foreach (var (t, m, p) in data) {
-					//var texSize = (Vector2)t.Size() * tuner.sizeScale;
+					if (t == null)
+						continue;
+
+					var texSize = new Vector2(texHeight * t.width / (float)t.height, texHeight);
 					var vp = new Rect(offset_x, 0f, texSize.x, texSize.y);
+					offset_x += texSize.x;
+
 					CamBuf.SetViewport(vp);
 
 					if (m == null)
@@ -47,20 +56,20 @@ namespace nobnak.Gist.Cameras {
 					else
 						CamBuf.Blit(t, RTI, m, p);
 				}
-				TargetCam.AddCommandBuffer(CamEvent, CamBuf);
+				cmdRet.Set(cevent, CamBuf);
 			};
 		}
 
-		#region interface
+#region interface
 		public Validator Valid { get; protected set; } = new Validator();
 		public CameraEvent CamEvent { get; protected set; }
-		public CommandBuffer CamBuf { get; protected set; } = new CommandBuffer();
+		public CommandBuffer CamBuf { get; protected set; }
 
 		public Camera TargetCam {
 			get => targetCam;
 			set {
-				RemoveCommandBuffer();
 				targetCam = value;
+				cmdRet.TargetCam = targetCam;
 				Valid.Invalidate();
 			}
 		}
@@ -84,36 +93,32 @@ namespace nobnak.Gist.Cameras {
 			return this;
 		}
 
-		#region IDisposable
+#region IDisposable
 		public void Dispose() {
+			if (cmdRet != null) {
+				cmdRet.Reset();
+				cmdRet = null;
+			}
 			if (CamBuf != null) {
-				RemoveCommandBuffer();
 				CamBuf = null;
 			}
 		}
-		#endregion
+#endregion
 
-		#region member
-		private void RemoveCommandBuffer() {
-			if (targetCam != null)
-				targetCam.RemoveCommandBuffer(CamEvent, CamBuf);
-		}
-		#endregion
-
-		#region IValidator
+#region IValidator
 		public bool IsValid => Valid.IsValid;
 		public void Invalidate() => Valid.Invalidate();
 		public bool Validate(bool force = false) => Valid.Validate(force);
-		#endregion
+#endregion
 
-		#endregion
+#endregion
 
-		#region definition
+#region definition
 		[System.Serializable]
 		public class Tuner {
 			public bool enabled = true;
 			public float sizeScale = 0.2f;
 		}
-		#endregion
+#endregion
 	}
 }
