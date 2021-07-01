@@ -51,11 +51,13 @@
 				float4 cref = tex2D(_RefTex, i.uv.xy);
 				float dt = _User_Time.x;
                 
+                
+                //cref = saturate(ContrastBrightness4(cref, _ColorAdjust.xy));
 
                 float4 cref_inv = saturate(1 - cref);
 				float4 cnext = cprev;
-                cnext = lerp(cnext, min(max(cref_inv, cnext), cnext + saturate(cref_inv * _Throttle.x * dt)), cref_inv);
-                cnext = lerp(cnext, max(min(cref_inv, cnext), cnext - saturate(cref * _Throttle.y * dt)), cref);
+                cnext = lerp(cnext, 1, saturate(cref_inv * _Throttle.x * dt));
+                cnext = lerp(cnext, 0, saturate(cref * _Throttle.y * dt));
 
                 cnext = saturate(ContrastBrightness4(cnext, _ColorAdjust.xy));
 				return cnext;
