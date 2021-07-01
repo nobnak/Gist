@@ -83,7 +83,11 @@ namespace nobnak.Gist.Cameras {
 			validator.Validate();
 
 			depthTex.AfterCreateTexture += v => validator.Invalidate();
-			depthColorTex.AfterCreateTexture += v => validator.Invalidate();
+			depthColorTex.AfterCreateTexture += v => {
+				using (new RenderTextureActivator(depthColorTex))
+					GL.Clear(true, true, Color.white);
+				validator.Invalidate();
+			};
 		}
 		private void OnDisable() {
 			if (commander != null) {
