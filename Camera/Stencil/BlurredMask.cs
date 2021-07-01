@@ -108,13 +108,13 @@ namespace nobnak.Gist.Cameras {
 			if (depthColorTex != null && tuner.blurSize > 0) {
 				var size = depthColorTex.Size();
 				var blurRes = Mathf.RoundToInt(2f * link.targetCam.orthographicSize / tuner.blurSize);
-				blurRes = Mathf.Clamp(blurRes, 4, size.y);
+				blurRes = Mathf.Min(blurRes, size.y);
 
-				var iter = 0;
-				var lod = 4;
-				blur.FindSize(size.y, blurRes, out iter, out lod);
-				blur.Render(depthColorTex, ref bDepthTex, iter, lod);
-				resTex = bDepthTex;
+				if (blurRes >= 4) {
+					blur.FindSize(size.y, blurRes, out var iter, out var lod);
+					blur.Render(depthColorTex, ref bDepthTex, iter, lod);
+					resTex = bDepthTex;
+				}
 
 				if (tuner.ramm.dark >= 0f) {
 					ramm.Render(
