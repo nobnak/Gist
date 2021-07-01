@@ -1,4 +1,4 @@
-﻿Shader "Hidden/RestoreAndMergeMask" {
+﻿Shader "Hidden/BinaryAccumulator" {
     Properties {
         _MainTex ("Prev Texture", 2D) = "white" {}
 		_RefTex ("Reference Texture", 2D) = "black" {}

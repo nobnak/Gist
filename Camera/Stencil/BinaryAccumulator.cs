@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace nobnak.Gist.Cameras {
 
-	public class RestoreAndMergeMaskKit : System.IDisposable {
+	public class BinaryAccumulator : System.IDisposable {
 
-		public const string PATH = "RestoreAndMergeMaskKit";
+		public const string PATH = "BinaryAccumulator";
 		public static readonly Vector2 DEFAULT_COLOR_ADJUSTER = new Vector2(1f, 0f);
 
 		public static readonly int P_MainTex = Shader.PropertyToID("_MainTex");
@@ -18,7 +18,7 @@ namespace nobnak.Gist.Cameras {
 
 		protected Material mat;
 
-		public RestoreAndMergeMaskKit() {
+		public BinaryAccumulator() {
 			var s = Resources.Load<Shader>(PATH);
 			mat = new Material(s);
 		}
@@ -62,8 +62,11 @@ namespace nobnak.Gist.Cameras {
 		#region definitions
 		[System.Serializable]
 		public class RenderParams {
+			[Tooltip("黒化速度")]
 			public float dark = 0f;
+			[Tooltip("白化速度")]
 			public float light = 0f;
+			[Tooltip("インプットのコントラスト")]
 			public Vector2 colorAdjuster = new Vector2(1f, 0f);
 		}
 		#endregion

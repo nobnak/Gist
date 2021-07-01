@@ -21,7 +21,7 @@ namespace nobnak.Gist.Cameras {
 		[SerializeField]
 		protected TempRef link = new TempRef();
 		[SerializeField]
-		public Tuner tuner = new Tuner();
+		protected Tuner tuner = new Tuner();
 		[SerializeField]
 		public TextureEvent OnRenderDepth = new TextureEvent();
 
@@ -30,7 +30,7 @@ namespace nobnak.Gist.Cameras {
 		protected Validator validator = new Validator();
 
 		protected Blur blur;
-		protected RestoreAndMergeMaskKit ramm;
+		protected BinaryAccumulator ramm;
 		protected RenderTexture bDepthTex;
 		protected ResizableRenderTexture maskTex0;
 		protected ResizableRenderTexture maskTex1;
@@ -42,7 +42,7 @@ namespace nobnak.Gist.Cameras {
 			link.targetCam = GetComponent<Camera>();
 
 			blur = new Blur();
-			ramm = new RestoreAndMergeMaskKit();
+			ramm = new BinaryAccumulator();
 			maskTex0 = new ResizableRenderTexture(new FormatRT() {
 				textureFormat = RenderTextureFormat.ARGBHalf,
 				depth = 0,
@@ -139,6 +139,13 @@ namespace nobnak.Gist.Cameras {
 		#endregion
 
 		#region public
+		public Tuner CurrTuner {
+			get => tuner.DeepCopy();
+			set {
+				tuner = value.DeepCopy();
+				validator.Invalidate();
+			}
+		}
 		public void ListenSource(Texture tex) {
 			this.depthColorTex = tex;
 			validator.Invalidate();
@@ -150,8 +157,10 @@ namespace nobnak.Gist.Cameras {
 		public class Tuner {
 			public PIPTexture.Tuner pip = new PIPTexture.Tuner();
 
+			[Tooltip("カメラに対するブラーのサイズ")]
 			public float blurSize = -1;
-			public RestoreAndMergeMaskKit.RenderParams ramm = new RestoreAndMergeMaskKit.RenderParams();
+			[Tooltip("バイナリアキュムレータ")]
+			public BinaryAccumulator.RenderParams ramm = new BinaryAccumulator.RenderParams();
 		}
 		[System.Serializable]
 		public class TempRef {
