@@ -81,7 +81,8 @@ namespace nobnak.Gist.Pooling {
         public static void Free<T>(IList<T> data, IMemoryPool<T> pool) {
             foreach (var d in data)
                 pool.Free(d);
-            data.Clear();
+			if (!data.IsReadOnly)
+				data.Clear();
         }
     }
 }
