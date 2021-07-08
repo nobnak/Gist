@@ -3,6 +3,7 @@
         _MainTex ("Prev Texture", 2D) = "white" {}
 		_RefTex ("Reference Texture", 2D) = "black" {}
         _ColorAdjust ("Color Adjuster", Vector) = (1,0,0,0)
+        _BWPoints ("Black & White Points", Vector) = (0, 1, 0, 1)
     }
     SubShader {
         Cull Off ZWrite Off ZTest Always
@@ -34,6 +35,7 @@
 			float4 _Throttle;
 
             float4 _ColorAdjust;
+            float4 _BWPoints;
 
             v2f vert (appdata v) {
 				float4 uv = v.uv.xyxy;
@@ -49,15 +51,17 @@
 			float4 frag (v2f i) : SV_Target {
 				float4 cprev = tex2D(_MainTex, i.uv.zw);
 				float4 cref = tex2D(_RefTex, i.uv.xy);
-				float dt = _User_Time.x;
                 
+                float black = lerp(0, _BWPoints.x, _BWPoints.w);
+                float white = lerp(1, _BWPoints.y, _BWPoints.w);
                 
-                //cref = saturate(ContrastBrightness4(cref, _ColorAdjust.xy));
+                float dt = _User_Time.x;
+                float2 ds = dt * _Throttle.xy;
 
                 float4 cref_inv = saturate(1 - cref);
 				float4 cnext = cprev;
-                cnext = lerp(cnext, 0, saturate(cref_inv * _Throttle.y * dt));
-                cnext = lerp(cnext, 1, saturate(cref * _Throttle.x * dt));
+                cnext = lerp(cnext, black, saturate(cref_inv * ds.y));
+                cnext = lerp(cnext, white, saturate(cref * ds.x));
 
                 cnext = saturate(ContrastBrightness4(cnext, _ColorAdjust.xy));
 				return cnext;

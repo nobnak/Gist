@@ -15,6 +15,7 @@ namespace nobnak.Gist.Cameras {
 		public static readonly int P_User_Time = Shader.PropertyToID("_User_Time");
 		public static readonly int P_Throttle = Shader.PropertyToID("_Throttle");
 		public static readonly int P_ColorAdjust = Shader.PropertyToID("_ColorAdjust");
+		public static readonly int P_BWPoints = Shader.PropertyToID("_BWPoints");
 
 		protected Material mat;
 
@@ -44,6 +45,7 @@ namespace nobnak.Gist.Cameras {
 			mat.SetVector(P_User_Time, new Vector4(dt, Time.timeSinceLevelLoad, 0f, 0f));
 			mat.SetVector(P_Throttle, new Vector4(rparams.light, rparams.dark));
 			mat.SetVector(P_ColorAdjust, rparams.colorAdjuster);
+			mat.SetVector(P_BWPoints, new Vector4(rparams.blackWhtePoints.x, rparams.blackWhtePoints.y, 0f, 1f));
 
 			mat.SetTexture(P_RefTex, refTex);
 
@@ -68,6 +70,8 @@ namespace nobnak.Gist.Cameras {
 			public float light = 0f;
 			[Tooltip("インプットのコントラスト")]
 			public Vector2 colorAdjuster = new Vector2(1f, 0f);
+			[Tooltip("ブラック&ホワイトポイント")]
+			public Vector2 blackWhtePoints = new Vector2(0f, 1f);
 		}
 		#endregion
 	}
