@@ -25,6 +25,7 @@ namespace nobnak.Gist.Loader {
 		}
 		protected void OnDisable() {
 			loader.Changed -= ListenOnChanged;
+			loader.Dispose();
 		}
 		#endregion
 
