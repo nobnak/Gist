@@ -108,6 +108,7 @@ namespace nobnak.Gist.Loader {
 				if (result) {
 					Debug.LogFormat("Load Image : {0}", path);
 					target.name = path;
+					target.hideFlags = HideFlags.DontSave;
 				} else {
 					target.Destroy();
 					target = null;
