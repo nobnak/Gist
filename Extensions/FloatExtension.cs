@@ -70,7 +70,10 @@ namespace nobnak.Gist.Extension.FloatArray {
 			if (-float.Epsilon <= width && width <= float.Epsilon)
 				return (v < min) ? 0f : 1f;
 
-			return Mathf.Clamp01((v - min) / width).Smoothstep();
+			return Saturate((v - min) / width).Smoothstep();
+		}
+		public static float Saturate(this float x) {
+			return x < 0f ? 0f : (x < 1f ? x : 1f);
 		}
 		#endregion
 	}

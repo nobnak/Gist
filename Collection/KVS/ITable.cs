@@ -18,8 +18,10 @@ namespace nobnak.Gist.Collection.KVS {
 
 	}
 
+	public interface ITable { }
+
 	public interface ITable<K, R>
-		: IReadonlyTable<K, R>
+		: IReadonlyTable<K, R>, ITable
 		where R : IRow<K> 
 	{
 		bool Remove(K key);

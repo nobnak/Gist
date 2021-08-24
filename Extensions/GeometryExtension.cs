@@ -105,13 +105,26 @@ namespace nobnak.Gist.Extensions.GeometryExt {
 			hmat[2] = 1f; hmat[6] = -1f; hmat[10] = 1f;
 			var hinv = hmat.inverse;
 
+			var det = hmat.determinant;
+			var result = det <= -Mathf.Epsilon || Mathf.Epsilon < det;
+			if (!result) {
+				z = z0 * Vector4.one;
+				return result;
+            }
+
 			var h0 = new Vector3(p0.x, p0.y, z0);
 			var z1 = hinv.MultiplyPoint(h0);
 			z = new Vector4(z0, z1.x, z1.y, z1.z);
-
-			var det = hmat.determinant;
-			return det <= -Mathf.Epsilon || Mathf.Epsilon < det;
+			return result;
 		}
+		public static bool TryEstimateDepthOfParallelorism(this Vector2[] p, out Vector4 z, float z0 = 1f) {
+			if (p == null || p.Length != 4) {
+				z = Vector4.one;
+				return false;
+            }
+
+			return TryEstimateDepthOfParallelorism(p[0], p[1], p[2], p[3], out z, z0);
+        }
 		public static bool TryBuildParallelorism(
 			Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3,
 			out Vector3 h0, out Vector3 h1, out Vector3 h2, out Vector3 h3
