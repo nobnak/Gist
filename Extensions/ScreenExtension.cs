@@ -53,6 +53,9 @@ namespace nobnak.Gist.Extensions.ScreenExt {
 		public static Vector2Int Size(this Camera c) {
 			return new Vector2Int(c.pixelWidth, c.pixelHeight);
 		}
+		public static Vector2Int ScaledSize(this Camera c) {
+			return new Vector2Int(c.scaledPixelWidth, c.scaledPixelHeight);
+		}
 
 		public static void SetGlobalScreenParams(int width, int height) {
 			var s = new Vector4(width, height, 1f / width, 1f / height);

@@ -33,14 +33,14 @@ namespace nobnak.Gist.Cameras {
 				if (TargetCam == null || CamBuf == null)
 					return;
 
-				var screenSize = TargetCam.Size();
+				var destSize = TargetCam.ScaledSize();
 				var offset_x = 0f;
 
 				CamBuf.Clear();
 				if (!tuner.enabled)
 					return;
 
-				var texHeight = screenSize.y * tuner.sizeScale;
+				var texHeight = destSize.y * tuner.sizeScale;
 				foreach (var (t, m, p) in data) {
 					if (t == null)
 						continue;
@@ -50,7 +50,6 @@ namespace nobnak.Gist.Cameras {
 					offset_x += texSize.x;
 
 					CamBuf.SetViewport(vp);
-
 					if (m == null)
 						CamBuf.Blit(t, RTI);
 					else
