@@ -1,8 +1,8 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace nobnak.Gist.Layer2 {
+namespace nobnak.Gist.Events.Interfaces {
 
     public interface IChangeListener<Target> {
 

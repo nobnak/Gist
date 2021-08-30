@@ -1,3 +1,4 @@
+using nobnak.Gist.Events.Interfaces;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
