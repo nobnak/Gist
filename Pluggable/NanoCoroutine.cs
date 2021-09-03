@@ -34,6 +34,9 @@ namespace nobnak.Gist.Pluggable {
 				i++;
 			}
 		}
+		public void RemoveAll() {
+			coroutines.Clear();
+		}
 		#endregion
 
 		#region method
