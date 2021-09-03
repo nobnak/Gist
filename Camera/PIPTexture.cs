@@ -115,7 +115,7 @@ namespace nobnak.Gist.Cameras {
 #region definition
 		[System.Serializable]
 		public class Tuner {
-			[Tooltip("On/Off")]
+			[Tooltip("PIPの使用")]
 			public bool enabled = true;
 			[Tooltip("画面に占める割合")]
 			public float sizeScale = 0.2f;
