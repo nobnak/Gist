@@ -49,78 +49,10 @@ namespace nobnak.Gist.GPUBuffer {
 				tmp.AppendLine($"{i}. {data[i]}");
 			return tmp.ToString();
 		}
-		#endregion
+        #endregion
 
-		public ComputeBuffer Buffer {
-            get {
-                Upload();
-                dirty = DirtyFlag.Buffer;
-                return buffer;
-            }
-        }
-        public T[] Data {
-            get {
-                Download();
-                dirty = DirtyFlag.Data;
-                return data;
-            }
-        }
-        public int Capacity {
-            get { return capacity; }
-            set { Resize(value); }
-        }
-
-        public void Resize(int preferedSize) {
-            preferedSize = Mathf.Max(preferedSize, MIN_CAPACITY);
-
-            if (preferedSize != capacity) {
-                System.Array.Resize(ref data, preferedSize);
-                ResizeComputeBuffer(preferedSize);
-
-                capacity = preferedSize;
-                count = Mathf.Min(count, capacity);
-            }
-        }
-        public bool Upload() {
-            if (dirty == DirtyFlag.Data) {
-                dirty = DirtyFlag.Clean;
-                buffer.SetData(data);
-                //buffer.SetCounterValue((uint)count);
-                return true;
-            }
-            return false;
-        }
-        public void Download() {
-            if (dirty == DirtyFlag.Buffer) {
-                dirty = DirtyFlag.Clean;
-                buffer.GetData(data);
-            }
-        }
-		public static implicit operator ComputeBuffer (GPUList<T> gl) {
-			return gl.Buffer;
-		}
-		#endregion
-
-		#region private
-		protected void ResizeComputeBuffer(int nextSize) {
-            dirty = DirtyFlag.Data;
-            DisposeComputeBuffer();
-            buffer = new ComputeBuffer(nextSize, Marshal.SizeOf(typeof(T)), cbtype);
-        }
-        protected void EnsureCapacity(int minCapacity) {
-            if (minCapacity > capacity)
-                Resize(minCapacity.Po2());
-        }
-        protected void DisposeComputeBuffer() {
-            if (buffer != null) {
-                buffer.Dispose();
-                buffer = null;
-            }
-        }
-		#endregion
-
-		#region IDisposable
-		public void Dispose() {
+        #region IDisposable
+        public void Dispose() {
             DisposeComputeBuffer();
         }
         #endregion
@@ -133,13 +65,13 @@ namespace nobnak.Gist.GPUBuffer {
         public T this[int index] {
             get { return data[index]; }
             set {
-				try {
-					dirty = DirtyFlag.Data;
-					count = (index >= count ? (index + 1) : count);
-					data[index] = value;
-				} catch (System.Exception e) {
-					Debug.LogWarning($"Exception at index={index} count={count} capacity={capacity} data.Length={data.Length}\n{e}");
-				}
+                try {
+                    dirty = DirtyFlag.Data;
+                    count = (index >= count ? (index + 1) : count);
+                    data[index] = value;
+                } catch (System.Exception e) {
+                    Debug.LogWarning($"Exception at index={index} count={count} capacity={capacity} data.Length={data.Length}\n{e}");
+                }
             }
         }
         public int IndexOf(T item) {
@@ -191,5 +123,90 @@ namespace nobnak.Gist.GPUBuffer {
             return GetEnumerator();
         }
         #endregion
+
+        public ComputeBuffer Buffer {
+            get {
+                Upload();
+                dirty = DirtyFlag.Buffer;
+                return buffer;
+            }
+        }
+        public T[] Data {
+            get {
+                Download();
+                dirty = DirtyFlag.Data;
+                return data;
+            }
+        }
+        public int Capacity {
+            get { return capacity; }
+            set { Resize(value); }
+        }
+
+        public void Resize(int preferedSize) {
+            preferedSize = Mathf.Max(preferedSize, MIN_CAPACITY);
+
+            if (preferedSize != capacity) {
+                System.Array.Resize(ref data, preferedSize);
+                ResizeComputeBuffer(preferedSize);
+
+                capacity = preferedSize;
+                count = Mathf.Min(count, capacity);
+            }
+        }
+        public bool Upload() {
+            if (dirty == DirtyFlag.Data) {
+                dirty = DirtyFlag.Clean;
+                buffer.SetData(data);
+                //buffer.SetCounterValue((uint)count);
+                return true;
+            }
+            return false;
+        }
+        public void Download() {
+            if (dirty == DirtyFlag.Buffer) {
+                dirty = DirtyFlag.Clean;
+                buffer.GetData(data);
+            }
+        }
+
+        public void SetData(T[] array) {
+            dirty = DirtyFlag.Data;
+            count = array.Length;
+            EnsureCapacity(count);
+            System.Array.Copy(array, 0, data, 0, count);
+        }
+        public void SetData(IList<T> list) {
+            dirty = DirtyFlag.Data;
+            count = list.Count;
+            EnsureCapacity(count);
+            list.CopyTo(data, 0);
+        }
+        #endregion
+
+        #region static
+        public static implicit operator ComputeBuffer (GPUList<T> gl) {
+			return gl.Buffer;
+		}
+		#endregion
+
+		#region private
+		protected void ResizeComputeBuffer(int nextSize) {
+            dirty = DirtyFlag.Data;
+            DisposeComputeBuffer();
+            buffer = new ComputeBuffer(nextSize, Marshal.SizeOf(typeof(T)), cbtype);
+        }
+        protected void EnsureCapacity(int minCapacity) {
+            if (minCapacity > capacity)
+                Resize(minCapacity.Po2());
+        }
+        protected void DisposeComputeBuffer() {
+            if (buffer != null) {
+                buffer.Dispose();
+                buffer = null;
+            }
+        }
+		#endregion
+
     }
 }
