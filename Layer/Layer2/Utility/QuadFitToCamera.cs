@@ -1,4 +1,5 @@
-﻿using nobnak.Gist.Cameras;
+using nobnak.Gist.Cameras;
+using nobnak.Gist.Events.Interfaces;
 using nobnak.Gist.Extensions.ComponentExt;
 using nobnak.Gist.Layer2;
 using System.Collections;

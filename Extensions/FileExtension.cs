@@ -9,6 +9,12 @@ namespace nobnak.Gist.Extensions.FileExt {
 
 		public static System.Exception lastErrot = null;
 
+		public static string ProjectRoot {
+			get => Path.GetDirectoryName(Application.dataPath);
+		}
+		public static string UnderProjectRoot(this string file) 
+			=> Path.Combine(ProjectRoot, file);
+
 		public static bool TrySave(this string path, string text) {
 			try {
                 path.Save(text);

@@ -21,6 +21,7 @@ namespace nobnak.Gist.Collection {
 		#endregion
 
 		public int Capacity { get => capacity; }
+		public int Count { get => tokensInUse.Count; }
 		public Token GetToken() {
 			var i = GetIndex();
 			var token = new Token(this, i);
@@ -53,6 +54,7 @@ namespace nobnak.Gist.Collection {
 		}
 		#endregion
 
+		#region definitions
 		public class Token : System.IDisposable {
 
 			public readonly ReusableIndexStorage reusable;
@@ -92,5 +94,6 @@ namespace nobnak.Gist.Collection {
 			}
 			#endregion
 		}
+		#endregion
 	}
 }

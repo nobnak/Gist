@@ -33,14 +33,14 @@ namespace nobnak.Gist.Cameras {
 				if (TargetCam == null || CamBuf == null)
 					return;
 
-				var screenSize = TargetCam.Size();
+				var destSize = TargetCam.ScaledSize();
 				var offset_x = 0f;
 
 				CamBuf.Clear();
 				if (!tuner.enabled)
 					return;
 
-				var texHeight = screenSize.y * tuner.sizeScale;
+				var texHeight = destSize.y * tuner.sizeScale;
 				foreach (var (t, m, p) in data) {
 					if (t == null)
 						continue;
@@ -50,7 +50,6 @@ namespace nobnak.Gist.Cameras {
 					offset_x += texSize.x;
 
 					CamBuf.SetViewport(vp);
-
 					if (m == null)
 						CamBuf.Blit(t, RTI);
 					else
@@ -116,7 +115,7 @@ namespace nobnak.Gist.Cameras {
 #region definition
 		[System.Serializable]
 		public class Tuner {
-			[Tooltip("On/Off")]
+			[Tooltip("PIPの使用")]
 			public bool enabled = true;
 			[Tooltip("画面に占める割合")]
 			public float sizeScale = 0.2f;
