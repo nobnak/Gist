@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using nobnak.Gist.Extensions.ScreenExt;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -23,7 +24,7 @@ namespace nobnak.Gist.Cameras {
             projectionMatrix = cam.projectionMatrix;
 
             targetTexture = cam.targetTexture;
-            screenSize = ScreenSize(cam);
+            screenSize = cam.Size();
         }
 
         #region interface
