@@ -11,6 +11,21 @@ namespace nobnak.Gist.Resizable {
 		public TextureWrapMode wrapMode;
 		public FilterMode filterMode;
 		public int anisoLevel;
+
+		#region interface
+
+		#region object
+		public override bool Equals(object obj) {
+			var f = obj as BaseFormat;
+			return (f != null)
+				&& base.Equals(obj)
+				&& wrapMode == f.wrapMode
+				&& filterMode == f.filterMode
+				&& anisoLevel == f.anisoLevel;
+		}
+		#endregion
+
+		#endregion
 	}
 
 	[System.Serializable]

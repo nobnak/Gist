@@ -75,6 +75,7 @@ namespace nobnak.Gist.Cameras {
 			validator.Validate();
 		}
 		private void OnDisable() {
+			NotifyBlurredTexOnUpdate(null);
 			if (blur != null) {
 				blur.Dispose();
 				blur = null;
@@ -127,7 +128,7 @@ namespace nobnak.Gist.Cameras {
 				}
 			}
 
-			OnRenderDepth.Invoke(resTex);
+			NotifyBlurredTexOnUpdate(resTex);
 
 			pip.Clear();
 			pip.Add(resTex);
@@ -140,7 +141,10 @@ namespace nobnak.Gist.Cameras {
 
 		#region public
 		public Tuner CurrTuner {
-			get => tuner.DeepCopy();
+			get {
+				validator.Validate();
+				return tuner.DeepCopy();
+			}
 			set {
 				tuner = value.DeepCopy();
 				validator.Invalidate();
@@ -149,6 +153,12 @@ namespace nobnak.Gist.Cameras {
 		public void ListenSource(Texture tex) {
 			this.depthColorTex = tex;
 			validator.Invalidate();
+		}
+		#endregion
+
+		#region member
+		protected void NotifyBlurredTexOnUpdate(Texture tex) {
+			OnRenderDepth?.Invoke(tex);
 		}
 		#endregion
 

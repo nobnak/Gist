@@ -23,6 +23,9 @@ namespace nobnak.Gist.Resizable {
 			Reset();
 		}
 
+		#region interface
+
+		#region object
 		public override string ToString() {
 			var tmp = new StringBuilder();
 			tmp.AppendFormat("readWrite={0}, ", readWrite);
@@ -35,6 +38,20 @@ namespace nobnak.Gist.Resizable {
 			tmp.Append(base.ToString());
 			return tmp.ToString();
 		}
+
+		public override bool Equals(object obj) {
+			var f = obj as FormatRT;
+			return (f != null)
+				&& base.Equals(obj)
+				&& readWrite == f.readWrite
+				&& textureFormat == f.textureFormat
+				&& antiAliasing == f.antiAliasing
+				&& depth == f.depth
+				&& autoGenerateMips == f.autoGenerateMips
+				&& useMipMap == f.useMipMap
+				&& useDynamicScale == f.useDynamicScale;
+		}
+		#endregion
 
 		public override void Reset() {
 			base.Reset();
@@ -74,5 +91,6 @@ namespace nobnak.Gist.Resizable {
 			tex.antiAliasing = ParseAntiAliasing(antiAliasing);
 			tex.useDynamicScale = useDynamicScale;
 		}
+		#endregion
 	}
 }
