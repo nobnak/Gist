@@ -1,10 +1,13 @@
-﻿using System.Collections;
+﻿using nobnak.Gist.Extensions.ScreenExt;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace nobnak.Gist.Cameras {
 
     public struct CameraData : System.IEquatable<Camera> {
+
+        public readonly int cameraId;
 
         public readonly Matrix4x4 localToWorldMatrix;
         public readonly Matrix4x4 worldToCameraMatrix;
@@ -18,12 +21,14 @@ namespace nobnak.Gist.Cameras {
                 this = default;
                 return;
             }
+            cameraId = cam.GetInstanceID();
+
             localToWorldMatrix = cam.transform.localToWorldMatrix;
             worldToCameraMatrix = cam.worldToCameraMatrix;
             projectionMatrix = cam.projectionMatrix;
 
             targetTexture = cam.targetTexture;
-            screenSize = ScreenSize(cam);
+            screenSize = cam.Size();
         }
 
         #region interface
@@ -31,6 +36,7 @@ namespace nobnak.Gist.Cameras {
         #region IEquatable
         public bool Equals(Camera other) {
             return other != null
+                && cameraId == other.GetInstanceID()
                 && localToWorldMatrix.Equals(other.transform.localToWorldMatrix)
                 && worldToCameraMatrix.Equals(other.worldToCameraMatrix)
                 && projectionMatrix.Equals(other.projectionMatrix)

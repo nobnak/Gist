@@ -8,6 +8,8 @@ namespace nobnak.Gist.MathAlgorithms.Curves.Common {
     public abstract class BaseCurve : IParametricCurve, IList<Vector3> {
         public event System.Action Changed;
 
+        public string name;
+
         protected Validator validator = new Validator();
         protected List<Vector3> points = new List<Vector3>();
 
