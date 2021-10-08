@@ -2,6 +2,7 @@ using nobnak.Gist.Pluggable;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace nobnak.Gist.Events.Hooks {
 
@@ -23,6 +24,9 @@ namespace nobnak.Gist.Events.Hooks {
 		#region interface
 		public void Notify(GameObject g) {
 			events.OnSetEnabled.Invoke(g);
+
+			events.EnabledOnEnable.Invoke(g.activeSelf);
+			events.DisabledOnEnable.Invoke(!g.activeSelf);
 		}
 		#endregion
 
@@ -33,6 +37,8 @@ namespace nobnak.Gist.Events.Hooks {
 		public class Events {
 			public GoEvent OnSetEnabled = new GoEvent();
 
+			public BoolEvent EnabledOnEnable = new BoolEvent();
+			public BoolEvent DisabledOnEnable = new BoolEvent();
 		}
 		#endregion
 	}

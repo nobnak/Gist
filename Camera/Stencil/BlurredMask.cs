@@ -21,9 +21,9 @@ namespace nobnak.Gist.Cameras {
 		[SerializeField]
 		protected TempRef link = new TempRef();
 		[SerializeField]
-		protected Tuner tuner = new Tuner();
+		protected Events events = new Events();
 		[SerializeField]
-		public TextureEvent OnRenderDepth = new TextureEvent();
+		protected Tuner tuner = new Tuner();
 
 		protected Texture depthColorTex;
 		protected CameraData currCamData;
@@ -39,7 +39,7 @@ namespace nobnak.Gist.Cameras {
 
 		#region unity
 		private void OnEnable() {
-			link.targetCam = GetComponent<Camera>();
+			if (link.targetCam == null) link.targetCam = GetComponent<Camera>();
 
 			blur = new Blur();
 			ramm = new BinaryAccumulator();
@@ -51,6 +51,8 @@ namespace nobnak.Gist.Cameras {
 
 			pip = new PIPTexture();
 
+			currCamData = default;
+			validator.Reset();
 			validator.SetCheckers(() => currCamData.Equals(link.targetCam));
 			validator.Validation += () => {
 				currCamData = link.targetCam;
@@ -73,9 +75,13 @@ namespace nobnak.Gist.Cameras {
 			maskTex1.AfterCreateTexture += fClear;
 
 			validator.Validate();
+
+			NotifyOnEnable();
 		}
 		private void OnDisable() {
 			NotifyBlurredTexOnUpdate(null);
+			NotifyOnEnable();
+
 			if (blur != null) {
 				blur.Dispose();
 				blur = null;
@@ -158,7 +164,10 @@ namespace nobnak.Gist.Cameras {
 
 		#region member
 		protected void NotifyBlurredTexOnUpdate(Texture tex) {
-			OnRenderDepth?.Invoke(tex);
+			events.OnRenderDepth?.Invoke(tex);
+		}
+		protected void NotifyOnEnable() {
+			events.EnabledOnEnable.Invoke(enabled);
 		}
 		#endregion
 
@@ -175,6 +184,11 @@ namespace nobnak.Gist.Cameras {
 		[System.Serializable]
 		public class TempRef {
 			public Camera targetCam;
+		}
+		[System.Serializable]
+		public class Events {
+			public BoolEvent EnabledOnEnable = new BoolEvent();
+			public TextureEvent OnRenderDepth = new TextureEvent();
 		}
 		#endregion
 	}
