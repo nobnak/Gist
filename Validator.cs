@@ -3,26 +3,33 @@ using UnityEngine;
 
 namespace nobnak.Gist {
 
-	public class Validator : IValidator {
+	public struct Validator : IValidator {
 
 		public event System.Action Validation;
 		public event System.Action Validated;
 		public event System.Action Invalidated;
 
-		protected bool useCache;
-		protected int validatedFrameCount = -1;
+		private bool useCache;
+		private int validatedFrameCount;
 
-		protected bool isUnderValidation;
-		protected bool initialValidity;
-		protected bool validity;
-		protected System.Func<bool>[] checker;
+		private bool isUnderValidation;
+		private bool initialValidity;
+		private bool validity;
+		private System.Func<bool>[] checker;
 
-		public Validator(bool initialValidity, bool useCache = true) {
+		public Validator(bool initialValidity = false, bool useCache = true) {
+			this.Validation = null;
+			this.Validated = null;
+			this.Invalidated = null;
+
+			this.validatedFrameCount = -1;
+			this.isUnderValidation = false;
+			this.checker = null;
+
 			this.initialValidity = initialValidity;
 			this.validity = initialValidity;
 			this.useCache = useCache;
 		}
-		public Validator() : this(false) { }
 
 		public void Reset() {
 			validity = initialValidity;
@@ -62,21 +69,20 @@ namespace nobnak.Gist {
 			return result;
 		}
 
-		protected void ResetEvents() {
+		private void ResetEvents() {
 			Validation = null;
 			Validated = null;
 			Invalidated = null;
 		}
-		protected void _Validate() {
+		private void _Validate() {
 			try {
 				isUnderValidation = true;
-				if (Validation != null)
-					Validation();
+				Validation?.Invoke();
 			} finally {
 				isUnderValidation = false;
 			}
 		}
-		protected bool Check(bool useChache) {
+		private bool Check(bool useChache) {
 			if (useCache && validatedFrameCount == Time.frameCount)
 				return true;
 
@@ -85,7 +91,7 @@ namespace nobnak.Gist {
 				validatedFrameCount = Time.frameCount;
 			return result;
 		}
-		protected bool _Check() {
+		private bool _Check() {
 			if (checker == null)
 				return true;
 
@@ -95,14 +101,8 @@ namespace nobnak.Gist {
 			return true;
 		}
 
-		protected void NotifyInvalidated() {
-			if (Invalidated != null)
-				Invalidated();
-		}
-		protected void NotifyValidated() {
-			if (Validated != null)
-				Validated();
-		}
+		private void NotifyInvalidated()  => Invalidated?.Invoke();
+		private void NotifyValidated()  => Validated?.Invoke();
 
 	}
 }
