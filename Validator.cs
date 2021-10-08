@@ -26,9 +26,10 @@ namespace nobnak.Gist {
 
 		public void Reset() {
 			validity = initialValidity;
-			Validation = null;
 			checker = null;
+			ResetEvents();
 		}
+
 		public void SetCheckers(params System.Func<bool>[] checkers) {
 			this.checker = checkers;
 		}
@@ -43,7 +44,6 @@ namespace nobnak.Gist {
 				NotifyInvalidated();
 			}
 		}
-
 		public bool Validate(bool force = false) {
 			if (isUnderValidation)
 				return false;
@@ -62,6 +62,11 @@ namespace nobnak.Gist {
 			return result;
 		}
 
+		protected void ResetEvents() {
+			Validation = null;
+			Validated = null;
+			Invalidated = null;
+		}
 		protected void _Validate() {
 			try {
 				isUnderValidation = true;
