@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,9 +12,6 @@ namespace nobnak.Gist.Events {
 
         private void OnEnable() {
             Notify(true);
-        }
-        private void OnValidate() {
-            Notify(enabled);
         }
         private void OnDisable() {
             Notify(false);

@@ -27,6 +27,7 @@ namespace nobnak.Gist.Cameras {
 				name = "PIP",
 			};
 
+			camdata = default;
 			Valid.SetCheckers(() => camdata.Equals(TargetCam));
 			Valid.Validation += () => {
 				camdata = TargetCam;

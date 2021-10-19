@@ -15,8 +15,16 @@ namespace nobnak.Gist.ObjectExt {
 			if (obj != null) {
 				if (Application.isPlaying)
 					Object.Destroy(obj, t);
-				else
-					Object.DestroyImmediate(obj);
+				else {
+#if UNITY_EDITOR
+					UnityEditor.EditorApplication.CallbackFunction delayedNotify = null;
+					delayedNotify = () => {
+						UnityEditor.EditorApplication.delayCall -= delayedNotify;
+						Object.DestroyImmediate(obj);
+					};
+					UnityEditor.EditorApplication.delayCall += delayedNotify;
+#endif
+				}
 			}
         }
 		public static void DestroyGo(this Component comp, float t = 0f) {

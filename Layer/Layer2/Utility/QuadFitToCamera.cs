@@ -21,8 +21,7 @@ namespace nobnak.Gist.Layer2 {
 
         #region unity
         private void OnEnable() {
-            cameraData = default;
-
+			cameraData = default;
             validator.Reset();
             validator.SetCheckers(() => cameraData.Equals(target));
             validator.Validation += () => {
