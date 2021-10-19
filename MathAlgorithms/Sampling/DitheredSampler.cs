@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace nobnak.Gist.MathAlgorithms.Sampler {
 
+    // https://en.wikipedia.org/wiki/Error_diffusion
     public class DitheredSampler {
 
         public UnityEngine.Events.UnityEvent Changed = new UnityEngine.Events.UnityEvent();
