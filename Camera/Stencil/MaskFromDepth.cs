@@ -38,8 +38,7 @@ namespace nobnak.Gist.Cameras {
 
 		#region unity
 		private void OnEnable() {
-			currCamData = default;
-			link.targetCam = GetComponent<Camera>();
+			if (link.targetCam == null) link.targetCam = GetComponent<Camera>();
 
 			manualCam = new ManuallyRenderCamera(link.targetCam);
 			commander = new CameraEventRetention(manualCam.Camera);
@@ -59,6 +58,7 @@ namespace nobnak.Gist.Cameras {
 			pip = new PIPTexture();
 
 			currCamData = default;
+			validator.Reset();
 			validator.SetCheckers(() => currCamData.Equals(link.targetCam));
 			validator.Validation += () => {
 				currCamData = link.targetCam;
