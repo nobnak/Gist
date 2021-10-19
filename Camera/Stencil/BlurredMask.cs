@@ -75,12 +75,9 @@ namespace nobnak.Gist.Cameras {
 			maskTex1.AfterCreateTexture += fClear;
 
 			validator.Validate();
-
-			NotifyOnEnable();
 		}
 		private void OnDisable() {
 			NotifyBlurredTexOnUpdate(null);
-			NotifyOnEnable();
 
 			if (blur != null) {
 				blur.Dispose();
@@ -166,9 +163,6 @@ namespace nobnak.Gist.Cameras {
 		protected void NotifyBlurredTexOnUpdate(Texture tex) {
 			events.OnRenderDepth?.Invoke(tex);
 		}
-		protected void NotifyOnEnable() {
-			events.EnabledOnEnable.Invoke(enabled);
-		}
 		#endregion
 
 		#region definitions
@@ -187,7 +181,6 @@ namespace nobnak.Gist.Cameras {
 		}
 		[System.Serializable]
 		public class Events {
-			public BoolEvent EnabledOnEnable = new BoolEvent();
 			public TextureEvent OnRenderDepth = new TextureEvent();
 		}
 		#endregion
