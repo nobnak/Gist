@@ -1,11 +1,10 @@
 ﻿namespace nobnak.Gist {
 
-	public interface IInvalidatable {
-		void Invalidate();
-	}
-	public interface IValidator : IInvalidatable {
+	public interface IValidator {
 		bool IsValid { get; }
-
 		bool Validate(bool force = false);
+	}
+	public interface IInvalidatable : IValidator {
+		void Invalidate();
 	}
 }
