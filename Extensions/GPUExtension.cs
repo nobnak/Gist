@@ -31,5 +31,14 @@ namespace nobnak.Gist.Extensions.GPUExt {
 		public static bool IsSupportedForReadPixels(this GraphicsFormat format) {
 			return SystemInfo.IsFormatSupported(format, FormatUsage.ReadPixels);
 		}
+
+		public static void DispatchThread(this ComputeShader cs, int kernel, params int[] totalThreads) {
+			var vThreads = Vector3Int.one;
+			var i = 0;
+			foreach (var t in totalThreads) vThreads[i++] = t;
+
+			var disp = cs.DispatchSize(kernel, vThreads);
+			cs.Dispatch(kernel, disp.x, disp.y, disp.z);
+		}
 	}
 }
