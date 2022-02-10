@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using nobnak.Gist.ObjectExt;
 using UnityEngine.Rendering;
 
-namespace nobnak.Gist {
+namespace nobnak.Gist.GLTools {
 
 	public class GLMaterial : System.IDisposable {
 

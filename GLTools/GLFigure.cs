@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 
-namespace nobnak.Gist {
+namespace nobnak.Gist.GLTools {
 	public class GLFigure : System.IDisposable {
 
 		public const float TWO_PI_RAD = 2f * Mathf.PI;
