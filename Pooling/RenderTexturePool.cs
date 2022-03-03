@@ -1,4 +1,4 @@
-﻿using nobnak.Gist.ObjectExt;
+using nobnak.Gist.ObjectExt;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -56,6 +56,7 @@ namespace nobnak.Gist.Pooling {
             pool = new MemoryPool<RenderTexture>(
                 () => {
                     var tex = new RenderTexture(size.x, size.y, size.z, format, linear);
+					tex.hideFlags = HideFlags.DontSave;
                     if (OnCreate != null)
                         OnCreate.Invoke(tex);
                     return tex;

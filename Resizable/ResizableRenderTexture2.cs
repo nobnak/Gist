@@ -110,6 +110,7 @@ namespace nobnak.Gist.Resizable {
 			}
 
 			tex = new RenderTexture(desc);
+			tex.hideFlags = HideFlags.DontSave;
 			Debug.Log($"{GetType().Name} : {tex.width}x{tex.height}");
 			NotifyChanged();
 			return tex;

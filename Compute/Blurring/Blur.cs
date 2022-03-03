@@ -1,4 +1,4 @@
-﻿using nobnak.Gist.Extensions.GPUExt;
+using nobnak.Gist.Extensions.GPUExt;
 using nobnak.Gist.ObjectExt;
 using nobnak.Gist.Pooling;
 using System.Collections;
@@ -114,6 +114,7 @@ namespace nobnak.Gist.Compute.Blurring {
             dst.filterMode = FilterMode.Bilinear;
             dst.wrapMode = TextureWrapMode.Clamp;
             dst.enableRandomWrite = true;
+			dst.hideFlags = HideFlags.DontSave;
             dst.Create();
             return dst;
         }

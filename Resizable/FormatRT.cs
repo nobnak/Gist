@@ -70,6 +70,7 @@ namespace nobnak.Gist.Resizable {
 		public override RenderTexture CreateTexture(int width, int height) {
 			var tex = new RenderTexture(width, height, 
 				depth, textureFormat, readWrite);
+			tex.hideFlags = HideFlags.DontSave;
 			ApplyToNew(tex);
 			return tex;
 		}
