@@ -77,7 +77,7 @@ namespace nobnak.Gist.Cameras {
 		public Tuner CurrTuner {
 			get { return tuner.DeepCopy(); }
 			set {
-				tuner = value.DeepCopy();
+				tuner = value;
 				Valid.Invalidate();
 			}
 		}
