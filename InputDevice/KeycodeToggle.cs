@@ -25,13 +25,13 @@ namespace nobnak.Gist.InputDevice {
 			Toggle = null;
 
             Down += () => {
-                guiVisible = !guiVisible;
-                validator.Invalidate();
+				lastGuiVisible = guiVisible;
+				guiVisible = !guiVisible;
+				validator.Invalidate();
             };
             validator.Reset();
             validator.Validation += () => {
-                lastGuiVisible = guiVisible;
-                NotifyToggle();
+				if (lastGuiVisible != guiVisible) NotifyToggle();
             };
             validator.SetCheckers(() => lastGuiVisible == guiVisible);
         }
