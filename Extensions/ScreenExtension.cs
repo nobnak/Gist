@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using nobnak.Gist.Extensions.EditorExt;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -78,13 +79,7 @@ namespace nobnak.Gist.Extensions.ScreenExt {
 		public static void ScaleGUIBasedOnDpi(float targetDpi = 96f) {
 			var scale = Screen.dpi / targetDpi;
 #if UNITY_EDITOR
-			var typeGameView = System.Type.GetType("UnityEditor.GameView,UnityEditor");
-			var gameView = EditorWindow.GetWindow(typeGameView);
-			var propLowRes = typeGameView.GetProperty("lowResolutionForAspectRatios");
-			var propForce = typeGameView.GetProperty("forceLowResolutionAspectRatios");
-			var isLowRes = (bool)propLowRes.GetValue(gameView);
-			var forceLowRes = (bool)propForce.GetValue(gameView);
-			if (!forceLowRes && isLowRes)
+			if (EditorExtension.LowResolutionAspectRatio)
 				scale *= 0.5f;
 #endif
 			GUIUtility.ScaleAroundPivot(new Vector2(scale, scale), Vector2.zero);
