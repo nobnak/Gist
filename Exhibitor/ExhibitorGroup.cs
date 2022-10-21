@@ -31,8 +31,9 @@ namespace nobnak.Gist.Exhibitor {
         #region AbstractExhibitor
         public override void DeserializeFromJson(string json) {
             JsonUtility.FromJsonOverwrite(json, data);
-            data.ApplyTo(exhibitors);
-            ReflectChangeOf(MVVMComponent.ViewModel);
+			//data.ApplyTo(exhibitors, (e, i) => Debug.LogWarning($"Exception on load at {i} in {name}\n{e}"));
+			data.ApplyTo(exhibitors);
+			ReflectChangeOf(MVVMComponent.ViewModel);
         }
         public override object RawData() {
             validator.Validate();
@@ -93,11 +94,15 @@ namespace nobnak.Gist.Exhibitor {
                 exhibitorData = exhibitors.Select(v => v.SerializeToJson()).ToArray();
                 return this;
             }
-            public Data ApplyTo(AbstractExhibitor[] exhibitors) {
+            public Data ApplyTo(AbstractExhibitor[] exhibitors, System.Action<System.Exception, int> onError = null) {
                 for (var i = 0; i < exhibitors.Length && i < exhibitorData.Length; i++) {
-                    var j = exhibitorData[i];
-                    var e = exhibitors[i];
-                    e.DeserializeFromJson(j);
+					try {
+						var j = exhibitorData[i];
+						var e = exhibitors[i];
+						e.DeserializeFromJson(j);
+					} catch(System.Exception e) {
+						if (onError == null) throw e; else onError(e, i);
+					}
                 }
                 return this;
 			}
