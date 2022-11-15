@@ -1,10 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace nobnak.Gist.IMGUI {
 
+#if UNITY_EDITOR
 	[CustomPropertyDrawer(typeof(LayerAttribute))]
 	public class LayerAttributeEditor : PropertyDrawer {
 		public override void OnGUI(Rect pos, SerializedProperty prop, GUIContent label) {
@@ -14,6 +18,7 @@ namespace nobnak.Gist.IMGUI {
 			EditorGUI.EndProperty();
 		}
 	}
+#endif
 
 	public class LayerAttribute : PropertyAttribute {}
 }
