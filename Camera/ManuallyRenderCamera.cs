@@ -30,17 +30,17 @@ namespace nobnak.Gist {
 
 		public Camera Camera { get { return manualCam; } }
 
-		public ManuallyRenderCamera Render(RenderTexture target) {
+		public ManuallyRenderCamera Render(RenderTexture target, int cullingMask = -1) {
             Profiler.BeginSample ("ManuallyRenderCamera.Render");
-            PrepareForRendering (target);
+            PrepareForRendering (target, cullingMask);
 			manualCam.Render ();
             PostpareForRendering ();
             Profiler.EndSample ();
 			return this;
 		}
-        public ManuallyRenderCamera RenderWithShader(RenderTexture target, Shader shader, string tag) {
+        public ManuallyRenderCamera RenderWithShader(RenderTexture target, Shader shader, string tag, int cullingMask = -1) {
             Profiler.BeginSample ("ManuallyRenderCamera.RenderWithShader");
-            PrepareForRendering (target);
+            PrepareForRendering (target, cullingMask);
             manualCam.RenderWithShader (shader, tag);
             PostpareForRendering ();
             Profiler.EndSample ();
@@ -54,10 +54,11 @@ namespace nobnak.Gist {
         }
         #endregion
 
-        void PrepareForRendering(RenderTexture target) {
+        void PrepareForRendering(RenderTexture target, int cullingMask = -1) {
             tracker.Adjust (manualCam);
             NotifyAfterCopyFrom ();
-            manualCam.targetTexture = target;
+			manualCam.cullingMask &= cullingMask;
+			manualCam.targetTexture = target;
         }
         void PostpareForRendering() {
             manualCam.targetTexture = null;
