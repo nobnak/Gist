@@ -32,19 +32,17 @@ namespace nobnak.Gist.InputDevice {
             validator.Reset();
             validator.Validation += () => {
 				if (lastGuiVisible != guiVisible) NotifyToggle();
-            };
+				lastGuiVisible = guiVisible;
+			};
             validator.SetCheckers(() => lastGuiVisible == guiVisible);
         }
         public override void Update() {
             base.Update();
             validator.Validate();
         }
-        #endregion
-        #region member
-        protected virtual void NotifyToggle() {
-			if (Toggle != null)
-				Toggle(this);
-		}
+		#endregion
+		#region member
+		protected virtual void NotifyToggle() => Toggle?.Invoke(this);
 		#endregion
 		#region static
 		public static implicit operator bool(KeycodeToggle k) {
