@@ -71,6 +71,10 @@ namespace nobnak.Gist.Loader {
 		}
 
 		public virtual void Dispose() {
+			Reset();
+		}
+		public virtual void Reset() {
+			Changed = null;
 			ClearTarget();
 		}
 		#endregion
