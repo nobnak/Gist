@@ -12,7 +12,8 @@ namespace nobnak.Gist.IMGUI.Scope {
 
 			if (foldoutStyle == null) {
 				foldoutStyle = new GUIStyle(UnityEngine.GUI.skin.label) {
-					alignment = TextAnchor.MiddleLeft
+					alignment = TextAnchor.MiddleLeft,
+					wordWrap = false,
 				};
 				var coff = foldoutStyle.normal.textColor;
 				var con = Color.white;
