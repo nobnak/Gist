@@ -60,7 +60,7 @@ namespace nobnak.Gist.Loader {
             return System.Environment.ExpandEnvironmentVariables(path);
         }
         public static string GetFullPath(string folder, string filename) {
-            return System.IO.Path.Combine(folder, filename);
+            return ExpandedPath($"{folder}/{filename}");
         }
         #endregion
 
