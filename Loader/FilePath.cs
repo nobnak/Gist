@@ -29,7 +29,9 @@ namespace nobnak.Gist.Loader {
 		}
 		public virtual string ExpandedPath {
 			get {
-				return System.Environment.ExpandEnvironmentVariables(filepath);
+				var expanded = System.Environment.ExpandEnvironmentVariables(filepath);
+				//Debug.Log($"Expand path: <{filepath}> => <{expanded}>");
+				return expanded;
 			}
 		}
 		public virtual string FullPath {
