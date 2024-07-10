@@ -84,13 +84,14 @@ namespace nobnak.Gist.Resizable {
 		public override void ApplyToNew(RenderTexture tex) {
 			tex.autoGenerateMips = autoGenerateMips;
 			tex.useMipMap = useMipMap;
-			ApplyToExisting(tex);
+            ApplyToExisting(tex);
 		}
 		public override void ApplyToExisting(RenderTexture tex) {
 			base.ApplyToExisting(tex);
 			tex.antiAliasing = ParseAntiAliasing(antiAliasing);
 			tex.useDynamicScale = useDynamicScale;
-		}
+            tex.hideFlags = HideFlags.DontSave;
+        }
 		#endregion
 	}
 }
