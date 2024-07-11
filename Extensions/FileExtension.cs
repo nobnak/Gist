@@ -15,9 +15,9 @@ namespace nobnak.Gist.Extensions.FileExt {
 		public static string UnderProjectRoot(this string file) 
 			=> Path.Combine(ProjectRoot, file);
 
-		public static bool TrySave(this string path, string text) {
+		public static bool TrySave(this string path, string text, bool createFolder = true) {
 			try {
-                path.Save(text);
+                path.Save(text, createFolder);
 				return true;
 			} catch (System.Exception e) {
 				lastErrot = e;
@@ -37,7 +37,12 @@ namespace nobnak.Gist.Extensions.FileExt {
 			}
 		}
 
-		public static void Save(this string path, string text) {
+		public static void Save(this string path, string text, bool createFolder = true) {
+			if (createFolder) {
+				var folder = new DirectoryInfo(Path.GetDirectoryName(path));
+				if (!folder.Exists)
+					folder.Create();
+			}
             File.WriteAllText(path, text);
         }
 		public static string Load(this string path) {
