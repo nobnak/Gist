@@ -48,7 +48,7 @@ namespace nobnak.Gist.Compute.Blurring {
             var ds = CS.DispatchSize(K_MAIN, w, h);
             CS.Dispatch(K_MAIN, ds.x, ds.y, ds.z);
         }
-        public void Render(Texture src, RenderTexture dst, int iterations, int lod = 0) {
+        public void Render(Texture src, RenderTexture dst, int iterations, int lod = 0, Material mat = null, int pass = -1) {
             iterations = Mathf.Max(0, iterations);
             lod = Mathf.Clamp(lod, 0, 16);
 
@@ -78,11 +78,14 @@ namespace nobnak.Gist.Compute.Blurring {
                 last = lastTmp = nextTmp;
             }
 
-            Graphics.Blit(last, dst);
+            if (mat != null)
+                Graphics.Blit(last, dst, mat, pass);
+            else
+                Graphics.Blit(last, dst);
             if (lastTmp != null)
                 ReleaseTempRT(lastTmp);
         }
-        public bool Render(Texture src, ref RenderTexture dst, int iterations, int lod = 0) {
+        public bool Render(Texture src, ref RenderTexture dst, int iterations, int lod = 0, Material mat = null, int pass = -1) {
             iterations = Mathf.Max(0, iterations);
             lod = Mathf.Clamp(lod, 0, 16);
 
@@ -95,7 +98,7 @@ namespace nobnak.Gist.Compute.Blurring {
                 dst.DestroySelf();
                 dst = CreateRT(lodSize);
             }
-            Render(src, dst, iterations, lod);
+            Render(src, dst, iterations, lod, mat, pass);
 
             return dstResized;
         }
