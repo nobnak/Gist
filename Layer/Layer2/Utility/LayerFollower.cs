@@ -43,8 +43,10 @@ namespace nobnak.Gist.Layer2 {
 		public Layer Layer {
 			get { return layer; }
 			set {
-				validator.Invalidate();
-				layer = value;
+				if (layer != value) {
+					validator.Invalidate();
+					layer = value;
+				}
 			}
 		}
 		public void TargetOnChange(Layer target) {
