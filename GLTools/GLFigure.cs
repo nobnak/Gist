@@ -289,13 +289,29 @@ namespace nobnak.Gist.GLTools {
         public void DrawLineStrip(IEnumerable<Vector3> vertices, Transform trs) {
             DrawLineStrip(vertices, MakeModelViewMatrix(trs));
         }
-        public void ResetProjectionMatrix() {
+		public void DrawLineStrip(IEnumerable<Vector3> vertices, Matrix4x4 modelViewMat, float width) {
+			DrawLines(ConvertLineStripToLines(vertices), modelViewMat, width);
+		}
+
+		public void ResetProjectionMatrix() {
 			EnabledCustomProjectionMatrix = false;
 		}
-        #endregion
+		public IEnumerable<Vector3> ConvertLineStripToLines(IEnumerable<Vector3> vertices) {
+			var iter = vertices.GetEnumerator();
+			if (!iter.MoveNext())
+				yield break;
+			var vfrom = iter.Current;
+			while (iter.MoveNext()) {
+				var vto = iter.Current;
+				yield return vfrom;
+				yield return vto;
+				vfrom = vto;
+			}
+		}
+		#endregion
 
-        #region private
-        protected static Matrix4x4 MakeModelViewMatrix(Transform trs) {
+			#region private
+		protected static Matrix4x4 MakeModelViewMatrix(Transform trs) {
             var mv = Camera.current.worldToCameraMatrix;
             if (trs != null)
                 mv *= trs.localToWorldMatrix;
