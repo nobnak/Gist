@@ -14,7 +14,7 @@
             #pragma fragment frag
 
             #include "UnityCG.cginc"
-            #include "Assets/Packages/Gist/CGIncludes/ColorSpace.cginc"
+            #include "../../../CGIncludes/ColorSpace.cginc"
 
             struct appdata {
                 float4 vertex : POSITION;
