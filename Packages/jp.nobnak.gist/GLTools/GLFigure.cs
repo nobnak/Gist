@@ -249,7 +249,7 @@ namespace nobnak.Gist.GLTools {
 			if (!StartDraw(Matrix4x4.identity, GL.TRIANGLE_STRIP))
 				return;
 			try {
-				var half = 0.5f * width;
+				var halfWidth = 0.5f * width;
 				var iter = vertices.GetEnumerator();
 				while (iter.MoveNext()) {
 					var vfrom = modelViewMat.MultiplyPoint3x4(iter.Current);
@@ -259,14 +259,32 @@ namespace nobnak.Gist.GLTools {
 
 					var span = vto - vfrom;
 					span.z = 0f;
-					var tan = half * span.normalized;
+					var tan = halfWidth * span.normalized;
 					var nor = new Vector3(-tan.y, tan.x, 0f);
 
-					GL.Vertex(vfrom + nor - tan);
-					GL.Vertex(vto + nor + tan);
-					GL.Vertex(vfrom - nor - tan);
-					GL.Vertex(vto - nor + tan);
-				}
+                    // Dg--p0---p2
+                    //   Å_ | Å^ | Å_
+                    //     p1---p3--Dg
+                    // Å™ normal
+                    // Å® tangent
+                    var p0 = vfrom + nor - tan;
+                    var p2 = vto + nor + tan;
+                    var p1 = vfrom - nor - tan;
+                    var p3 = vto - nor + tan;
+#if true
+                    GL.Vertex(p0);
+                    GL.Vertex(p0);
+					GL.Vertex(p1);
+					GL.Vertex(p2);
+					GL.Vertex(p3);
+                    GL.Vertex(p3);
+#else
+                    GL.Vertex(p0);
+                    GL.Vertex(p2);
+                    GL.Vertex(p1);
+                    GL.Vertex(p3);
+#endif
+                }
 			} finally {
 				EndDraw();
 			}
@@ -308,9 +326,9 @@ namespace nobnak.Gist.GLTools {
 				vfrom = vto;
 			}
 		}
-		#endregion
+#endregion
 
-			#region private
+            #region private
 		protected static Matrix4x4 MakeModelViewMatrix(Transform trs) {
             var mv = Camera.current.worldToCameraMatrix;
             if (trs != null)
@@ -340,9 +358,9 @@ namespace nobnak.Gist.GLTools {
 				vfrom = vto;
 			}
 		}
-		#endregion
+        #endregion
 
-		#region Static
+        #region Static
 		static GLFigure _instance;
 
 		public static GLFigure Instance {
@@ -374,7 +392,7 @@ namespace nobnak.Gist.GLTools {
             GL.End ();
             GL.PopMatrix ();
         }
-		#endregion
+        #endregion
 
 	}
 }
